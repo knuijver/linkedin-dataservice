@@ -10,21 +10,16 @@ using System.Text.Json.Serialization;
 
 namespace LinkedInApiClient
 {
-    public static class LinkedInErrorExtensions
-    {
-        public static IResult<LinkedInError, string> ToStringResult(this LinkedInError error) =>
-             Result.Error<LinkedInError, string>(error);
-    }
-    public class LinkedInWebApiRequestHandler
+    public class LinkedInWebApiHandler
     {
         HttpClient httpClient;
 
-        public LinkedInWebApiRequestHandler()
+        public LinkedInWebApiHandler()
             : this(new HttpClientHandler())
         {
         }
 
-        public LinkedInWebApiRequestHandler(HttpMessageHandler handler)
+        public LinkedInWebApiHandler(HttpMessageHandler handler)
         {
             this.httpClient = new HttpClient(handler);
             this.httpClient.BaseAddress = new Uri(LinkedInConstants.DefaultBaseUrl);
