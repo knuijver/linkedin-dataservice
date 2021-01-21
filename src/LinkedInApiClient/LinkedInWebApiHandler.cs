@@ -27,6 +27,9 @@ namespace LinkedInApiClient
             this.httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
+        public static readonly IEnumerable<KeyValuePair<string, string>> EmptyParameters = Enumerable.Empty<KeyValuePair<string, string>>();
+
+
         protected void SetBasicAuthenticationHeader(string userName, string password)
         {
             var authToken = Encoding.ASCII.GetBytes($"{userName}:{password}");
@@ -39,14 +42,20 @@ namespace LinkedInApiClient
             this.httpClient.DefaultRequestHeaders.Add("User-Agent", userAgent);
         }
 
-        public Task<IResult<LinkedInError, string>> Request(AuthenticatedRequest request)
+        public Task<Result<LinkedInError, string>> Query(AuthenticatedRequest request)
         {
-            return Request(request.BearerToken, request.Request);
+            return Query(request.BearerToken, request.Request);
         }
 
-        public Task<IResult<LinkedInError, string>> Request<T>(string token, T request) where T : LinkedInRequest
+        public Task<Result<LinkedInError, string>> Query(string token, ILinkedInRequest request)
         {
             return GetJsonAsync(httpClient, token, request.Url, request.QueryParameters);
+        }
+
+        public async Task<Result<LinkedInError, T>> Query<T>(string token, T request) where T : ILinkedInRequest, ILinkedInResponse<T>
+        {
+            var result = await GetJsonAsync(httpClient, token, request.Url, request.QueryParameters);
+            return result.ConvertFromJson<T>();
         }
 
         public static string AppendQueryToUrl(string url, IEnumerable<KeyValuePair<string, string>> query)
@@ -63,7 +72,21 @@ namespace LinkedInApiClient
             }
         }
 
-        public static async Task<IResult<LinkedInError, string>> GetJsonAsync(HttpClient client, string token, string url, IEnumerable<KeyValuePair<string, string>> query)
+        public static string Combine(string baseUri, string path)
+            => Combine(new Uri(baseUri), path).ToString();
+
+        public static Uri Combine(Uri baseUri, string path)
+        {
+            var builder = new UriBuilder(baseUri);
+
+            builder.Path = (builder.Path.EndsWith("/"))
+                ? string.Concat(builder.Path, path)
+                : string.Concat(builder.Path, "/", path);
+
+            return builder.Uri;
+        }
+
+        public static async Task<Result<LinkedInError, string>> GetJsonAsync(HttpClient client, string token, string url, IEnumerable<KeyValuePair<string, string>> query)
         {
             var uri = new Uri(AppendQueryToUrl(url, query));
             var message = new HttpRequestMessage(HttpMethod.Get, uri);
@@ -76,7 +99,7 @@ namespace LinkedInApiClient
 
             if (response.IsSuccessStatusCode)
             {
-                return Result.Ok<LinkedInError, string>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+                return Result.Success(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
             }
             else
             {
@@ -88,7 +111,7 @@ namespace LinkedInApiClient
             }
         }
 
-        public static async Task<IResult<LinkedInError, string>> RequestAccessToken(HttpClient client, string url, string clientId, string secret)
+        public static async Task<Result<LinkedInError, string>> RequestAccessToken(HttpClient client, string url, string clientId, string secret)
         {
             var message = new HttpRequestMessage(HttpMethod.Post, url);
             message.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
@@ -108,7 +131,7 @@ namespace LinkedInApiClient
             {
                 if (response.IsSuccessStatusCode)
                 {
-                    return Result.Ok<LinkedInError, string>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+                    return Result.Success(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
                 }
                 else
                 {
@@ -128,7 +151,7 @@ namespace LinkedInApiClient
             }
         }
 
-        public static async Task<IResult<LinkedInError, string>> RefreshAccessToken(HttpClient client, string url, string clientId, string secret, string refreshToken)
+        public static async Task<Result<LinkedInError, string>> RefreshAccessToken(HttpClient client, string url, string clientId, string secret, string refreshToken)
         {
             var message = new HttpRequestMessage(HttpMethod.Post, url);
             message.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
@@ -147,7 +170,7 @@ namespace LinkedInApiClient
 
             if (response.IsSuccessStatusCode)
             {
-                return Result.Ok<LinkedInError, string>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+                return Result.Success(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
             }
             else
             {

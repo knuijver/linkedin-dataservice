@@ -4,9 +4,18 @@ using System.Linq;
 
 namespace LinkedInApiClient
 {
-    public class LinkedInRequest
+    public interface ILinkedInRequest
     {
-        public LinkedInRequest(string url, IEnumerable<KeyValuePair<string, string>> queryParameters)
+        string Url { get; }
+        IEnumerable<KeyValuePair<string, string>> QueryParameters { get; }
+    }
+    public interface ILinkedInResponse<T>
+    {
+    }
+
+    public class LinkedInRequestWithStringResponse : ILinkedInRequest, ILinkedInResponse<string>
+    {
+        public LinkedInRequestWithStringResponse(string url, IEnumerable<KeyValuePair<string, string>> queryParameters)
         {
             Url = url ?? throw new ArgumentNullException(nameof(url));
             QueryParameters = queryParameters ?? throw new ArgumentNullException(nameof(queryParameters));

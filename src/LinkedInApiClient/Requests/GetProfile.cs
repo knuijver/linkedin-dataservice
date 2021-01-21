@@ -4,14 +4,17 @@ using System.Linq;
 
 namespace LinkedInApiClient
 {
-    public class GetProfile : LinkedInRequest
+    public class GetProfile : ILinkedInRequest
     {
         public GetProfile()
-            : base("me", new Dictionary<string, string>
-            {
-                ["projection"] = "(id,firstName,lastName,profilePicture(displayImage~:playableStreams))"
-            })
         {
         }
+
+        public string Url { get; } = LinkedInWebApiHandler.Combine(LinkedInConstants.DefaultBaseUrl, "me");
+
+        public IEnumerable<KeyValuePair<string, string>> QueryParameters { get; } = new Dictionary<string, string>
+        {
+            ["projection"] = "(id,firstName,lastName,profilePicture(displayImage~:playableStreams))"
+        };
     }
 }

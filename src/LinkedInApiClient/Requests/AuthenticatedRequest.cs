@@ -5,7 +5,7 @@ namespace LinkedInApiClient
 {
     public class AuthenticatedRequest
     {
-        public AuthenticatedRequest(string bearerToken, LinkedInRequest request)
+        public AuthenticatedRequest(string bearerToken, ILinkedInRequest request)
         {
             BearerToken = bearerToken ?? throw new ArgumentNullException(nameof(bearerToken));
             Request = request ?? throw new ArgumentNullException(nameof(request));
@@ -13,6 +13,6 @@ namespace LinkedInApiClient
 
         public string BearerToken { get; private set; }
 
-        public LinkedInRequest Request { get; private set; }
+        public ILinkedInRequest Request { get; private set; }
     }
 }

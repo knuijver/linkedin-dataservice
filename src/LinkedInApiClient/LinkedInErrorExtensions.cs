@@ -5,7 +5,10 @@ namespace LinkedInApiClient
 {
     public static class LinkedInErrorExtensions
     {
-        public static IResult<LinkedInError, string> ToStringResult(this LinkedInError error) =>
-             Result.Error<LinkedInError, string>(error);
+        public static Result<LinkedInError, string> ToStringResult(this LinkedInError error) =>
+             Result.Fail(error);
+
+        public static Result<LinkedInError, ILinkedInResponse<T>> ToResult<T>(this LinkedInError error) where T : ILinkedInResponse<T>
+            => Result.Fail(error);
     }
 }

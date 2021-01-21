@@ -4,15 +4,18 @@ using System.Linq;
 
 namespace LinkedInApiClient
 {
-    public class GetEmail : LinkedInRequest
+    public class GetEmail : ILinkedInRequest
     {
         public GetEmail()
-            : base("emailAddress", new Dictionary<string, string>
-            {
-                ["q"] = "members",
-                ["projection"] = "(elements*(handle~))"
-            })
         {
         }
+
+        public string Url { get; } = LinkedInWebApiHandler.Combine(LinkedInConstants.DefaultBaseUrl, "emailAddress");
+
+        public IEnumerable<KeyValuePair<string, string>> QueryParameters { get; } = new Dictionary<string, string>
+        {
+            ["q"] = "members",
+            ["projection"] = "(elements*(handle~))"
+        };
     }
 }

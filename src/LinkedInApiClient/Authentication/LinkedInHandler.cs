@@ -54,12 +54,12 @@ namespace LinkedInApiClient.Authentication
 
             var handler = new LinkedInWebApiHandler();
 
-            var profile = handler.Request(new AuthenticatedRequest(tokens.AccessToken, new GetProfile()));
-            var email = handler.Request(new AuthenticatedRequest(tokens.AccessToken, new GetEmail()));
+            var profile = handler.Query(new AuthenticatedRequest(tokens.AccessToken, new GetProfile()));
+            var email = handler.Query(new AuthenticatedRequest(tokens.AccessToken, new GetEmail()));
 
             //using (var payload = JsonDocument.Parse(profile.Result.Result()))
             //{
-            var payload = JObject.Parse(profile.Result.Result());
+            var payload = JObject.Parse(profile.Result.Data);
             var context = new OAuthCreatingTicketContext(
                 new ClaimsPrincipal(identity),
                 properties,
