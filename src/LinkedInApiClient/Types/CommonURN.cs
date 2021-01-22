@@ -1,32 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace LinkedInApiClient
+namespace LinkedInApiClient.Types
 {
-    public struct LinkedInURN
-    {
-        public LinkedInURN(string @namespace, string entityType, string id)
-        {
-            Namespace = @namespace;
-            EntityType = entityType;
-            Id = id;
-        }
-
-        public string @Namespace { get; private set; }
-
-        public string EntityType { get; private set; }
-
-        public string Id { get; private set; }
-
-        public override string ToString()
-        {
-            return $"urn:{Namespace}:{EntityType}:{Id}";
-        }
-    }
-
     /// <summary>
     /// Common URNs & Namespaces
     /// </summary>
@@ -75,12 +51,16 @@ namespace LinkedInApiClient
         /// <param name="commentId"></param>
         /// <returns></returns>
         public static LinkedInURN Comment(string activityURN, string commentId) => LIN("comment", $"({activityURN},{commentId})");
-    }
 
-
-    public static class LinkedInURNExtensions
-    {
-
+        /// <summary>
+        /// Company ID translates to Organization Urn via urn:li:organization:{companyID}. 
+        /// Company URN and Organization URN are interchangeable through its namespace (e.g. urn:li:company:1 can become urn:li:organization:1).
+        /// A School ID will migrate to an Organization URN with an ID translation(e.g.school ID 123 will be urn:li:organization:456).
+        /// Organization AP
+        /// </summary>
+        /// <param name="companyId"></param>
+        /// <returns></returns>
+        public static LinkedInURN OrganizationId(string companyId) => LIN("organization", companyId);
     }
 }
 /*
@@ -89,8 +69,5 @@ Like URN can be  translated here  using the V2 Activities API.
 Social Action API
 
 urn:li:organization:{id}	
-Company ID translates to Organization Urn via urn:li:organization:{companyID}. 
-Company URN and Organization URN are interchangeable through its namespace (e.g. urn:li:company:1 can become urn:li:organization:1).
-A School ID will migrate to an Organization URN with an ID translation (e.g. school ID 123 will be urn:li:organization:456).
-Organization AP
+
 */

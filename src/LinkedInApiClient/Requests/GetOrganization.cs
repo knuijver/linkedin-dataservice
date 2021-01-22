@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using LinkedInApiClient.Types;
 
 namespace LinkedInApiClient
 {
     public class GetOrganization : ILinkedInRequest
     {
-        public GetOrganization(string organizationId)
+        public GetOrganization(LinkedInURN organizationId)
         {
-            Url = LinkedInWebApiHandler.Combine(LinkedInConstants.DefaultBaseUrl, $"organizations/{organizationId}");
+            Url = LinkedInWebApiHandler.Combine(LinkedInConstants.DefaultBaseUrl, $"organizations/{organizationId.UrlEncode()}");
         }
 
         public string Url { get; }
 
-        public IEnumerable<KeyValuePair<string, string>> QueryParameters { get; } = LinkedInWebApiHandler.EmptyParameters;
+        public QueryParameterCollection QueryParameters { get; } = QueryParameterCollection.EmptyParameters;
     }
 }

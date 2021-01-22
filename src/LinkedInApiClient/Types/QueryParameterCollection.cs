@@ -1,0 +1,53 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace LinkedInApiClient.Types
+{
+    public class QueryParameterCollection : IEnumerable<KeyValuePair<string, string>>
+    {
+        IDictionary<string, string> parameters;
+
+        public static readonly QueryParameterCollection EmptyParameters = new QueryParameterCollection();
+
+        public QueryParameterCollection()
+        {
+            this.parameters = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        }
+        public QueryParameterCollection(IEnumerable<KeyValuePair<string, string>> queryParameters)
+        {
+            this.parameters = new Dictionary<string, string>(queryParameters, StringComparer.OrdinalIgnoreCase);
+        }
+
+        public string this[string index]
+        {
+            get => parameters[index];
+            set => parameters[index] = value;
+        }
+
+        public QueryParameterCollection AddRange(IEnumerable<KeyValuePair<string, string>> par)
+        {
+            parameters = new Dictionary<string, string>(parameters.Concat(par), StringComparer.OrdinalIgnoreCase);
+            return this;
+        }
+
+        public string ToUrlQueryString(string url)
+        {
+            if (!parameters.Any())
+            {
+                return url;
+            }
+            else
+            {
+                return url
+                    + (url.Contains("?") ? "&" : "?")
+                    + string.Join("&", parameters.Select(x => Uri.EscapeDataString(x.Key) + "=" + Uri.EscapeDataString(x.Value)));
+            }
+        }
+
+        public IEnumerator<KeyValuePair<string, string>> GetEnumerator() => parameters.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => parameters.GetEnumerator();
+    }
+}

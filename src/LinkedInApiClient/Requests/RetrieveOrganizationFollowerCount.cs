@@ -1,0 +1,27 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using LinkedInApiClient.Types;
+
+namespace LinkedInApiClient
+{
+    /// <summary>
+    /// The Organization Network Size API provides the ability to retrieve the number of
+    /// first-degree connections (followers) for any organization.
+    /// </summary>
+    public class RetrieveOrganizationFollowerCount : ILinkedInRequest
+    {
+        public RetrieveOrganizationFollowerCount(LinkedInURN organizationId)
+        {
+            Url = LinkedInWebApiHandler.Combine(LinkedInConstants.DefaultBaseUrl, $"networkSizes/{organizationId.UrlEncode()}");
+            QueryParameters = new QueryParameterCollection
+            {
+                ["edgeType"] = "CompanyFollowedByMember"
+            };
+        }
+
+        public string Url { get; }
+
+        public QueryParameterCollection QueryParameters { get; }
+    }
+}

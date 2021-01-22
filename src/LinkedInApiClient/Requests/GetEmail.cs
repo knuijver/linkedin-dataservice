@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using LinkedInApiClient.Types;
 
 namespace LinkedInApiClient
 {
@@ -12,7 +13,7 @@ namespace LinkedInApiClient
 
         public string Url { get; } = LinkedInWebApiHandler.Combine(LinkedInConstants.DefaultBaseUrl, "emailAddress");
 
-        public IEnumerable<KeyValuePair<string, string>> QueryParameters { get; } = new Dictionary<string, string>
+        public QueryParameterCollection QueryParameters { get; } = new QueryParameterCollection
         {
             ["q"] = "members",
             ["projection"] = "(elements*(handle~))"

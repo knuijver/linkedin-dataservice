@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LinkedInApiClient
+namespace LinkedInApiClient.Types
 {
     public readonly struct Option<T>
     {

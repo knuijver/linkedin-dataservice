@@ -5,8 +5,8 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using LinkedInApiClient.Types;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace LinkedInApiClient
 {
@@ -26,9 +26,6 @@ namespace LinkedInApiClient
             this.httpClient.DefaultRequestHeaders.Add("Content-Type", "application/json");
             this.httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
-
-        public static readonly IEnumerable<KeyValuePair<string, string>> EmptyParameters = Enumerable.Empty<KeyValuePair<string, string>>();
-
 
         protected void SetBasicAuthenticationHeader(string userName, string password)
         {
@@ -107,7 +104,7 @@ namespace LinkedInApiClient
                 return LinkedInError
                     .From(error)
                     //.With(response.StatusCode, $"Your request on {url} failed with status code {response.StatusCode}")
-                    .ToStringResult();
+                    .ToResult();
             }
         }
 
@@ -139,14 +136,14 @@ namespace LinkedInApiClient
                     return LinkedInError
                         .From(error)
                         //.With(response.StatusCode, $"Your request on {url} failed with status code {response.StatusCode}")
-                        .ToStringResult();
+                        .ToResult();
                 }
             }
             catch (Exception exception)
             {
                 return LinkedInError
                     .With(response.StatusCode, exception.Message)
-                    .ToStringResult();
+                    .ToResult();
 
             }
         }
@@ -178,7 +175,7 @@ namespace LinkedInApiClient
                 return LinkedInError
                     .From(error)
                     //.With(response.StatusCode, $"Your request on {url} failed with status code {response.StatusCode}")
-                    .ToStringResult();
+                    .ToResult();
             }
         }
     }

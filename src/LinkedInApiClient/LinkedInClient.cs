@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LinkedInApiClient.Types;
 
 namespace LinkedInApiClient
 {
     public class LinkedInClient
     {
-        readonly IOrganizationAccessTokenRegistry tokenRegistry;
-        readonly LinkedInWebApiHandler handler;
+        private readonly IAccessTokenRegistry tokenRegistry;
+        private readonly LinkedInWebApiHandler handler;
 
-        public LinkedInClient(IOrganizationAccessTokenRegistry tokenRegistry, LinkedInWebApiHandler handler)
+        public LinkedInClient(IAccessTokenRegistry tokenRegistry, LinkedInWebApiHandler handler)
         {
             this.handler = handler;
             this.tokenRegistry = tokenRegistry;
@@ -19,7 +20,7 @@ namespace LinkedInApiClient
 
         public async Task<Option<string>> EmailAddress(string organizationId)
         {
-            var token = (await tokenRegistry.LinkedInAccessTokenAsync(organizationId));
+            var token = (await tokenRegistry.AccessTokenAsync(organizationId));
             if (token.IsSuccess)
             {
                 return (await handler.Query(new AuthenticatedRequest(token.Data, new GetEmail())))
@@ -33,7 +34,7 @@ namespace LinkedInApiClient
 
         public async Task<Option<string>> Profile(string organizationId)
         {
-            var token = await tokenRegistry.LinkedInAccessTokenAsync(organizationId);
+            var token = await tokenRegistry.AccessTokenAsync(organizationId);
             if (token.IsSuccess)
             {
                 var result = await handler.Query(new AuthenticatedRequest(token.Data, new GetProfile()));
