@@ -23,7 +23,7 @@ namespace LinkedInApiClient
         {
             this.httpClient = new HttpClient(handler);
             this.httpClient.BaseAddress = new Uri(LinkedInConstants.DefaultBaseUrl);
-            this.httpClient.DefaultRequestHeaders.Add("Content-Type", "application/json");
+            //this.httpClient.DefaultRequestHeaders.Add("Content-Type", "application/json");
             this.httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
@@ -41,10 +41,10 @@ namespace LinkedInApiClient
 
         public Task<Result<LinkedInError, string>> Query(AuthenticatedRequest request)
         {
-            return Query(request.BearerToken, request.Request);
+            return QueryAsync(request.BearerToken, request.Request);
         }
 
-        public Task<Result<LinkedInError, string>> Query(string token, ILinkedInRequest request)
+        public Task<Result<LinkedInError, string>> QueryAsync(string token, ILinkedInRequest request)
         {
             return GetJsonAsync(httpClient, token, request.Url, request.QueryParameters);
         }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LinkedInApiClient.Types;
+using LinkedInApiClient.UseCases;
 
 namespace LinkedInApiClient
 {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using LinkedInApiClient.Types;
 
-namespace LinkedInApiClient
+namespace LinkedInApiClient.UseCases
 {
     /// <summary>
     /// The Organization Network Size API provides the ability to retrieve the number of

@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Linq;
-using LinkedInApiClient.Authentication;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using LinkedInApiClient.Authentication;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class LinkedInExtentions
+    public static class LinkedInAuthenticationExtentions
     {
         public static AuthenticationBuilder AddOAuth<TOptions, THandler>(this AuthenticationBuilder builder, string authenticationScheme, string displayName, Action<TOptions> configureOptions)
             where TOptions : OAuthOptions, new()

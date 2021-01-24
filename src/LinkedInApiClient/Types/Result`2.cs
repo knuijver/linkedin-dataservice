@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Linq;
 
 namespace LinkedInApiClient
@@ -29,6 +30,13 @@ namespace LinkedInApiClient
 
         public static implicit operator Result<TError, TData>(DelayedError<TError> temp) =>
             new Result<TError, TData>(temp.Value);
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void Deconstruct(out TError error, out TData data)
+        {
+            error = this.Error;
+            data = this.Data;
+        }
     }
 
     public readonly struct DelayedData<T>

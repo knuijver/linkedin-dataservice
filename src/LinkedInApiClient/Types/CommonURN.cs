@@ -61,6 +61,8 @@ namespace LinkedInApiClient.Types
         /// <param name="companyId"></param>
         /// <returns></returns>
         public static LinkedInURN OrganizationId(string companyId) => LIN("organization", companyId);
+
+        public static LinkedInURN OrganizationBrand(string companyId) => LIN("organizationBrand", companyId);
     }
 }
 /*

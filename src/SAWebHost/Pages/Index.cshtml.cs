@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LinkedInApiClient.Types;
+using Newtonsoft.Json;
 
 namespace SAWebHost.Pages
 {
@@ -19,7 +21,12 @@ namespace SAWebHost.Pages
 
         public void OnGet()
         {
+            var model = new
+            {
+                Sample = CommonURN.OrganizationId("32523")
+            };
 
+            _logger.LogInformation(JsonConvert.SerializeObject(model, Formatting.Indented));
         }
     }
 }

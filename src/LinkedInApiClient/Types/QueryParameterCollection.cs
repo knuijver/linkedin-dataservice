@@ -32,6 +32,16 @@ namespace LinkedInApiClient.Types
             return this;
         }
 
+        public static QueryParameterCollection operator+ (QueryParameterCollection collection, IEnumerable<KeyValuePair<string, string>> par)
+        {
+            return collection.AddRange(par);
+        }
+        public static QueryParameterCollection operator +(QueryParameterCollection collection, KeyValuePair<string, string> par)
+        {
+            collection[par.Key] = par.Value;
+            return collection;
+        }
+
         public string ToUrlQueryString(string url)
         {
             if (!parameters.Any())

@@ -4,17 +4,17 @@ using System.Collections.Generic;
 using System.Linq;
 using LinkedInApiClient.Types;
 
-namespace LinkedInApiClient
+namespace LinkedInApiClient.UseCases
 {
-    public class OrganizationalEntityFollowerStatistics : ILinkedInRequest
+    public class RetrieveLifetimeFollowerStatistics : ILinkedInRequest
     {
-        public OrganizationalEntityFollowerStatistics(LinkedInURN organizationId, TimeInterval timeInterval)
+        public RetrieveLifetimeFollowerStatistics(LinkedInURN organizationId, TimeInterval timeInterval)
         {
             QueryParameters = new QueryParameterCollection
             {
                 ["q"] = "organizationalEntity",
                 ["organizationalEntity"] = organizationId.UrlEncode()
-            }.AddRange(timeInterval.AsQueryParameters());
+            } + timeInterval.AsQueryParameters();
         }
         public string Url { get; } = LinkedInWebApiHandler.Combine(LinkedInConstants.DefaultBaseUrl, "organizationalEntityFollowerStatistics");
 
