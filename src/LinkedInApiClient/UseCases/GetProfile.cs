@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using LinkedInApiClient.Types;
 
 namespace LinkedInApiClient.UseCases
 {
     public class GetProfile : ILinkedInRequest
     {
-        public GetProfile()
+        public GetProfile(string tokenId)
         {
+            TokenId = tokenId;
         }
 
         public string Url { get; } = UrlHelper.Combine(LinkedInConstants.DefaultBaseUrl, "me");
@@ -17,5 +16,7 @@ namespace LinkedInApiClient.UseCases
         {
             ["projection"] = "(id,firstName,lastName,profilePicture(displayImage~:playableStreams))"
         };
+
+        public string TokenId { get; }
     }
 }

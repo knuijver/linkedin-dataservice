@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-namespace LinkedInApiClient.Authentication
+﻿namespace LinkedInApiClient.Authentication
 {
     /// <summary>
     /// LinkedIn OAuth tokens.

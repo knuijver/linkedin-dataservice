@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-namespace LinkedInApiClient.Types
+﻿namespace LinkedInApiClient.Types
 {
     public static class Result
     {

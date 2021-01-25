@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using LinkedInApiClient.Types;
 
 namespace LinkedInApiClient.UseCases
@@ -15,5 +13,6 @@ namespace LinkedInApiClient.UseCases
         public string Url { get; }
 
         public QueryParameterCollection QueryParameters { get; } = QueryParameterCollection.EmptyParameters;
+        public string TokenId => throw new NotImplementedException();
     }
 }

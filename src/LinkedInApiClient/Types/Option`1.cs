@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LinkedInApiClient.Types
 {
@@ -40,6 +36,14 @@ namespace LinkedInApiClient.Types
 
         public Option<TOut> Bind<TOut>(Func<T, Option<TOut>> bind) =>
             hasValue ? bind(value) : new Option<TOut>();
+
+        public void Tee(Action<T> action)
+        {
+            if (hasValue)
+            {
+                action(value);
+            }
+        }
     }
 
     public readonly struct NoneOption

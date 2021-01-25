@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using LinkedInApiClient.Types;
 
-namespace LinkedInApiClient.UseCases
+namespace LinkedInApiClient.UseCases.EmailAddress
 {
-    public class GetEmail : ILinkedInRequest
+    public class GetEmail : ILinkedInRequest<Option<string>>
     {
-        public GetEmail()
+        public GetEmail(string tokenId)
         {
+            this.TokenId = tokenId;
         }
 
         public string Url { get; } = UrlHelper.Combine(LinkedInConstants.DefaultBaseUrl, "emailAddress");
@@ -18,5 +17,7 @@ namespace LinkedInApiClient.UseCases
             ["q"] = "members",
             ["projection"] = "(elements*(handle~))"
         };
+
+        public string TokenId { get; }
     }
 }

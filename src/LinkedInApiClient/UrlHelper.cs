@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LinkedInApiClient
 {
     static class UrlHelper
     {
-
         public static string AppendQueryToUrl(string url, IEnumerable<KeyValuePair<string, string>> query)
         {
             if (!query.Any())

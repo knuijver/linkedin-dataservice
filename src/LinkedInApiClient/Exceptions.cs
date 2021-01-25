@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Net;
 
 namespace LinkedInApiClient
 {
@@ -36,28 +30,5 @@ namespace LinkedInApiClient
         {
             return new LinkedInError((HttpStatusCode)error.Status, error.Message, error.ServiceErrorCode);
         }
-        /*
-                public static LinkedInError ForHttpStatusCode(HttpStatusCode statusCode)
-                {
-                    var error = statusCode switch
-                    {
-                        HttpStatusCode.BadRequest => new LinkedInError(statusCode),
-                        HttpStatusCode.Unauthorized => new LinkedInError(statusCode),
-                        HttpStatusCode.PaymentRequired => new LinkedInError(statusCode),
-                        HttpStatusCode.Forbidden => new LinkedInError(statusCode),
-                        HttpStatusCode.NotFound => new LinkedInError(statusCode),
-                        HttpStatusCode.MethodNotAllowed => new LinkedInError(statusCode),
-                        HttpStatusCode.LengthRequired => new LinkedInError(statusCode),
-                        HttpStatusCode.TooManyRequests => new LinkedInError(statusCode),
-                        HttpStatusCode.InternalServerError => new LinkedInError(statusCode),
-                        HttpStatusCode.BadGateway => new LinkedInError(statusCode),
-                        HttpStatusCode.ServiceUnavailable => new LinkedInError(statusCode),
-                        HttpStatusCode.GatewayTimeout => new LinkedInError(statusCode),
-
-                        _ => throw new NotImplementedException(),
-                    };
-
-                    return error;
-                }*/
     }
 }

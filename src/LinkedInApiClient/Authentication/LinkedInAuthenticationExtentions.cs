@@ -1,10 +1,9 @@
-﻿using System;
-using System.Linq;
+﻿using LinkedInApiClient.Authentication;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using LinkedInApiClient.Authentication;
+using System;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

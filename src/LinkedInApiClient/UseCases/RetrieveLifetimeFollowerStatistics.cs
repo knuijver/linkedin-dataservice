@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using LinkedInApiClient.Types;
 
 namespace LinkedInApiClient.UseCases
@@ -19,5 +16,6 @@ namespace LinkedInApiClient.UseCases
         public string Url { get; } = UrlHelper.Combine(LinkedInConstants.DefaultBaseUrl, "organizationalEntityFollowerStatistics");
 
         public QueryParameterCollection QueryParameters { get; }
+        public string TokenId => throw new NotImplementedException();
     }
 }

@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
-using LinkedInApiClient.UseCases;
+﻿using LinkedInApiClient.UseCases;
+using LinkedInApiClient.UseCases.EmailAddress;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Text.Encodings.Web;
+using System.Threading.Tasks;
 
 namespace LinkedInApiClient.Authentication
 {
@@ -48,14 +48,14 @@ namespace LinkedInApiClient.Authentication
                 RefreshToken = tokens.RefreshToken
             };
 
-            var handler = new LinkedInApiHandler();
+            var handler = new LinkedInHttpClient();
 
-            var profile = handler.Query(new AuthenticatedRequest(tokens.AccessToken, new GetProfile()));
-            var email = handler.Query(new AuthenticatedRequest(tokens.AccessToken, new GetEmail()));
+            var email = await handler.GetAsync(tokens.AccessToken, new GetEmail(null));
+            var profile = await handler.GetAsync(tokens.AccessToken, new GetProfile(null));
 
             //using (var payload = JsonDocument.Parse(profile.Result.Result()))
             //{
-            var payload = JObject.Parse(profile.Result.Data);
+            var payload = JObject.Parse(profile.Data);
             var context = new OAuthCreatingTicketContext(
                 new ClaimsPrincipal(identity),
                 properties,
