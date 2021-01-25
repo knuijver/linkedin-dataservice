@@ -11,7 +11,7 @@ namespace LinkedInApiClient.UseCases
     {
         public RetrieveLifetimeOrganizationPageStatistics(LinkedInURN organizationId, TimeInterval timeInterval)
         {
-            Url = LinkedInWebApiHandler.Combine(LinkedInConstants.DefaultBaseUrl, "organizationPageStatistics");
+            Url = UrlHelper.Combine(LinkedInConstants.DefaultBaseUrl, "organizationPageStatistics");
             QueryParameters = new QueryParameterCollection
             {
                 ["q"] = "organization",

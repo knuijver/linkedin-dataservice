@@ -48,7 +48,7 @@ namespace LinkedInApiClient.Authentication
                 RefreshToken = tokens.RefreshToken
             };
 
-            var handler = new LinkedInWebApiHandler();
+            var handler = new LinkedInApiHandler();
 
             var profile = handler.Query(new AuthenticatedRequest(tokens.AccessToken, new GetProfile()));
             var email = handler.Query(new AuthenticatedRequest(tokens.AccessToken, new GetEmail()));

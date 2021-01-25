@@ -32,7 +32,7 @@ namespace LinkedInApiClientTests
                     ItExpr.IsAny<CancellationToken>())
                .ReturnsAsync(response);
 
-            var linkedIn = new LinkedInWebApiHandler(handlerMock.Object);
+            var linkedIn = new LinkedInApiHandler(handlerMock.Object);
             var result = await linkedIn.QueryAsync(string.Empty, new GetEmail());
 
 
@@ -68,7 +68,7 @@ namespace LinkedInApiClientTests
                     ItExpr.IsAny<CancellationToken>())
                .ReturnsAsync(response);
 
-            var linkedIn = new LinkedInWebApiHandler(handlerMock.Object);
+            var linkedIn = new LinkedInApiHandler(handlerMock.Object);
             var result = await linkedIn.QueryAsync(string.Empty, new GetEmail());
 
 

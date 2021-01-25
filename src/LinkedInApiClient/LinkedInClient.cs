@@ -11,17 +11,17 @@ namespace LinkedInApiClient
     public class LinkedInClient
     {
         private readonly IAccessTokenRegistry tokenRegistry;
-        private readonly LinkedInWebApiHandler handler;
+        private readonly LinkedInApiHandler handler;
 
-        public LinkedInClient(IAccessTokenRegistry tokenRegistry, LinkedInWebApiHandler handler)
+        public LinkedInClient(IAccessTokenRegistry tokenRegistry, LinkedInApiHandler handler)
         {
             this.handler = handler;
             this.tokenRegistry = tokenRegistry;
         }
 
-        public async Task<Option<string>> EmailAddress(string organizationId)
+        public async Task<Option<string>> EmailAddress(string tokenId)
         {
-            var token = (await tokenRegistry.AccessTokenAsync(organizationId));
+            var token = (await tokenRegistry.AccessTokenAsync(tokenId));
             if (token.IsSuccess)
             {
                 return (await handler.Query(new AuthenticatedRequest(token.Data, new GetEmail())))
@@ -33,9 +33,9 @@ namespace LinkedInApiClient
             }
         }
 
-        public async Task<Option<string>> Profile(string organizationId)
+        public async Task<Option<string>> Profile(string tokenId)
         {
-            var token = await tokenRegistry.AccessTokenAsync(organizationId);
+            var token = await tokenRegistry.AccessTokenAsync(tokenId);
             if (token.IsSuccess)
             {
                 var result = await handler.Query(new AuthenticatedRequest(token.Data, new GetProfile()));

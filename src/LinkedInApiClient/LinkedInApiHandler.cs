@@ -10,20 +10,19 @@ using System.Text.Json;
 
 namespace LinkedInApiClient
 {
-    public class LinkedInWebApiHandler
+    public class LinkedInApiHandler
     {
         HttpClient httpClient;
 
-        public LinkedInWebApiHandler()
+        public LinkedInApiHandler()
             : this(new HttpClientHandler())
         {
         }
 
-        public LinkedInWebApiHandler(HttpMessageHandler handler)
+        public LinkedInApiHandler(HttpMessageHandler handler)
         {
             this.httpClient = new HttpClient(handler);
             this.httpClient.BaseAddress = new Uri(LinkedInConstants.DefaultBaseUrl);
-            //this.httpClient.DefaultRequestHeaders.Add("Content-Type", "application/json");
             this.httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
@@ -46,46 +45,17 @@ namespace LinkedInApiClient
 
         public Task<Result<LinkedInError, string>> QueryAsync(string token, ILinkedInRequest request)
         {
-            return GetJsonAsync(httpClient, token, request.Url, request.QueryParameters);
+            return GetJsonAsync(httpClient, token, request.HttpRequestUrl());
         }
 
-        public async Task<Result<LinkedInError, T>> Query<T>(string token, T request) where T : ILinkedInRequest, ILinkedInResponse<T>
+        public async Task<Result<LinkedInError, T>> Query<T>(string token, ILinkedInRequest request) where T : ILinkedInResponse<T>
         {
-            var result = await GetJsonAsync(httpClient, token, request.Url, request.QueryParameters);
+            var result = await GetJsonAsync(httpClient, token, request.HttpRequestUrl());
             return result.ConvertFromJson<T>();
         }
 
-        public static string AppendQueryToUrl(string url, IEnumerable<KeyValuePair<string, string>> query)
+        private static async Task<Result<LinkedInError, string>> GetJsonAsync(HttpClient client, string token, Uri uri)
         {
-            if (!query.Any())
-            {
-                return url;
-            }
-            else
-            {
-                return url
-                    + (url.Contains("?") ? "&" : "?")
-                    + string.Join("&", query.Select(x => Uri.EscapeDataString(x.Key) + "=" + Uri.EscapeDataString(x.Value)));
-            }
-        }
-
-        public static string Combine(string baseUri, string path)
-            => Combine(new Uri(baseUri), path).ToString();
-
-        public static Uri Combine(Uri baseUri, string path)
-        {
-            var builder = new UriBuilder(baseUri);
-
-            builder.Path = (builder.Path.EndsWith("/"))
-                ? string.Concat(builder.Path, path)
-                : string.Concat(builder.Path, "/", path);
-
-            return builder.Uri;
-        }
-
-        public static async Task<Result<LinkedInError, string>> GetJsonAsync(HttpClient client, string token, string url, IEnumerable<KeyValuePair<string, string>> query)
-        {
-            var uri = new Uri(AppendQueryToUrl(url, query));
             var message = new HttpRequestMessage(HttpMethod.Get, uri);
             message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
@@ -108,7 +78,7 @@ namespace LinkedInApiClient
             }
         }
 
-        public static async Task<Result<LinkedInError, string>> RequestAccessToken(HttpClient client, string url, string clientId, string secret)
+        public static async Task<Result<LinkedInError, string>> RequestAccessToken(HttpClient client, Uri url, string clientId, string secret)
         {
             var message = new HttpRequestMessage(HttpMethod.Post, url);
             message.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
@@ -148,7 +118,7 @@ namespace LinkedInApiClient
             }
         }
 
-        public static async Task<Result<LinkedInError, string>> RefreshAccessToken(HttpClient client, string url, string clientId, string secret, string refreshToken)
+        public static async Task<Result<LinkedInError, string>> RefreshAccessToken(HttpClient client, Uri url, string clientId, string secret, string refreshToken)
         {
             var message = new HttpRequestMessage(HttpMethod.Post, url);
             message.Headers.Add("Content-Type", "application/x-www-form-urlencoded");

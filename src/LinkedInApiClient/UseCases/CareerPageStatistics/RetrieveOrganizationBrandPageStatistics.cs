@@ -11,7 +11,7 @@ namespace LinkedInApiClient.UseCases.CareerPageStatistics
     {
         public RetrieveOrganizationBrandPageStatistics(LinkedInURN organizationBrand, TimeInterval timeInterval)
         {
-            Url = LinkedInWebApiHandler.Combine(LinkedInConstants.DefaultBaseUrl, "brandPageStatistics");
+            Url = UrlHelper.Combine(LinkedInConstants.DefaultBaseUrl, "brandPageStatistics");
             QueryParameters = new QueryParameterCollection
             {
                 ["q"] = "brand",

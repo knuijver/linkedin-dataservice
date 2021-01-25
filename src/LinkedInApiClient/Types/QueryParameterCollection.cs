@@ -32,7 +32,7 @@ namespace LinkedInApiClient.Types
             return this;
         }
 
-        public static QueryParameterCollection operator+ (QueryParameterCollection collection, IEnumerable<KeyValuePair<string, string>> par)
+        public static QueryParameterCollection operator +(QueryParameterCollection collection, IEnumerable<KeyValuePair<string, string>> par)
         {
             return collection.AddRange(par);
         }
@@ -42,19 +42,8 @@ namespace LinkedInApiClient.Types
             return collection;
         }
 
-        public string ToUrlQueryString(string url)
-        {
-            if (!parameters.Any())
-            {
-                return url;
-            }
-            else
-            {
-                return url
-                    + (url.Contains("?") ? "&" : "?")
-                    + string.Join("&", parameters.Select(x => Uri.EscapeDataString(x.Key) + "=" + Uri.EscapeDataString(x.Value)));
-            }
-        }
+        public string ToUrlQueryString(string url) =>
+            UrlHelper.AppendQueryToUrl(url, this.parameters);
 
         public IEnumerator<KeyValuePair<string, string>> GetEnumerator() => parameters.GetEnumerator();
 

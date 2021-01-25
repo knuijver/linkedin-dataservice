@@ -9,7 +9,7 @@ namespace LinkedInApiClient.UseCases
     {
         public GetOrganization(LinkedInURN organizationId)
         {
-            Url = LinkedInWebApiHandler.Combine(LinkedInConstants.DefaultBaseUrl, $"organizations/{organizationId.UrlEncode()}");
+            Url = UrlHelper.Combine(LinkedInConstants.DefaultBaseUrl, $"organizations/{organizationId.UrlEncode()}");
         }
 
         public string Url { get; }

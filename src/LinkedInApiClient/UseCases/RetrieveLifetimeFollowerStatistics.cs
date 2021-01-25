@@ -16,7 +16,7 @@ namespace LinkedInApiClient.UseCases
                 ["organizationalEntity"] = organizationId.UrlEncode()
             } + timeInterval.AsQueryParameters();
         }
-        public string Url { get; } = LinkedInWebApiHandler.Combine(LinkedInConstants.DefaultBaseUrl, "organizationalEntityFollowerStatistics");
+        public string Url { get; } = UrlHelper.Combine(LinkedInConstants.DefaultBaseUrl, "organizationalEntityFollowerStatistics");
 
         public QueryParameterCollection QueryParameters { get; }
     }

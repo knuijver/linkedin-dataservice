@@ -13,7 +13,7 @@ namespace LinkedInApiClient.UseCases
     {
         public RetrieveOrganizationFollowerCount(LinkedInURN organizationId)
         {
-            Url = LinkedInWebApiHandler.Combine(LinkedInConstants.DefaultBaseUrl, $"networkSizes/{organizationId.UrlEncode()}");
+            Url = UrlHelper.Combine(LinkedInConstants.DefaultBaseUrl, $"networkSizes/{organizationId.UrlEncode()}");
             QueryParameters = new QueryParameterCollection
             {
                 ["edgeType"] = "CompanyFollowedByMember"

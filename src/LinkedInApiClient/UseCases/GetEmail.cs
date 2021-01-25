@@ -11,7 +11,7 @@ namespace LinkedInApiClient.UseCases
         {
         }
 
-        public string Url { get; } = LinkedInWebApiHandler.Combine(LinkedInConstants.DefaultBaseUrl, "emailAddress");
+        public string Url { get; } = UrlHelper.Combine(LinkedInConstants.DefaultBaseUrl, "emailAddress");
 
         public QueryParameterCollection QueryParameters { get; } = new QueryParameterCollection
         {
