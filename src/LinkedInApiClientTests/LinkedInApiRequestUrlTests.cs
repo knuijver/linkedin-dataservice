@@ -1,122 +1,151 @@
 using LinkedInApiClient;
+using LinkedInApiClient.Authentication;
 using LinkedInApiClient.Types;
 using LinkedInApiClient.UseCases.EmailAddress;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Moq.Protected;
 using Newtonsoft.Json;
+using System;
+using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http;
+using System.Text;
+using System.Text.Unicode;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace LinkedInApiClientTests
 {
-    internal class DummyAccessTokenRegistry : IAccessTokenRegistry
-    {
-        public Task<Result<string, string>> AccessTokenAsync(string tokenId)
-        {
-            return Task.FromResult<Result<string, string>>(Result.Success(string.Empty));
-        }
-
-        public Task<Result<string, string>> UpdateAccessTokenAsync(string tokenId, string accessToken, string expiresIn, string refreshToken)
-        {
-            return Task.FromResult<Result<string, string>>(Result.Success(string.Empty));
-        }
-
-        public static IAccessTokenRegistry Create() => new DummyAccessTokenRegistry();
-    }
 
     [TestClass]
-    public class LinkedInApiRequestUrlTests
+    public class LinkedInApi_RequestMessageTests
     {
+        [TestMethod]
+        public void DefaultTokenEndpoint_IsAbsoluteUrl()
+        {
+            if (!Uri.TryCreate(LinkedInConstants.DefaultTokenEndpoint, UriKind.Absolute, out var uri))
+            {
+                Assert.Fail($"{nameof(LinkedInConstants.DefaultTokenEndpoint)} is not defined as an Absolute Url");
+            }
+        }
+
+        [TestMethod]
+        public async Task RequestAccessToken_Generate_an_Access_Token()
+        {
+            Mock<HttpMessageHandler> handlerMock = Fakes.HttpMessageHandler(responseContent: new AccessTokenResponse());
+            var linkedIn = new LinkedInHttpClient(handlerMock.Object);
+            var clientId = Guid.NewGuid().ToString("n");
+            var secret = Convert.ToBase64String(Encoding.UTF8.GetBytes("Keep the Secret"));
+
+            var uri = new Uri(LinkedInConstants.DefaultTokenEndpoint);
+            var result = await linkedIn.RequestAccessToken(uri, clientId, secret);
+
+            Assert.IsTrue(result.IsSuccess);
+
+            Fakes.VerifyRequest(
+                handlerMock,
+                req => req.Method == HttpMethod.Post
+                    && req.RequestUri == uri
+                    && req.Content.Headers.ContentType.MediaType == "application/x-www-form-urlencoded"
+                );
+        }
+
+        [TestMethod]
+        public async Task RequestAccessToken_HandlingInvalidTokens_401_Unauthorized()
+        {
+            Mock<HttpMessageHandler> handlerMock = Fakes.HttpMessageHandler(HttpStatusCode.Unauthorized, new ErrorResponse { Status = (int)HttpStatusCode.Unauthorized });
+            var linkedIn = new LinkedInHttpClient(handlerMock.Object);
+            var clientId = Guid.NewGuid().ToString("n");
+            var secret = Convert.ToBase64String(Encoding.UTF8.GetBytes("Keep the Secret"));
+
+            var uri = new Uri(LinkedInConstants.DefaultTokenEndpoint);
+            var result = await linkedIn.RequestAccessToken(uri, clientId, secret);
+
+            Assert.IsFalse(result.IsSuccess);
+            Assert.AreEqual(HttpStatusCode.Unauthorized, result.Error.StatusCode);
+            Assert.IsNull(result.Data);
+
+            Fakes.VerifyRequest(
+                handlerMock,
+                req => req.Method == HttpMethod.Post
+                    && req.RequestUri == uri
+                    && req.Content.Headers.ContentType.MediaType == "application/x-www-form-urlencoded"
+                );
+        }
+
+        [TestMethod]
+        public async Task Refreshing_a_Token()
+        {
+            Mock<HttpMessageHandler> handlerMock = Fakes.HttpMessageHandler(responseContent: DummyAccessTokenRegistry.RefreshToken);
+            var linkedIn = new LinkedInHttpClient(handlerMock.Object);
+            var clientId = Guid.NewGuid().ToString("n");
+            var secret = Convert.ToBase64String(Encoding.UTF8.GetBytes("Keep the Secret"));
+            var refreshToken = Convert.ToBase64String(Encoding.UTF8.GetBytes("Refresh"));
+
+            var uri = new Uri(LinkedInConstants.DefaultTokenEndpoint);
+            var result = await linkedIn.RefreshAccessToken(uri, clientId, secret, refreshToken);
+
+            Assert.IsTrue(result.IsSuccess);
+
+            Fakes.VerifyRequest(
+                handlerMock,
+                req => req.Method == HttpMethod.Post
+                    && req.RequestUri == uri
+                    && req.Content.Headers.ContentType.MediaType == "application/x-www-form-urlencoded"
+                );
+        }
+
         [TestMethod]
         public async Task QueryingEmailAddress()
         {
-            var handlerMock = new Mock<HttpMessageHandler>();
-            var response = new HttpResponseMessage
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(@"[]"),
-            };
+            Mock<HttpMessageHandler> handlerMock = Fakes.HttpMessageHandler();
 
-            handlerMock
-                .Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync",
-                    ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>())
-               .ReturnsAsync(response);
+            var message = new GetEmail(Fakes.TokenId);
+            Uri uri;
+            Uri.TryCreate(new Uri(LinkedInConstants.DefaultBaseUrl), message.HttpRequestUrl(), out uri);
 
             var linkedIn = new LinkedInHttpClient(handlerMock.Object);
-            var result = await linkedIn.GetAsync(string.Empty, new GetEmail(string.Empty));
+            var result = await linkedIn.GetAsync(string.Empty, message);
 
             Assert.IsTrue(result.IsSuccess);
-            handlerMock.Protected().Verify(
-               "SendAsync",
-               Times.Exactly(1),
-               ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Get && req.RequestUri.ToString().StartsWith(new GetEmail(string.Empty).Url)),
-               ItExpr.IsAny<CancellationToken>());
+            Fakes.VerifyRequest(
+                handlerMock,
+                req => req.Method == HttpMethod.Get
+                    && req.RequestUri == uri);
         }
+
 
         [TestMethod]
         public async Task ApiQueryFailure()
         {
-            var error = new ErrorResponse()
+            Mock<HttpMessageHandler> handlerMock = Fakes.HttpMessageHandler(HttpStatusCode.BadRequest, new ErrorResponse()
             {
                 Message = "Failed",
                 ServiceErrorCode = 7632,
                 Status = 401
-            };
-            var handlerMock = new Mock<HttpMessageHandler>();
-            var response = new HttpResponseMessage
-            {
-                StatusCode = HttpStatusCode.BadRequest,
-                Content = new StringContent(JsonConvert.SerializeObject(error)),
-            };
+            });
 
-            handlerMock
-                .Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync",
-                    ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>())
-               .ReturnsAsync(response);
+            var message = new GetEmail(Fakes.TokenId);
+            Uri uri;
+            Uri.TryCreate(new Uri(LinkedInConstants.DefaultBaseUrl), message.HttpRequestUrl(), out uri);
+
 
             var linkedIn = new LinkedInHttpClient(handlerMock.Object);
-            var result = await linkedIn.GetAsync(string.Empty, new GetEmail(string.Empty));
-
+            var result = await linkedIn.GetAsync(string.Empty, message);
 
             Assert.IsFalse(result.IsSuccess);
-
-            handlerMock.Protected().Verify(
-               "SendAsync",
-               Times.Exactly(1),
-               ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Get && req.RequestUri == new GetEmail(string.Empty).HttpRequestUrl()),
-               ItExpr.IsAny<CancellationToken>());
+            handlerMock.VerifyRequest(req => req.Method == HttpMethod.Get && req.RequestUri == uri);
         }
 
         [TestMethod]
         public async Task EmailAddressHandler_GET_FromApiEndpoint()
         {
-            var handlerMock = new Mock<HttpMessageHandler>();
-            var response = new HttpResponseMessage
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(@"[]"),
-            };
-
-            handlerMock
-                .Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync",
-                    ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>())
-               .ReturnsAsync(response);
+            var handlerMock = Fakes.HttpMessageHandler();
 
             var linkedIn = new LinkedInHttpClient(handlerMock.Object);
             var handler = new GetEmailHandler(linkedIn, DummyAccessTokenRegistry.Create()) as ILinkedInRequestHandler<GetEmail, Option<string>>;
-            var result = await handler.Handle(new GetEmail(string.Empty), CancellationToken.None);
+            var result = await handler.Handle(new GetEmail(Fakes.TokenId), CancellationToken.None);
             result.Tee(v =>
             {
                 Assert.IsNotNull(v);
@@ -124,12 +153,13 @@ namespace LinkedInApiClientTests
 
             result.Match(r => Assert.IsFalse(string.IsNullOrEmpty(r)), () => Assert.Fail());
 
-            handlerMock.Protected().Verify(
-               "SendAsync",
-               Times.Exactly(1),
-               ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Get && req.RequestUri.ToString().StartsWith(new GetEmail(string.Empty).Url)),
-               ItExpr.IsAny<CancellationToken>());
+            Uri uri;
+            Uri.TryCreate(new Uri(LinkedInConstants.DefaultBaseUrl), new GetEmail(Fakes.TokenId).HttpRequestUrl(), out uri);
 
+            Fakes.VerifyRequest(
+                handlerMock,
+                req => req.Method == HttpMethod.Get
+                    && req.RequestUri == uri);
         }
     }
 }

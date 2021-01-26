@@ -10,7 +10,7 @@ namespace LinkedInApiClient.UseCases
             TokenId = tokenId;
         }
 
-        public string Url { get; } = UrlHelper.Combine(LinkedInConstants.DefaultBaseUrl, "me");
+        public string Url { get; } = "me";
 
         public QueryParameterCollection QueryParameters { get; } = new QueryParameterCollection
         {

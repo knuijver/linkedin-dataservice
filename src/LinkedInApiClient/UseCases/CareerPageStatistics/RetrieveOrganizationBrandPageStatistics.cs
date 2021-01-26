@@ -1,23 +1,27 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using LinkedInApiClient.Types;
 
 namespace LinkedInApiClient.UseCases.CareerPageStatistics
 {
-    public class RetrieveOrganizationBrandPageStatistics : ILinkedInRequest
+    public class RetrieveOrganizationBrandPageStatistics : ILinkedInRequest<Option<string>>
     {
-        public RetrieveOrganizationBrandPageStatistics(LinkedInURN organizationBrand, TimeInterval timeInterval)
+        public RetrieveOrganizationBrandPageStatistics(LinkedInURN organizationBrand, TimeInterval timeInterval, string tokenId)
         {
-            Url = UrlHelper.Combine(LinkedInConstants.DefaultBaseUrl, "brandPageStatistics");
+            TokenId = tokenId;
+            Url = "brandPageStatistics";
             QueryParameters = new QueryParameterCollection
             {
                 ["q"] = "brand",
                 ["brand"] = organizationBrand.UrlEncode()
-            };
+            } + timeInterval.AsQueryParameters();
         }
 
         public string Url { get; }
 
         public QueryParameterCollection QueryParameters { get; }
-        public string TokenId => throw new NotImplementedException();
+
+        public string TokenId { get; }
     }
 }

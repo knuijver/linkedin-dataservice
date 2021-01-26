@@ -1,4 +1,5 @@
-﻿using LinkedInApiClient.Types;
+﻿using LinkedInApiClient.Authentication;
+using LinkedInApiClient.Types;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -25,28 +26,22 @@ namespace LinkedInApiClient
             this.client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        private static HttpRequestMessage CreateRequest(HttpMethod method, Uri uri, string token, HttpContent content = null)
+        public static HttpRequestMessage CreateRequest(HttpMethod method, Uri uri, string token, HttpContent content = null)
         {
-            var contentType = content switch
+            var message = new HttpRequestMessage(method, uri)
             {
-                FormUrlEncodedContent _ => "application/x-www-form-urlencoded",
-                StringContent => "application/json",
-                _ => null
+                Content = content,
+                Version = new Version(2, 0),
+                VersionPolicy = HttpVersionPolicy.RequestVersionOrLower
             };
-
-            var message = new HttpRequestMessage(method, uri);
 
             if (token != null)
                 message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            if (contentType != null)
-                message.Headers.Add("Content-Type", contentType);
-
-            message.Content = content;
 
             return message;
         }
 
-        private async Task<Result<LinkedInError, string>> ExecuteRequest(HttpRequestMessage request)
+        public async Task<Result<LinkedInError, string>> ExecuteRequest(HttpRequestMessage request)
         {
             try
             {
@@ -77,7 +72,7 @@ namespace LinkedInApiClient
             }
         }
 
-        private async Task<Result<LinkedInError, T>> ExecuteRequest<T>(HttpRequestMessage request)
+        public async Task<Result<LinkedInError, T>> ExecuteRequest<T>(HttpRequestMessage request)
         {
             var response = await ExecuteRequest(request);
             if (response.IsSuccess)
@@ -93,7 +88,7 @@ namespace LinkedInApiClient
             }
         }
 
-        public static HttpContent FormData(IEnumerable<KeyValuePair<string, string>> data) 
+        public static HttpContent FormData(IEnumerable<KeyValuePair<string, string>> data)
             => new FormUrlEncodedContent(data);
 
         public Task<Result<LinkedInError, string>> GetAsync(string token, IBaseApiRequest request)
@@ -110,11 +105,11 @@ namespace LinkedInApiClient
 
         public static HttpContent JsonContent(object content)
         {
-            var json = JsonSerializer.Serialize(content);
+            var json = content is string ? (content as string) : JsonSerializer.Serialize(content);
             return new StringContent(json, Encoding.UTF8, "application/json");
         }
 
-        public Task<Result<LinkedInError, string>> RefreshAccessToken(
+        public Task<Result<LinkedInError, RefreshAccessToken>> RefreshAccessToken(
             Uri uri,
             string clientId,
             string secret,
@@ -133,10 +128,10 @@ namespace LinkedInApiClient
                         ["refresh_token"] = refreshToken
                     }));
 
-            return ExecuteRequest(message);
+            return ExecuteRequest<RefreshAccessToken>(message);
         }
 
-        public Task<Result<LinkedInError, string>> RequestAccessToken(
+        public Task<Result<LinkedInError, AccessTokenResponse>> RequestAccessToken(
             Uri uri,
             string clientId,
             string secret)
@@ -153,7 +148,7 @@ namespace LinkedInApiClient
                         ["client_secret"] = secret,
                     }));
 
-            return ExecuteRequest(message);
+            return ExecuteRequest<AccessTokenResponse>(message);
         }
     }
 }

@@ -9,18 +9,19 @@ namespace LinkedInApiClient.UseCases
     /// </summary>
     public class RetrieveOrganizationFollowerCount : ILinkedInRequest
     {
-        public RetrieveOrganizationFollowerCount(LinkedInURN organizationId)
+        public RetrieveOrganizationFollowerCount(LinkedInURN organizationId, string tokenId)
         {
-            Url = UrlHelper.Combine(LinkedInConstants.DefaultBaseUrl, $"networkSizes/{organizationId.UrlEncode()}");
+            Url = $"networkSizes/{organizationId.UrlEncode()}";
             QueryParameters = new QueryParameterCollection
             {
                 ["edgeType"] = "CompanyFollowedByMember"
             };
+            TokenId = tokenId;
         }
 
         public string Url { get; }
 
         public QueryParameterCollection QueryParameters { get; }
-        public string TokenId => throw new NotImplementedException();
+        public string TokenId { get; }
     }
 }

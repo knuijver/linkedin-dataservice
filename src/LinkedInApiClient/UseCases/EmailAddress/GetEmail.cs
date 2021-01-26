@@ -10,7 +10,7 @@ namespace LinkedInApiClient.UseCases.EmailAddress
             this.TokenId = tokenId;
         }
 
-        public string Url { get; } = UrlHelper.Combine(LinkedInConstants.DefaultBaseUrl, "emailAddress");
+        public string Url { get; } = "emailAddress";
 
         public QueryParameterCollection QueryParameters { get; } = new QueryParameterCollection
         {
