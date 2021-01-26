@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using LinkedInApiClient;
 using LinkedInApiClient.Authentication;
@@ -16,12 +17,12 @@ namespace LinkedInApiClientTests
             RefreshTokenExpiresIn = 439200
         };
 
-        public Task<Result<string, string>> AccessTokenAsync(string tokenId)
+        public Task<Result<string, string>> AccessTokenAsync(string tokenId, CancellationToken cancellationToken)
         {
             return Task.FromResult<Result<string, string>>(Result.Success(string.Empty));
         }
 
-        public Task<Result<string, string>> UpdateAccessTokenAsync(string tokenId, string accessToken, string expiresIn, string refreshToken)
+        public Task<Result<string, string>> UpdateAccessTokenAsync(string tokenId, string accessToken, string expiresIn, string refreshToken, CancellationToken cancellationToken)
         {
             return Task.FromResult<Result<string, string>>(Result.Success(string.Empty));
         }

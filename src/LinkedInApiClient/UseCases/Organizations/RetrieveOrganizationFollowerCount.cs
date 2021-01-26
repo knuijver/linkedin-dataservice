@@ -11,6 +11,9 @@ namespace LinkedInApiClient.UseCases
     {
         public RetrieveOrganizationFollowerCount(LinkedInURN organizationId, string tokenId)
         {
+            if (organizationId.EntityType != "organization")
+                throw new ArgumentException($"{nameof(organizationId)} has an invalid URN Type", nameof(organizationId));
+
             Url = $"networkSizes/{organizationId.UrlEncode()}";
             QueryParameters = new QueryParameterCollection
             {
@@ -22,6 +25,7 @@ namespace LinkedInApiClient.UseCases
         public string Url { get; }
 
         public QueryParameterCollection QueryParameters { get; }
+
         public string TokenId { get; }
     }
 }

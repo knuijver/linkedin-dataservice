@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace LinkedInApiClient.Authentication
@@ -50,8 +51,8 @@ namespace LinkedInApiClient.Authentication
 
             var handler = new LinkedInHttpClient();
 
-            var email = await handler.GetAsync(tokens.AccessToken, new GetEmail(null));
-            var profile = await handler.GetAsync(tokens.AccessToken, new GetProfile(null));
+            var email = await handler.GetAsync(tokens.AccessToken, new GetEmail(null), CancellationToken.None);
+            var profile = await handler.GetAsync(tokens.AccessToken, new GetProfile(null), CancellationToken.None);
 
             //using (var payload = JsonDocument.Parse(profile.Result.Result()))
             //{

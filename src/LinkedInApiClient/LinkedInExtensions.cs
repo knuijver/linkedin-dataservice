@@ -1,5 +1,7 @@
 ﻿using LinkedInApiClient.Types;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace LinkedInApiClient
 {
@@ -36,6 +38,34 @@ namespace LinkedInApiClient
             if (request.Url == null || request.Url.Length == 0)
             {
                 throw new ArgumentException(nameof(request.Url));
+            }
+        }
+
+        public static async Task<Result<LinkedInError, string>> Handle(this ILinkedInRequest request, IAccessTokenRegistry tokenRegistry, ILinkedInHttpClient client, CancellationToken cancellationToken)
+        {
+            var toke = await tokenRegistry.AccessTokenAsync(request.TokenId, cancellationToken);
+            if (toke.IsSuccess)
+            {
+                var result = await client.GetAsync(request.TokenId, request, cancellationToken).ConfigureAwait(false);
+                return result;
+            }
+            else
+            {
+                return Result.Fail(new LinkedInError(toke.Error));
+            }
+        }
+
+        public static async Task<Result<LinkedInError, T>> Handle<T>(this ILinkedInRequest<T> request, IAccessTokenRegistry tokenRegistry, ILinkedInHttpClient client, CancellationToken cancellationToken)
+        {
+            var toke = await tokenRegistry.AccessTokenAsync(request.TokenId, cancellationToken);
+            if (toke.IsSuccess)
+            {
+                var result = await client.GetAsync<T>(request.TokenId, request, cancellationToken).ConfigureAwait(false);
+                return result;
+            }
+            else
+            {
+                return Result.Fail(new LinkedInError(toke.Error));
             }
         }
     }

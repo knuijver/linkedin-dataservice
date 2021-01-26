@@ -39,7 +39,7 @@ namespace LinkedInApiClientTests
             var secret = Convert.ToBase64String(Encoding.UTF8.GetBytes("Keep the Secret"));
 
             var uri = new Uri(LinkedInConstants.DefaultTokenEndpoint);
-            var result = await linkedIn.RequestAccessToken(uri, clientId, secret);
+            var result = await linkedIn.RequestAccessToken(uri, clientId, secret, CancellationToken.None);
 
             Assert.IsTrue(result.IsSuccess);
 
@@ -60,10 +60,11 @@ namespace LinkedInApiClientTests
             var secret = Convert.ToBase64String(Encoding.UTF8.GetBytes("Keep the Secret"));
 
             var uri = new Uri(LinkedInConstants.DefaultTokenEndpoint);
-            var result = await linkedIn.RequestAccessToken(uri, clientId, secret);
+            var result = await linkedIn.RequestAccessToken(uri, clientId, secret, CancellationToken.None);
 
             Assert.IsFalse(result.IsSuccess);
-            Assert.AreEqual(HttpStatusCode.Unauthorized, result.Error.StatusCode);
+            Assert.IsInstanceOfType(result.Error, typeof(LinkedInHttpError));
+            Assert.AreEqual(HttpStatusCode.Unauthorized, ((LinkedInHttpError)result.Error).StatusCode);
             Assert.IsNull(result.Data);
 
             Fakes.VerifyRequest(
@@ -84,7 +85,7 @@ namespace LinkedInApiClientTests
             var refreshToken = Convert.ToBase64String(Encoding.UTF8.GetBytes("Refresh"));
 
             var uri = new Uri(LinkedInConstants.DefaultTokenEndpoint);
-            var result = await linkedIn.RefreshAccessToken(uri, clientId, secret, refreshToken);
+            var result = await linkedIn.RefreshAccessToken(uri, clientId, secret, refreshToken, CancellationToken.None);
 
             Assert.IsTrue(result.IsSuccess);
 
@@ -106,7 +107,7 @@ namespace LinkedInApiClientTests
             Uri.TryCreate(new Uri(LinkedInConstants.DefaultBaseUrl), message.HttpRequestUrl(), out uri);
 
             var linkedIn = new LinkedInHttpClient(handlerMock.Object);
-            var result = await linkedIn.GetAsync(string.Empty, message);
+            var result = await linkedIn.GetAsync(string.Empty, message, CancellationToken.None);
 
             Assert.IsTrue(result.IsSuccess);
             Fakes.VerifyRequest(
@@ -132,7 +133,7 @@ namespace LinkedInApiClientTests
 
 
             var linkedIn = new LinkedInHttpClient(handlerMock.Object);
-            var result = await linkedIn.GetAsync(string.Empty, message);
+            var result = await linkedIn.GetAsync(string.Empty, message, CancellationToken.None);
 
             Assert.IsFalse(result.IsSuccess);
             handlerMock.VerifyRequest(req => req.Method == HttpMethod.Get && req.RequestUri == uri);
@@ -144,14 +145,10 @@ namespace LinkedInApiClientTests
             var handlerMock = Fakes.HttpMessageHandler();
 
             var linkedIn = new LinkedInHttpClient(handlerMock.Object);
-            var handler = new GetEmailHandler(linkedIn, DummyAccessTokenRegistry.Create()) as ILinkedInRequestHandler<GetEmail, Option<string>>;
+            var handler = new GetEmailHandler(linkedIn, DummyAccessTokenRegistry.Create()) as ILinkedInRequestHandler<GetEmail, string>;
             var result = await handler.Handle(new GetEmail(Fakes.TokenId), CancellationToken.None);
-            result.Tee(v =>
-            {
-                Assert.IsNotNull(v);
-            });
 
-            result.Match(r => Assert.IsFalse(string.IsNullOrEmpty(r)), () => Assert.Fail());
+            Assert.IsTrue(result.IsSuccess);
 
             Uri uri;
             Uri.TryCreate(new Uri(LinkedInConstants.DefaultBaseUrl), new GetEmail(Fakes.TokenId).HttpRequestUrl(), out uri);

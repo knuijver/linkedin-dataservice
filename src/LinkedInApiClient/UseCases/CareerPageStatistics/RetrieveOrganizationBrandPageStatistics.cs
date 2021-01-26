@@ -5,7 +5,7 @@ using LinkedInApiClient.Types;
 
 namespace LinkedInApiClient.UseCases.CareerPageStatistics
 {
-    public class RetrieveOrganizationBrandPageStatistics : ILinkedInRequest<Option<string>>
+    public class RetrieveOrganizationBrandPageStatistics : ILinkedInRequest<string>
     {
         public RetrieveOrganizationBrandPageStatistics(LinkedInURN organizationBrand, TimeInterval timeInterval, string tokenId)
         {

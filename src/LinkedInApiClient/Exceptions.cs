@@ -1,7 +1,32 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 
 namespace LinkedInApiClient
 {
+
+    public class LinkedInError
+    {
+        public LinkedInError(string message)
+        {
+            this.Message = message;
+        }
+
+        public string Message { get; private set; }
+    }
+
+
+    public class LinkedInCaughtException : LinkedInError
+    {
+        public LinkedInCaughtException(string message, Exception exception)
+            : base(message)
+        {
+            Exception = exception;
+        }
+
+        public Exception Exception { get; set; }
+
+    }
+
     public class ErrorResponse
     {
         public int ServiceErrorCode { get; set; }
@@ -9,26 +34,25 @@ namespace LinkedInApiClient
         public int Status { get; set; }
     }
 
-    public class LinkedInError
+    public class LinkedInHttpError : LinkedInError
     {
-        public LinkedInError(HttpStatusCode statusCode, string message, int serviceErrorCode)
+        public LinkedInHttpError(HttpStatusCode statusCode, string message, int serviceErrorCode)
+            : base(message)
         {
-            this.Message = message;
             this.StatusCode = statusCode;
-            ServiceErrorCode = serviceErrorCode;
+            this.ServiceErrorCode = serviceErrorCode;
         }
 
-        public string Message { get; private set; }
         public HttpStatusCode StatusCode { get; private set; }
         public int ServiceErrorCode { get; private set; }
 
         public static LinkedInError With(HttpStatusCode statusCode, string message)
         {
-            return new LinkedInError(statusCode, message, -1);
+            return new LinkedInHttpError(statusCode, message, -1);
         }
         public static LinkedInError From(ErrorResponse error)
         {
-            return new LinkedInError((HttpStatusCode)error.Status, error.Message, error.ServiceErrorCode);
+            return new LinkedInHttpError((HttpStatusCode)error.Status, error.Message, error.ServiceErrorCode);
         }
     }
 }

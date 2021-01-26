@@ -7,11 +7,12 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace LinkedInApiClient
 {
-    public class LinkedInHttpClient
+    public class LinkedInHttpClient : ILinkedInHttpClient
     {
         HttpClient client;
 
@@ -41,14 +42,14 @@ namespace LinkedInApiClient
             return message;
         }
 
-        public async Task<Result<LinkedInError, string>> ExecuteRequest(HttpRequestMessage request)
+        public async Task<Result<LinkedInError, string>> ExecuteRequest(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             try
             {
-                var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead)
+                var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
                     .ConfigureAwait(false);
 
-                var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                var responseContent = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
                 if (response.IsSuccessStatusCode)
                 {
                     return Result.Success(responseContent);
@@ -58,7 +59,8 @@ namespace LinkedInApiClient
                     var error = string.IsNullOrEmpty(responseContent)
                         ? default
                         : JsonSerializer.Deserialize<ErrorResponse>(responseContent);
-                    return LinkedInError
+
+                    return LinkedInHttpError
                         .From(error)
                         .ToResult();
                 }
@@ -68,18 +70,19 @@ namespace LinkedInApiClient
               ex is HttpRequestException ||
               ex is JsonException)
             {
-                return Result.Fail(LinkedInError.With(HttpStatusCode.BadRequest, ex.Message));
+                return Result.Fail(LinkedInHttpError.With(HttpStatusCode.BadRequest, ex.Message));
             }
         }
 
-        public async Task<Result<LinkedInError, T>> ExecuteRequest<T>(HttpRequestMessage request)
+        public async Task<Result<LinkedInError, T>> ExecuteRequest<T>(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            var response = await ExecuteRequest(request);
+            var response = await ExecuteRequest(request, cancellationToken);
             if (response.IsSuccess)
             {
                 var result = string.IsNullOrEmpty(response.Data)
                     ? default
                     : JsonSerializer.Deserialize<T>(response.Data);
+
                 return Result.Success(result);
             }
             else
@@ -91,16 +94,16 @@ namespace LinkedInApiClient
         public static HttpContent FormData(IEnumerable<KeyValuePair<string, string>> data)
             => new FormUrlEncodedContent(data);
 
-        public Task<Result<LinkedInError, string>> GetAsync(string token, IBaseApiRequest request)
+        public Task<Result<LinkedInError, string>> GetAsync(string token, IBaseApiRequest request, CancellationToken cancellationToken)
         {
             var message = CreateRequest(HttpMethod.Get, request.HttpRequestUrl(), token);
-            return ExecuteRequest(message);
+            return ExecuteRequest(message, cancellationToken);
         }
 
-        public Task<Result<LinkedInError, TResponse>> GetAsync<TResponse>(string token, IBaseApiRequest request)
+        public Task<Result<LinkedInError, TResponse>> GetAsync<TResponse>(string token, IBaseApiRequest request, CancellationToken cancellationToken)
         {
             var message = CreateRequest(HttpMethod.Get, request.HttpRequestUrl(), token);
-            return ExecuteRequest<TResponse>(message);
+            return ExecuteRequest<TResponse>(message, cancellationToken);
         }
 
         public static HttpContent JsonContent(object content)
@@ -113,7 +116,8 @@ namespace LinkedInApiClient
             Uri uri,
             string clientId,
             string secret,
-            string refreshToken)
+            string refreshToken,
+            CancellationToken cancellationToken)
         {
             var message = CreateRequest(
                 HttpMethod.Post,
@@ -128,13 +132,14 @@ namespace LinkedInApiClient
                         ["refresh_token"] = refreshToken
                     }));
 
-            return ExecuteRequest<RefreshAccessToken>(message);
+            return ExecuteRequest<RefreshAccessToken>(message, cancellationToken);
         }
 
         public Task<Result<LinkedInError, AccessTokenResponse>> RequestAccessToken(
             Uri uri,
             string clientId,
-            string secret)
+            string secret,
+            CancellationToken cancellationToken)
         {
             var message = CreateRequest(
                 HttpMethod.Post,
@@ -148,7 +153,7 @@ namespace LinkedInApiClient
                         ["client_secret"] = secret,
                     }));
 
-            return ExecuteRequest<AccessTokenResponse>(message);
+            return ExecuteRequest<AccessTokenResponse>(message, cancellationToken);
         }
     }
 }
