@@ -3,7 +3,7 @@ using LinkedInApiClient.Types;
 
 namespace LinkedInApiClient.UseCases.EmailAddress
 {
-    public class GetEmail : ILinkedInRequest<string>
+    public class GetEmail : ILinkedInRequest
     {
         public GetEmail(string tokenId)
         {

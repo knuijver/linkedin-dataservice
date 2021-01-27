@@ -1,5 +1,4 @@
 using LinkedInApiClient;
-using LinkedInApiClient.Authentication;
 using LinkedInApiClient.Types;
 using LinkedInApiClient.UseCases.EmailAddress;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -11,6 +10,7 @@ using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Text.Unicode;
 using System.Threading;
 using System.Threading.Tasks;
@@ -145,7 +145,7 @@ namespace LinkedInApiClientTests
             var handlerMock = Fakes.HttpMessageHandler();
 
             var linkedIn = new LinkedInHttpClient(handlerMock.Object);
-            var handler = new GetEmailHandler(linkedIn, DummyAccessTokenRegistry.Create()) as ILinkedInRequestHandler<GetEmail, string>;
+            var handler = new GetEmailHandler(linkedIn, DummyAccessTokenRegistry.Create()) as ILinkedInRequestHandler<GetEmail, JsonElement>;
             var result = await handler.Handle(new GetEmail(Fakes.TokenId), CancellationToken.None);
 
             Assert.IsTrue(result.IsSuccess);

@@ -1,10 +1,11 @@
 ﻿using LinkedInApiClient.Types;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace LinkedInApiClient
 {
-    public interface ILinkedInRequest : ILinkedInRequest<string>
+    public interface ILinkedInRequest : ILinkedInRequest<JsonElement>
     {
     }
 

@@ -1,4 +1,4 @@
-﻿namespace LinkedInApiClient.Authentication
+﻿namespace LinkedInApiClient.Types
 {
     /// <summary>
     /// LinkedIn OAuth tokens.
@@ -34,33 +34,39 @@
 
     public class AccessTokenResponse
     {
-        [Newtonsoft.Json.JsonProperty("access_token"), System.Text.Json.Serialization.JsonPropertyName("access_token")]
+        //[Newtonsoft.Json.JsonProperty("access_token")]
+        [System.Text.Json.Serialization.JsonPropertyName("access_token")]
         public string AccessToken { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("expires_in"), System.Text.Json.Serialization.JsonPropertyName("expires_in")]
+        //[Newtonsoft.Json.JsonProperty("expires_in")]
+        [System.Text.Json.Serialization.JsonPropertyName("expires_in")]
         public string ExpiresIn { get; set; }
     }
 
 
     public class RefreshAccessToken
     {
-        [Newtonsoft.Json.JsonProperty("access_token"), System.Text.Json.Serialization.JsonPropertyName("access_token")]
+        //[Newtonsoft.Json.JsonProperty("access_token")]
+        [System.Text.Json.Serialization.JsonPropertyName("access_token")]
         public string AccessToken { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("expires_in"), System.Text.Json.Serialization.JsonPropertyName("expires_in")]
+        //[Newtonsoft.Json.JsonProperty("expires_in")]
+        [System.Text.Json.Serialization.JsonPropertyName("expires_in")]
         public int ExpiresIn { get; set; }
 
         /// <summary>
         /// Your refresh token for the application. This token must be kept secure.
         /// </summary>
-        [Newtonsoft.Json.JsonProperty("refresh_token"), System.Text.Json.Serialization.JsonPropertyName("refresh_token")]
+        //[Newtonsoft.Json.JsonProperty("refresh_token")]
+        [System.Text.Json.Serialization.JsonPropertyName("refresh_token")]
         public string RefreshToken { get; set; }
 
         /// <summary>
         /// The number of seconds remaining until the refresh token expires. 
         /// Refresh tokens usually have a longer lifespan than access tokens.
         /// </summary>
-        [Newtonsoft.Json.JsonProperty("refresh_token_expires_in"), System.Text.Json.Serialization.JsonPropertyName("refresh_token_expires_in")]
+        //[Newtonsoft.Json.JsonProperty("refresh_token_expires_in")]
+        [System.Text.Json.Serialization.JsonPropertyName("refresh_token_expires_in")]
         public int RefreshTokenExpiresIn { get; set; }
     }
 

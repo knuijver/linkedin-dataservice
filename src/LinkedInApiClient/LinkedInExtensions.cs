@@ -1,5 +1,6 @@
 ﻿using LinkedInApiClient.Types;
 using System;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -41,31 +42,30 @@ namespace LinkedInApiClient
             }
         }
 
-        public static async Task<Result<LinkedInError, string>> Handle(this ILinkedInRequest request, IAccessTokenRegistry tokenRegistry, ILinkedInHttpClient client, CancellationToken cancellationToken)
+        public static async Task<Result<LinkedInError, JsonElement>> Handle(this ILinkedInRequest request, IAccessTokenRegistry tokenRegistry, LinkedInHttpClient client, CancellationToken cancellationToken)
         {
-            var toke = await tokenRegistry.AccessTokenAsync(request.TokenId, cancellationToken);
-            if (toke.IsSuccess)
+            var token = await tokenRegistry.AccessTokenAsync(request.TokenId, cancellationToken);
+            if (token.IsSuccess)
             {
-                var result = await client.GetAsync(request.TokenId, request, cancellationToken).ConfigureAwait(false);
+                var result = await client.GetAsync(token.Data, request, cancellationToken).ConfigureAwait(false);
                 return result;
             }
             else
             {
-                return Result.Fail(new LinkedInError(toke.Error));
+                return Result.Fail(new LinkedInError(token.Error));
             }
         }
-
-        public static async Task<Result<LinkedInError, T>> Handle<T>(this ILinkedInRequest<T> request, IAccessTokenRegistry tokenRegistry, ILinkedInHttpClient client, CancellationToken cancellationToken)
+        public static async Task<Result<LinkedInError, T>> Handle<T>(this ILinkedInRequest<T> request, IAccessTokenRegistry tokenRegistry, LinkedInHttpClient client, CancellationToken cancellationToken)
         {
-            var toke = await tokenRegistry.AccessTokenAsync(request.TokenId, cancellationToken);
-            if (toke.IsSuccess)
+            var token = await tokenRegistry.AccessTokenAsync(request.TokenId, cancellationToken);
+            if (token.IsSuccess)
             {
-                var result = await client.GetAsync<T>(request.TokenId, request, cancellationToken).ConfigureAwait(false);
+                var result = await client.GetAsync<T>(token.Data, request, cancellationToken).ConfigureAwait(false);
                 return result;
             }
             else
             {
-                return Result.Fail(new LinkedInError(toke.Error));
+                return Result.Fail(new LinkedInError(token.Error));
             }
         }
     }

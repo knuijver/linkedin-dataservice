@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -43,35 +44,37 @@ namespace LinkedInApiClient.Authentication
         {
             var args = new
             {
-                OrganizationId = identity.Name,
+                TokenId = identity.Name,
                 AccessToken = tokens.AccessToken,
                 ExpiresIn = tokens.ExpiresIn,
-                RefreshToken = tokens.RefreshToken
+                RefreshToken = tokens.RefreshToken,
+                TokenType = tokens.TokenType
             };
+
+            var saveToken = JsonSerializer.Serialize(args);
 
             var handler = new LinkedInHttpClient();
 
             var email = await handler.GetAsync(tokens.AccessToken, new GetEmail(null), CancellationToken.None);
             var profile = await handler.GetAsync(tokens.AccessToken, new GetProfile(null), CancellationToken.None);
 
-            //using (var payload = JsonDocument.Parse(profile.Result.Result()))
-            //{
-            var payload = JObject.Parse(profile.Data);
-            var context = new OAuthCreatingTicketContext(
-                new ClaimsPrincipal(identity),
-                properties,
-                Context,
-                Scheme,
-                Options,
-                Backchannel,
-                tokens,
-                payload
-                );
+            using (var payload = JsonDocument.Parse(profile.Data))
+            {   //   var payload = JObject.Parse(profile.Data);
+                var context = new OAuthCreatingTicketContext(
+                    new ClaimsPrincipal(identity),
+                    properties,
+                    Context,
+                    Scheme,
+                    Options,
+                    Backchannel,
+                    tokens,
+                    payload.RootElement
+                    );
 
-            context.RunClaimActions();
-            await Events.CreatingTicket(context);
-            return new AuthenticationTicket(context.Principal, context.Properties, Scheme.Name);
-            //}
+                context.RunClaimActions();
+                await Events.CreatingTicket(context);
+                return new AuthenticationTicket(context.Principal, context.Properties, Scheme.Name);
+            }
         }
     }
 }

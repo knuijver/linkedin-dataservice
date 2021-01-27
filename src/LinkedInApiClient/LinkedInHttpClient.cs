@@ -1,5 +1,4 @@
-﻿using LinkedInApiClient.Authentication;
-using LinkedInApiClient.Types;
+﻿using LinkedInApiClient.Types;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -12,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace LinkedInApiClient
 {
-    public class LinkedInHttpClient : ILinkedInHttpClient
+    public class LinkedInHttpClient
     {
         HttpClient client;
 
@@ -23,7 +22,7 @@ namespace LinkedInApiClient
         public LinkedInHttpClient(HttpMessageHandler handler)
         {
             this.client = new HttpClient(handler);
-            this.client.BaseAddress = new Uri(LinkedInConstants.DefaultBaseUrl);
+            this.client.BaseAddress = new Uri(LinkedInConstants.DefaultBaseUrl, UriKind.Absolute);
             this.client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
@@ -42,7 +41,7 @@ namespace LinkedInApiClient
             return message;
         }
 
-        public async Task<Result<LinkedInError, string>> ExecuteRequest(HttpRequestMessage request, CancellationToken cancellationToken)
+        public async Task<Result<LinkedInError, JsonElement>> ExecuteRequest(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             try
             {
@@ -52,7 +51,8 @@ namespace LinkedInApiClient
                 var responseContent = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
                 if (response.IsSuccessStatusCode)
                 {
-                    return Result.Success(responseContent);
+                    var document = JsonDocument.Parse(responseContent);
+                    return Result.Success(document.RootElement.Clone());
                 }
                 else
                 {
@@ -79,10 +79,7 @@ namespace LinkedInApiClient
             var response = await ExecuteRequest(request, cancellationToken);
             if (response.IsSuccess)
             {
-                var result = string.IsNullOrEmpty(response.Data)
-                    ? default
-                    : JsonSerializer.Deserialize<T>(response.Data);
-
+                var result = JsonSerializer.Deserialize<T>(response.Data.GetRawText());
                 return Result.Success(result);
             }
             else
@@ -94,7 +91,7 @@ namespace LinkedInApiClient
         public static HttpContent FormData(IEnumerable<KeyValuePair<string, string>> data)
             => new FormUrlEncodedContent(data);
 
-        public Task<Result<LinkedInError, string>> GetAsync(string token, IBaseApiRequest request, CancellationToken cancellationToken)
+        public Task<Result<LinkedInError, JsonElement>> GetAsync(string token, IBaseApiRequest request, CancellationToken cancellationToken)
         {
             var message = CreateRequest(HttpMethod.Get, request.HttpRequestUrl(), token);
             return ExecuteRequest(message, cancellationToken);

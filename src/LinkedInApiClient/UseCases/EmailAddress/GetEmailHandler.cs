@@ -2,10 +2,11 @@
 using LinkedInApiClient.Types;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace LinkedInApiClient.UseCases.EmailAddress
 {
-    public class GetEmailHandler : LinkedInRequestHandler<GetEmail, string>
+    public class GetEmailHandler : LinkedInRequestHandler<GetEmail, JsonElement>
     {
         readonly LinkedInHttpClient handler;
         readonly IAccessTokenRegistry tokenRegistry;
@@ -16,7 +17,7 @@ namespace LinkedInApiClient.UseCases.EmailAddress
             this.handler = handler ?? throw new ArgumentNullException(nameof(handler), $"{nameof(handler)} is null.");
         }
 
-        protected override async Task<Result<LinkedInError, string>> Handle(GetEmail request, CancellationToken cancellationToken)
+        protected override async Task<Result<LinkedInError, JsonElement>> Handle(GetEmail request, CancellationToken cancellationToken)
         {
             var token = await tokenRegistry.AccessTokenAsync(request.TokenId, cancellationToken);
             if (token.IsSuccess)
