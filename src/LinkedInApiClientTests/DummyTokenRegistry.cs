@@ -6,7 +6,7 @@ using LinkedInApiClient.Types;
 
 namespace LinkedInApiClientTests
 {
-    internal class DummyAccessTokenRegistry : IAccessTokenRegistry
+    internal class DummyTokenRegistry : IAccessTokenRegistry
     {
         public static readonly string ValidTokenId = "262cb823-7bad-4155-93c9-d04ed481f27a";
 
@@ -40,6 +40,6 @@ namespace LinkedInApiClientTests
             return Task.FromResult<Result<string, string>>(Result.Success(string.Empty));
         }
 
-        public static IAccessTokenRegistry Create() => new DummyAccessTokenRegistry();
+        public static IAccessTokenRegistry Create() => new DummyTokenRegistry();
     }
 }

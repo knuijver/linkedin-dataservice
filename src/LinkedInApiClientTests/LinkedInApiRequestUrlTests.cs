@@ -4,7 +4,6 @@ using LinkedInApiClient.UseCases.EmailAddress;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Moq.Protected;
-using Newtonsoft.Json;
 using System;
 using System.Linq.Expressions;
 using System.Net;
@@ -78,7 +77,7 @@ namespace LinkedInApiClientTests
         [TestMethod]
         public async Task Refreshing_a_Token()
         {
-            Mock<HttpMessageHandler> handlerMock = Fakes.HttpMessageHandler(responseContent: DummyAccessTokenRegistry.RefreshToken);
+            Mock<HttpMessageHandler> handlerMock = Fakes.HttpMessageHandler(responseContent: DummyTokenRegistry.RefreshToken);
             var linkedIn = new LinkedInHttpClient(handlerMock.Object);
             var clientId = Guid.NewGuid().ToString("n");
             var secret = Convert.ToBase64String(Encoding.UTF8.GetBytes("Keep the Secret"));
@@ -145,8 +144,8 @@ namespace LinkedInApiClientTests
             var handlerMock = Fakes.HttpMessageHandler();
 
             var linkedIn = new LinkedInHttpClient(handlerMock.Object);
-            var handler = new GetEmailHandler(linkedIn, DummyAccessTokenRegistry.Create()) as ILinkedInRequestHandler<GetEmail, JsonElement>;
-            var result = await handler.Handle(new GetEmail(Fakes.TokenId), CancellationToken.None);
+            var handler = new GetEmailHandler(linkedIn, DummyTokenRegistry.Create()) as ILinkedInRequestHandler<GetEmail, JsonElement>;
+            var result = await handler.Handle(new GetEmail(DummyTokenRegistry.ValidTokenId), CancellationToken.None);
 
             Assert.IsTrue(result.IsSuccess);
 

@@ -12,7 +12,7 @@ namespace LinkedInApiClient.UseCases.Shares
         public LookUpShareById(string tokenId, LinkedInURN shareId, QueryParameterCollection queryParameters)
         {
             TokenId = tokenId;
-            Url = $"shares/{shareId}";
+            Url = $"shares/{shareId.UrlEncode()}";
             QueryParameters = queryParameters;
         }
 

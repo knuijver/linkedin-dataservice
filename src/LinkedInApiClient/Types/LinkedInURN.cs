@@ -42,6 +42,8 @@ namespace LinkedInApiClient.Types
             info.AddValue("$urn", this.ToString());
         }
 
+        public static implicit operator string(LinkedInURN urn) => urn.ToString();
+
         public override string ToString()
         {
             return $"urn:{Namespace}:{EntityType}:{Id}";

@@ -2,11 +2,12 @@ using System;
 using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using Moq.Protected;
-using Newtonsoft.Json;
+//using Newtonsoft.Json;
 
 namespace LinkedInApiClientTests
 {
@@ -15,12 +16,12 @@ namespace LinkedInApiClientTests
         public static readonly string TokenId = Guid.NewGuid().ToString("n");
 
         public static Mock<HttpMessageHandler> HttpMessageHandler<T>(HttpStatusCode statusCode = HttpStatusCode.OK, T responseContent = default)
-        {
+        {            
             return HttpMessageHandler(
                 statusCode,
                 Object.ReferenceEquals(responseContent, default)
                     ? ""
-                    : JsonConvert.SerializeObject(responseContent)
+                    : JsonSerializer.Serialize(responseContent)
                     );
         }
 

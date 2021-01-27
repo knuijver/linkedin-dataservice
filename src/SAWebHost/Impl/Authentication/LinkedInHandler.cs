@@ -58,7 +58,23 @@ namespace LinkedInApiClient.Authentication
             var email = await handler.GetAsync(tokens.AccessToken, new GetEmail(null), CancellationToken.None);
             var profile = await handler.GetAsync(tokens.AccessToken, new GetProfile(null), CancellationToken.None);
 
-            using (var payload = JsonDocument.Parse(profile.Data))
+            var context = new OAuthCreatingTicketContext(
+                new ClaimsPrincipal(identity),
+                properties,
+                Context,
+                Scheme,
+                Options,
+                Backchannel,
+                tokens,
+                profile.Data
+                );
+
+            context.RunClaimActions();
+            await Events.CreatingTicket(context);
+            return new AuthenticationTicket(context.Principal, context.Properties, Scheme.Name);
+
+            /*
+            using (var payload = JsonDocument.Parse(profile.Data.GetRawText()))
             {   //   var payload = JObject.Parse(profile.Data);
                 var context = new OAuthCreatingTicketContext(
                     new ClaimsPrincipal(identity),
@@ -75,6 +91,7 @@ namespace LinkedInApiClient.Authentication
                 await Events.CreatingTicket(context);
                 return new AuthenticationTicket(context.Principal, context.Properties, Scheme.Name);
             }
+            */
         }
     }
 }

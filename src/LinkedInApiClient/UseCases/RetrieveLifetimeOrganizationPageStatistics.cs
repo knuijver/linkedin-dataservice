@@ -11,7 +11,7 @@ namespace LinkedInApiClient.UseCases
             QueryParameters = new QueryParameterCollection
             {
                 ["q"] = "organization",
-                ["organization"] = organizationId.UrlEncode()
+                ["organization"] = organizationId
             } + timeInterval.AsQueryParameters();
             TokenId = tokenId;
         }

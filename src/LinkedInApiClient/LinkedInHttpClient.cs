@@ -24,6 +24,7 @@ namespace LinkedInApiClient
             this.client = new HttpClient(handler);
             this.client.BaseAddress = new Uri(LinkedInConstants.DefaultBaseUrl, UriKind.Absolute);
             this.client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            this.client.DefaultRequestHeaders.Add("X-Restli-Protocol-Version", "2.0.0");
         }
 
         public static HttpRequestMessage CreateRequest(HttpMethod method, Uri uri, string token, HttpContent content = null)

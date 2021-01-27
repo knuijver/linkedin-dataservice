@@ -9,12 +9,15 @@ namespace LinkedInApiClient.UseCases.CareerPageStatistics
     {
         public RetrieveOrganizationBrandPageStatistics(LinkedInURN organizationBrand, TimeInterval timeInterval, string tokenId)
         {
+            if (organizationBrand.EntityType != "organizationBrand") 
+                throw new ArgumentException($"{nameof(organizationBrand)} has an invalid URN Type", nameof(organizationBrand));
+
             TokenId = tokenId;
             Url = "brandPageStatistics";
             QueryParameters = new QueryParameterCollection
             {
                 ["q"] = "brand",
-                ["brand"] = organizationBrand.UrlEncode()
+                ["brand"] = organizationBrand
             } + timeInterval.AsQueryParameters();
         }
 
