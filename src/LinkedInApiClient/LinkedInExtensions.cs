@@ -4,6 +4,8 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
+#nullable enable
+
 namespace LinkedInApiClient
 {
     public static class LinkedInExtensions
@@ -28,7 +30,7 @@ namespace LinkedInApiClient
             }
 
             Validate((IBaseApiRequest)request);
-        }
+        }        
         public static void Validate(this IBaseApiRequest request)
         {
             if (request.QueryParameters == null)
@@ -67,6 +69,17 @@ namespace LinkedInApiClient
             {
                 return Result.Fail(new LinkedInError(token.Error));
             }
+        }
+
+        public static T? ToObject<T>(this JsonElement element, JsonSerializerOptions? options = null)
+        {
+            var json = element.GetRawText();
+            return JsonSerializer.Deserialize<T>(json, options);
+        }
+        public static T? ToObject<T>(this JsonDocument document, JsonSerializerOptions? options = null)
+        {
+            var json = document.RootElement.GetRawText();
+            return JsonSerializer.Deserialize<T>(json, options);
         }
     }
 }

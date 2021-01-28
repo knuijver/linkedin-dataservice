@@ -8,6 +8,7 @@ using LinkedInApiClient.UseCases;
 using LinkedInApiClient.UseCases.CareerPageStatistics;
 using LinkedInApiClient.UseCases.EmailAddress;
 using LinkedInApiClient.UseCases.Organizations;
+using LinkedInApiClient.UseCases.Shares;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LinkedInApiClientTests
@@ -34,6 +35,19 @@ namespace LinkedInApiClientTests
         }
 
         [TestMethod]
+        public async Task RetrieveOrganizationBrandPageStatistics()
+        {
+            var message = new RetrieveOrganizationBrandPageStatistics(
+                CommonURN.OrganizationBrand("37246747"),
+                default,
+                DummyTokenRegistry.ValidTokenId);
+
+            var result = await SendRequest(message);
+
+            if (!result.IsSuccess) Assert.Fail(result.Error.Message);
+        }
+
+        [TestMethod]
         public async Task EmailAddress()
         {
             var message = new GetEmail(DummyTokenRegistry.ValidTokenId);
@@ -54,6 +68,15 @@ namespace LinkedInApiClientTests
         }
 
         [TestMethod]
+        public async Task FindOrganizationByEmailDomain()
+        {
+            var message = new FindOrganizationByEmailDomain(DummyTokenRegistry.ValidTokenId, "tasper.nl");
+            var result = await SendRequest(message);
+
+            if (!result.IsSuccess) Assert.Fail(result.Error.Message);
+        }
+
+        [TestMethod]
         public async Task FindOrganizationByVanityName()
         {
             var message = new FindOrganizationByVanityName(DummyTokenRegistry.ValidTokenId, "Fantistics");
@@ -63,12 +86,51 @@ namespace LinkedInApiClientTests
         }
 
         [TestMethod]
-        public async Task RetrieveOrganizationBrandPageStatistics()
+        public async Task RetrieveAnAdministeredOrganization()
         {
-            var message = new RetrieveOrganizationBrandPageStatistics(
-                CommonURN.OrganizationBrand("37246747"), 
-                default, 
-                DummyTokenRegistry.ValidTokenId);
+            var message = new RetrieveAnAdministeredOrganization(
+                DummyTokenRegistry.ValidTokenId,
+                CommonURN.OrganizationId("37246747"));
+
+            var result = await SendRequest(message);
+
+            if (!result.IsSuccess) Assert.Fail(result.Error.Message);
+        }
+
+        [TestMethod]
+        public async Task RetrieveOrganizationFollowerCount()
+        {
+            var message = new RetrieveOrganizationFollowerCount(
+                DummyTokenRegistry.ValidTokenId,
+                CommonURN.OrganizationId("37246747"));
+
+            var result = await SendRequest(message);
+
+            if (!result.IsSuccess) Assert.Fail(result.Error.Message);
+        }
+
+        [TestMethod]
+        public async Task ActivityFeedNetworkShares()
+        {
+            var message = new ActivityFeedNetworkShares(
+                DummyTokenRegistry.ValidTokenId,
+                LinkedInURN.None,
+                LinkedInURN.None,
+                null
+                );
+
+            var result = await SendRequest(message);
+
+            if (!result.IsSuccess) Assert.Fail(result.Error.Message);
+        }
+
+        [TestMethod]
+        public async Task LookUpShareById()
+        {
+            var message = new LookUpShareById(
+                DummyTokenRegistry.ValidTokenId,
+                CommonURN.Share("123"),
+                QueryParameterCollection.EmptyParameters);
 
             var result = await SendRequest(message);
 
@@ -79,14 +141,34 @@ namespace LinkedInApiClientTests
         public async Task RetrieveLifetimeFollowerStatistics()
         {
             var message = new RetrieveLifetimeFollowerStatistics(
+                DummyTokenRegistry.ValidTokenId,
                 CommonURN.OrganizationId("37246747"),
-                default,
-                DummyTokenRegistry.ValidTokenId);
+                default);
 
             var result = await SendRequest(message);
 
             if (!result.IsSuccess) Assert.Fail(result.Error.Message);
         }
+
+        [TestMethod]
+        public async Task RetrieveLifetimeOrganizationPageStatistics()
+        {
+            var message = new RetrieveLifetimeOrganizationPageStatistics(
+                DummyTokenRegistry.ValidTokenId,
+                CommonURN.OrganizationId("37246747"),
+                default
+                );
+
+            var result = await SendRequest(message);
+
+            if (!result.IsSuccess) Assert.Fail(result.Error.Message);
+        }
+
+        //[TestMethod]
+        //public async Task Shared()
+        //{
+        //    GenericApiQuery.Create<JsonElement>()
+        //}
 
         public async Task<Result<LinkedInError, JsonElement>> SendRequest(ILinkedInRequest request)
         {

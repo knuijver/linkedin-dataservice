@@ -26,6 +26,18 @@ namespace LinkedInApiClient.Types
             set => parameters[index] = value;
         }
 
+        public QueryParameterCollection Add(string name, string value)
+        {
+            parameters.Add(name, value);
+            return this;
+        }
+
+        public QueryParameterCollection Add(KeyValuePair<string, string> par)
+        {
+            parameters.Add(par);
+            return this;
+        }
+
         public QueryParameterCollection AddRange(IEnumerable<KeyValuePair<string, string>> par)
         {
             parameters = new Dictionary<string, string>(parameters.Concat(par), StringComparer.OrdinalIgnoreCase);

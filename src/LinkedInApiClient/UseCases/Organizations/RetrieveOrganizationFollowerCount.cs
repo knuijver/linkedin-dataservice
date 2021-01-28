@@ -9,7 +9,7 @@ namespace LinkedInApiClient.UseCases
     /// </summary>
     public class RetrieveOrganizationFollowerCount : ILinkedInRequest
     {
-        public RetrieveOrganizationFollowerCount(LinkedInURN organizationId, string tokenId)
+        public RetrieveOrganizationFollowerCount(string tokenId, LinkedInURN organizationId)
         {
             if (organizationId.EntityType != "organization")
                 throw new ArgumentException($"{nameof(organizationId)} has an invalid URN Type", nameof(organizationId));

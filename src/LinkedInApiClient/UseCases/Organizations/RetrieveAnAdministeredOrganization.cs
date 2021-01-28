@@ -5,7 +5,7 @@ namespace LinkedInApiClient.UseCases.Organizations
 {
     public class RetrieveAnAdministeredOrganization : ILinkedInRequest
     {
-        public RetrieveAnAdministeredOrganization(LinkedInURN organizationId, string tokenId)
+        public RetrieveAnAdministeredOrganization(string tokenId, LinkedInURN organizationId)
         {
             if (organizationId.EntityType != "organization")
                 throw new ArgumentException($"{nameof(organizationId)} has an invalid URN Type", nameof(organizationId)); 

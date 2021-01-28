@@ -5,8 +5,13 @@ namespace LinkedInApiClient.UseCases
 {
     public class RetrieveLifetimeOrganizationPageStatistics : ILinkedInRequest
     {
-        public RetrieveLifetimeOrganizationPageStatistics(LinkedInURN organizationId, TimeInterval timeInterval, string tokenId)
+        public RetrieveLifetimeOrganizationPageStatistics(string tokenId, LinkedInURN organizationId, TimeInterval timeInterval)
         {
+            if (!organizationId.HasValue)
+            {
+                throw new ArgumentException(nameof(organizationId));
+            }
+
             Url = "organizationPageStatistics";
             QueryParameters = new QueryParameterCollection
             {
@@ -16,9 +21,10 @@ namespace LinkedInApiClient.UseCases
             TokenId = tokenId;
         }
 
+        public string TokenId { get; }
+
         public string Url { get; }
 
         public QueryParameterCollection QueryParameters { get; }
-        public string TokenId { get; }
     }
 }

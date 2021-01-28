@@ -1,6 +1,7 @@
 ﻿using LinkedInApiClient.Types;
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 
 namespace LinkedInApiClient.UseCases
 {
@@ -8,6 +9,9 @@ namespace LinkedInApiClient.UseCases
     {
         public static GenericApiQuery<TResponse> Create<TResponse>(string tokenId, string url, IEnumerable<KeyValuePair<string, string>> queryParameters)
             => new GenericApiQuery<TResponse>(tokenId, url, queryParameters);
+
+        public static GenericApiQuery<JsonElement> Create(string tokenId, string url, IEnumerable<KeyValuePair<string, string>> queryParameters)
+            => new GenericApiQuery<JsonElement>(tokenId, url, queryParameters);
     }
 
     public class GenericApiQuery<TResponse> : ILinkedInRequest<TResponse>

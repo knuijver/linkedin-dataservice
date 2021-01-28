@@ -5,7 +5,7 @@ namespace LinkedInApiClient.UseCases
 {
     public class RetrieveLifetimeFollowerStatistics : ILinkedInRequest
     {
-        public RetrieveLifetimeFollowerStatistics(LinkedInURN organizationId, TimeInterval timeInterval, string tokenId)
+        public RetrieveLifetimeFollowerStatistics(string tokenId, LinkedInURN organizationId, TimeInterval timeInterval)
         {
             QueryParameters = new QueryParameterCollection
             {
