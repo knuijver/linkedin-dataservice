@@ -22,7 +22,7 @@ namespace LinkedInApiClient.UseCases.EmailAddress
             var token = await tokenRegistry.AccessTokenAsync(request.TokenId, cancellationToken);
             if (token.IsSuccess)
             {
-                return await handler.GetAsync(request.TokenId, request, cancellationToken).ConfigureAwait(false);
+                return await handler.GetAsync<JsonElement>(request.TokenId, request, cancellationToken).ConfigureAwait(false);
             }
             else
             {

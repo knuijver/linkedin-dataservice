@@ -55,8 +55,8 @@ namespace LinkedInApiClient.Authentication
 
             var handler = new LinkedInHttpClient();
 
-            var email = await handler.GetAsync(tokens.AccessToken, new GetEmail(null), CancellationToken.None);
-            var profile = await handler.GetAsync(tokens.AccessToken, new GetProfile(null), CancellationToken.None);
+            var email = await new GetEmail(null).Handle(null, handler, CancellationToken.None);
+            var profile = await handler.GetAsync<JsonElement>(tokens.AccessToken, new GetProfile(null), CancellationToken.None);
 
             var context = new OAuthCreatingTicketContext(
                 new ClaimsPrincipal(identity),

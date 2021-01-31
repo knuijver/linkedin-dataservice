@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace LinkedInApiClient.Types
 {
+    [JsonConverter(typeof(LinkedInURNConverter))]
     public struct LinkedInURN
     {
         public static readonly LinkedInURN None = new LinkedInURN();

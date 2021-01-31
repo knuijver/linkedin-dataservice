@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using LinkedInApiClient.Types;
 
 namespace LinkedInApiClient.UseCases.CareerPageStatistics
 {
-    public class RetrieveOrganizationBrandPageStatisticsHandler : LinkedInRequestHandler<RetrieveOrganizationBrandPageStatistics, string>
+    public class RetrieveOrganizationBrandPageStatisticsHandler : LinkedInRequestHandler<RetrieveOrganizationBrandPageStatistics, JsonElement>
     {
         readonly LinkedInHttpClient handler;
         readonly IAccessTokenRegistry tokenRegistry;
@@ -16,7 +17,7 @@ namespace LinkedInApiClient.UseCases.CareerPageStatistics
             this.handler = handler ?? throw new ArgumentNullException(nameof(handler), $"{nameof(handler)} is null.");
         }
 
-        protected override Task<Result<LinkedInError, string>> Handle(RetrieveOrganizationBrandPageStatistics request, CancellationToken cancellationToken)
+        protected override Task<Result<LinkedInError, JsonElement>> Handle(RetrieveOrganizationBrandPageStatistics request, CancellationToken cancellationToken)
         {
             return request.Handle(tokenRegistry, handler, cancellationToken);
         }

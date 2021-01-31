@@ -11,7 +11,7 @@ namespace LinkedInApiClient.UseCases.Organizations
                 throw new ArgumentException($"{nameof(organizationId)} has an invalid URN Type", nameof(organizationId)); 
 
             TokenId = tokenId;
-            Url = $"organizations/{organizationId.UrlEncode()}";
+            Url = $"organizations/{organizationId.Id}";
         }
 
         public string Url { get; }

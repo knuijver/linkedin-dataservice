@@ -24,7 +24,7 @@ namespace LinkedInApiClient
             this.client = new HttpClient(handler);
             this.client.BaseAddress = new Uri(LinkedInConstants.DefaultBaseUrl, UriKind.Absolute);
             this.client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            this.client.DefaultRequestHeaders.Add("X-Restli-Protocol-Version", "2.0.0");
+            //this.client.DefaultRequestHeaders.Add("X-Restli-Protocol-Version", "2.0.0");
         }
 
         public static HttpRequestMessage CreateRequest(HttpMethod method, Uri uri, string token, HttpContent content = null)
@@ -42,18 +42,19 @@ namespace LinkedInApiClient
             return message;
         }
 
-        public async Task<Result<LinkedInError, JsonElement>> ExecuteRequest(HttpRequestMessage request, CancellationToken cancellationToken)
+        public async Task<Result<LinkedInError, string>> ExecuteRequest(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             try
             {
                 var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
                     .ConfigureAwait(false);
 
+                Console.WriteLine($"{request.Method} {request.RequestUri}");
+
                 var responseContent = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
                 if (response.IsSuccessStatusCode)
                 {
-                    var document = JsonDocument.Parse(responseContent);
-                    return Result.Success(document.RootElement.Clone());
+                    return Result.Success(responseContent);
                 }
                 else
                 {
@@ -75,12 +76,13 @@ namespace LinkedInApiClient
             }
         }
 
+
         public async Task<Result<LinkedInError, T>> ExecuteRequest<T>(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             var response = await ExecuteRequest(request, cancellationToken);
             if (response.IsSuccess)
             {
-                var result = JsonSerializer.Deserialize<T>(response.Data.GetRawText());
+                T result = ConvertTo<T>(response.Data);
                 return Result.Success(result);
             }
             else
@@ -89,10 +91,35 @@ namespace LinkedInApiClient
             }
         }
 
+        public T ConvertTo<T>(string response)
+        {
+            T result = default;
+            if (result is JsonElement)
+            {
+                var document = JsonDocument.Parse(response);
+                result = (T)(object)document.RootElement;
+            }
+            else if (result is JsonDocument)
+            {
+                var document = JsonDocument.Parse(response);
+                result = (T)(object)document.RootElement;
+            }
+            else if (typeof(T).IsClass)
+            {
+                result = JsonSerializer.Deserialize<T>(response);                
+            }
+            else
+            {
+                result = (T)Convert.ChangeType(response, typeof(T));
+            }
+
+            return result;
+        }
+
         public static HttpContent FormData(IEnumerable<KeyValuePair<string, string>> data)
             => new FormUrlEncodedContent(data);
 
-        public Task<Result<LinkedInError, JsonElement>> GetAsync(string token, IBaseApiRequest request, CancellationToken cancellationToken)
+        public Task<Result<LinkedInError, string>> GetAsync(string token, IBaseApiRequest request, CancellationToken cancellationToken)
         {
             var message = CreateRequest(HttpMethod.Get, request.HttpRequestUrl(), token);
             return ExecuteRequest(message, cancellationToken);

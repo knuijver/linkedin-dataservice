@@ -1,7 +1,7 @@
 ﻿using System;
 using LinkedInApiClient.Types;
 
-namespace LinkedInApiClient.UseCases
+namespace LinkedInApiClient.UseCases.Organizations
 {
     /// <summary>
     /// The Organization Network Size API provides the ability to retrieve the number of
@@ -14,7 +14,7 @@ namespace LinkedInApiClient.UseCases
             if (organizationId.EntityType != "organization")
                 throw new ArgumentException($"{nameof(organizationId)} has an invalid URN Type", nameof(organizationId));
 
-            Url = $"networkSizes/{organizationId.UrlEncode()}";
+            Url = $"networkSizes/{organizationId}";
             QueryParameters = new QueryParameterCollection
             {
                 ["edgeType"] = "CompanyFollowedByMember"

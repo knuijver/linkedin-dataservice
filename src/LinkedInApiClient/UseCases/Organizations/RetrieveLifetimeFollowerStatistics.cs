@@ -1,7 +1,7 @@
 ﻿using System;
 using LinkedInApiClient.Types;
 
-namespace LinkedInApiClient.UseCases
+namespace LinkedInApiClient.UseCases.Organizations
 {
     public class RetrieveLifetimeFollowerStatistics : ILinkedInRequest
     {

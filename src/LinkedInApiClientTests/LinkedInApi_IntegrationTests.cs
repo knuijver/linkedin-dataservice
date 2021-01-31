@@ -1,10 +1,12 @@
 using System;
+using System.Net;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using LinkedInApiClient;
 using LinkedInApiClient.Types;
 using LinkedInApiClient.UseCases;
+using LinkedInApiClient.UseCases.AccessControl;
 using LinkedInApiClient.UseCases.CareerPageStatistics;
 using LinkedInApiClient.UseCases.EmailAddress;
 using LinkedInApiClient.UseCases.Organizations;
@@ -38,7 +40,7 @@ namespace LinkedInApiClientTests
         public async Task RetrieveOrganizationBrandPageStatistics()
         {
             var message = new RetrieveOrganizationBrandPageStatistics(
-                CommonURN.OrganizationBrand("37246747"),
+                CommonURN.OrganizationBrand("72216557"),
                 default,
                 DummyTokenRegistry.ValidTokenId);
 
@@ -86,11 +88,23 @@ namespace LinkedInApiClientTests
         }
 
         [TestMethod]
+        public async Task OrganizationShares()
+        {
+            var message = new OrganizationShares(
+                DummyTokenRegistry.ValidTokenId,
+                CommonURN.OrganizationId("37246747"));
+
+            var result = await SendRequest(message);
+
+            if (!result.IsSuccess) Assert.Fail(result.Error.Message);
+        }
+
+        [TestMethod]
         public async Task RetrieveAnAdministeredOrganization()
         {
             var message = new RetrieveAnAdministeredOrganization(
                 DummyTokenRegistry.ValidTokenId,
-                CommonURN.OrganizationId("37246747"));
+                CommonURN.OrganizationId("72216557"));
 
             var result = await SendRequest(message);
 
@@ -109,7 +123,7 @@ namespace LinkedInApiClientTests
             if (!result.IsSuccess) Assert.Fail(result.Error.Message);
         }
 
-        [TestMethod]
+        [TestMethod, Obsolete]
         public async Task ActivityFeedNetworkShares()
         {
             var message = new ActivityFeedNetworkShares(
@@ -142,7 +156,7 @@ namespace LinkedInApiClientTests
         {
             var message = new RetrieveLifetimeFollowerStatistics(
                 DummyTokenRegistry.ValidTokenId,
-                CommonURN.OrganizationId("37246747"),
+                CommonURN.OrganizationId("72216557"),
                 default);
 
             var result = await SendRequest(message);
@@ -155,7 +169,7 @@ namespace LinkedInApiClientTests
         {
             var message = new RetrieveLifetimeOrganizationPageStatistics(
                 DummyTokenRegistry.ValidTokenId,
-                CommonURN.OrganizationId("37246747"),
+                CommonURN.OrganizationId("72216557"),
                 default
                 );
 
@@ -164,29 +178,54 @@ namespace LinkedInApiClientTests
             if (!result.IsSuccess) Assert.Fail(result.Error.Message);
         }
 
-        //[TestMethod]
-        //public async Task Shared()
-        //{
-        //    GenericApiQuery.Create<JsonElement>()
-        //}
-
-        public async Task<Result<LinkedInError, JsonElement>> SendRequest(ILinkedInRequest request)
+        [TestMethod]
+        public async Task FindAMembersOrganizationAccessControlInformation()
         {
-            request.Validate();
+            var message = new FindAMembersOrganizationAccessControlInformation(DummyTokenRegistry.ValidTokenId);
 
-            var tokenRegistry = DummyTokenRegistry.Create();
-            var client = new LinkedInHttpClient();
+            var result = await SendRequest(message);
 
-            var result = await request.Handle(tokenRegistry, client, CancellationToken.None);
-            return result;
+            if (!result.IsSuccess) Assert.Fail(result.Error.Message);
         }
+
+        [TestMethod]
+        public async Task FindOrganizationAdministrators()
+        {
+            var message = new FindOrganizationAdministrators(
+                DummyTokenRegistry.ValidTokenId,
+                CommonURN.OrganizationId("45271"));
+
+            var result = await SendRequest(message);
+
+            if (!result.IsSuccess)
+            {
+                var failure = (result.Error) switch
+                {
+                    LinkedInHttpError error when error.StatusCode == HttpStatusCode.Unauthorized => "Malformed requests. Typically, the Access Control fields are invalid.",
+                    LinkedInHttpError error when error.StatusCode == HttpStatusCode.Forbidden => "A viewer is not present, or the user is not authorized to modify the Access Control.",
+                    LinkedInHttpError error when error.StatusCode == HttpStatusCode.NotFound => "The Access Control does not exist.",
+                    _ => result.Error.Message
+                };
+
+                Assert.Fail(failure);
+            }
+        }
+
+        [TestMethod]
+        public async Task ResponseTypeChecking()
+        {
+            var req = GenericApiQuery.Create<string>("HelloWorld", "test", QueryParameterCollection.EmptyParameters);
+            await SendRequest(req);
+
+        }
+
         public async Task<Result<LinkedInError, T>> SendRequest<T>(ILinkedInRequest<T> request)
         {
             request.Validate();
 
             var tokenRegistry = DummyTokenRegistry.Create();
             var client = new LinkedInHttpClient();
-
+                        
             var result = await request.Handle(tokenRegistry, client, CancellationToken.None);
             return result;
         }
