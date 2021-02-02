@@ -10,8 +10,9 @@ namespace LinkedInApiClient.Types
     {
         public string TokenId { get; set; }
         public string AccessToken { get; set; }
-        public string ExpiresIn { get; set; }
+        public long ExpiresIn { get; set; }
         public string RefreshToken { get; set; }
+        public int RefreshTokenExpiresIn { get; set; }
         public string TokenType { get; set; }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using LinkedInApiClient.Types;
+using LinkedInApiClient.UseCases.Models;
+using LinkedInApiClient.UseCases.Organizations.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace LinkedInApiClient.UseCases.Organizations
 {
-    public class OrganizationShares : ILinkedInRequest
+    public class OrganizationShares : ILinkedInRequest<PagedResponse<OrganizationShare>>
     {
         public OrganizationShares(string tokenId, LinkedInURN organizationUrn)
         {
@@ -21,7 +23,7 @@ namespace LinkedInApiClient.UseCases.Organizations
                 ["q"] = "owners",
                 ["owners"] = organizationUrn,
                 ["sharesPerOwner"] = "1000",
-                //["projection"] = "(elements*(id),paging)"
+                ["projection"] = "(elements*(*,created(*,actor~(localizedLastName,localizedFirstName,vanityName,localizedHeadline))))"
             };
         }
 

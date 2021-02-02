@@ -15,7 +15,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LinkedInApiClientTests
 {
-    [TestClass]
+    [TestClass, TestCategory("Integration Tests")]
     public class LinkedInApi_IntegrationTests
     {
         [TestMethod]
@@ -72,7 +72,10 @@ namespace LinkedInApiClientTests
         [TestMethod]
         public async Task FindOrganizationByEmailDomain()
         {
-            var message = new FindOrganizationByEmailDomain(DummyTokenRegistry.ValidTokenId, "tasper.nl");
+            var message = new FindOrganizationByEmailDomain(
+                DummyTokenRegistry.ValidTokenId,
+                "tasper.nl");
+
             var result = await SendRequest(message);
 
             if (!result.IsSuccess) Assert.Fail(result.Error.Message);
@@ -81,7 +84,10 @@ namespace LinkedInApiClientTests
         [TestMethod]
         public async Task FindOrganizationByVanityName()
         {
-            var message = new FindOrganizationByVanityName(DummyTokenRegistry.ValidTokenId, "Fantistics");
+            var message = new FindOrganizationByVanityName(
+                DummyTokenRegistry.ValidTokenId,
+                "Fantistics");
+
             var result = await SendRequest(message);
 
             if (!result.IsSuccess) Assert.Fail(result.Error.Message);
@@ -98,6 +104,7 @@ namespace LinkedInApiClientTests
 
             if (!result.IsSuccess) Assert.Fail(result.Error.Message);
         }
+
 
         [TestMethod]
         public async Task RetrieveAnAdministeredOrganization()
@@ -169,7 +176,8 @@ namespace LinkedInApiClientTests
         {
             var message = new RetrieveLifetimeOrganizationPageStatistics(
                 DummyTokenRegistry.ValidTokenId,
-                CommonURN.OrganizationId("72216557"),
+                //CommonURN.OrganizationId("72216557"),
+                CommonURN.OrganizationId("37246747"),
                 default
                 );
 
@@ -193,7 +201,9 @@ namespace LinkedInApiClientTests
         {
             var message = new FindOrganizationAdministrators(
                 DummyTokenRegistry.ValidTokenId,
-                CommonURN.OrganizationId("45271"));
+                //CommonURN.OrganizationId("45271")
+                CommonURN.OrganizationId("37246747")
+                );
 
             var result = await SendRequest(message);
 
@@ -210,6 +220,7 @@ namespace LinkedInApiClientTests
                 Assert.Fail(failure);
             }
         }
+
 
         [TestMethod]
         public async Task ResponseTypeChecking()

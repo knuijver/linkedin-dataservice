@@ -1,0 +1,24 @@
+﻿@page
+@model SAWebHost.Pages.LinkedIn.IndexModel
+@{
+    
+}
+
+<div>
+
+    <form method="post" asp-page-handler="Connect" asp-route-returnUrl="@Model.ReturnUrl">
+        <input asp-for="AccessToken" class="btn" />
+        <input type="submit" value="Save"/>
+    </form>
+
+    <form method="get" action="@Model.Step1.Address">
+        <input hidden name="response_type" value="code" />
+        <input hidden asp-for="Step1.ClientId" name="client_id" />
+        <input hidden asp-for="Step1.RedirectUri" name="redirect_uri" />
+        <input hidden asp-for="Step1.State" name="state" />
+        <input hidden asp-for="Step1.Scope" name="scope" />
+        <button type="submit">Connect</button>
+    </form>
+
+</div>
+

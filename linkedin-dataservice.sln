@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LinkedInApiClient", "src\Li
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SAWebHost", "src\SAWebHost\SAWebHost.csproj", "{B91AEE35-A0B7-447A-B443-AD32EBB1BEDB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkedInApiClientTests", "src\LinkedInApiClientTests\LinkedInApiClientTests.csproj", "{62B00728-2FA1-4C10-9A1E-0BF0E1EB7ACB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LinkedInApiClientTests", "src\LinkedInApiClientTests\LinkedInApiClientTests.csproj", "{62B00728-2FA1-4C10-9A1E-0BF0E1EB7ACB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

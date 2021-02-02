@@ -180,5 +180,30 @@ namespace LinkedInApiClient
 
             return ExecuteRequest<AccessTokenResponse>(message, cancellationToken);
         }
+
+        public Task<Result<LinkedInError, JsonElement>> RequestAnAuthorizationCode(
+            Uri uri,
+            string clientId,
+            Uri redirectUri,
+            ICollection<string> scope,
+            string state,
+            CancellationToken cancellationToken)
+        {
+            var message = CreateRequest(
+               HttpMethod.Post,
+               uri,
+               null,
+               FormData(
+                   new Dictionary<string, string>
+                   {
+                       ["response_type"] = "code",
+                       ["client_id"] = clientId,
+                       ["redirect_uri"] = redirectUri.AbsoluteUri,
+                       ["state"] = state,
+                       ["scope"] = string.Join(" ", scope)
+                   }));
+
+            return ExecuteRequest<JsonElement>(message, cancellationToken);
+        }
     }
 }
