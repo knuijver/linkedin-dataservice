@@ -15,7 +15,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LinkedInApiClientTests
 {
-    [TestClass, TestCategory("Integration Tests")]
+    [TestClass]
+    [TestCategory("Integration Tests")]
+    [Ignore("Only run in dev env. may require new AccessTokens")]
     public class LinkedInApi_IntegrationTests
     {
         [TestMethod]
@@ -236,7 +238,7 @@ namespace LinkedInApiClientTests
 
             var tokenRegistry = DummyTokenRegistry.Create();
             var client = new LinkedInHttpClient();
-                        
+
             var result = await request.Handle(tokenRegistry, client, CancellationToken.None);
             return result;
         }
