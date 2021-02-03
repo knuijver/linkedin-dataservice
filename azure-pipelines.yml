@@ -57,7 +57,7 @@ stages:
           command: test
           publishTestResults: true
           projects: '$(solution)'
-          arguments: '--configuration $(BuildConfiguration) --logger "trx" --collect "Code coverage"'
+          arguments: '--configuration $(BuildConfiguration) --logger "trx" --collect "Code coverage" /p:Version="$(major).$(minor).$(patch)"'
           nobuild: false
       - task: DotNetCoreCLI@2
         displayName: 'Publishing $(BuildConfiguration) Artifacts'
