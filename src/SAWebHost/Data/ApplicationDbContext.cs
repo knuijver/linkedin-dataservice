@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -6,7 +7,12 @@ using System.Text;
 
 namespace SAWebHost.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationUser : IdentityUser
+    {
+        public string OrganizationUrn { get; set; }
+    }
+
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)

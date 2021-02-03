@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -29,20 +29,37 @@ namespace SAWebHost
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddDbContext<SAWebHostContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
             services.AddDatabaseDeveloperPageExceptionFilter();
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+            //services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
+            //    .AddEntityFrameworkStores<ApplicationDbContext>()
+            //    .AddDefaultTokenProviders();
 
             services.AddControllers();
             services.AddRazorPages();
 
+            services.ConfigureApplicationCookie(options =>
+            {
+                // Cookie settings
+                options.Cookie.HttpOnly = true;
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+
+                options.LoginPath = "/Identity/Account/Login";
+                options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+                options.SlidingExpiration = true;
+            });
+            /*
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = "LinkedIn";
+                //options.DefaultChallengeScheme = "LinkedIn";
             })
             .AddCookie()
             .AddLinkedIn("LinkedIn", "LinkedIn", options =>
@@ -51,8 +68,7 @@ namespace SAWebHost
                 options.ClientSecret = "F9PalSPEg6ZHP1ao";
                 //options.SaveTokens = true;
             });
-
-
+            */
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

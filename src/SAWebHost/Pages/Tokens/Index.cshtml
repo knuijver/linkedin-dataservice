@@ -1,0 +1,61 @@
+﻿@page
+@model SAWebHost.Pages.Tokens.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.AccessTokenEntry[0].AccessToken)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AccessTokenEntry[0].ExpiresIn)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AccessTokenEntry[0].RefreshToken)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AccessTokenEntry[0].RefreshTokenExpiresIn)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AccessTokenEntry[0].CreatedOn)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.AccessTokenEntry) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.AccessToken)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ExpiresIn)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RefreshToken)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RefreshTokenExpiresIn)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedOn)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
