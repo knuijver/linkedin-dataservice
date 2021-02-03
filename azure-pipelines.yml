@@ -1,0 +1,81 @@
+# ASP.NET Core (.NET Framework)
+# Build and test ASP.NET Core projects targeting the full .NET Framework.
+# Add steps that publish symbols, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+- master
+
+pool: OnPremise
+
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+  major: 1
+  minor: 0
+  patch: $[counter(format('{0}.{1}', variables['major'], variables['minor']), 100)]
+
+name: '$(major).$(minor).$(patch)'
+pr:
+- master
+
+stages:
+- stage: prepare
+  displayName: Prepare build environment
+  pool: OnPremise
+  jobs:
+    - job: cleanup_output
+      displayName: Setup our Workspace
+      workspace:
+        clean: outputs      
+      steps:
+      - script: echo Got stuf to do, linkedin_$(major).$(minor).$(patch)
+        displayName: 'Run a one-line script'
+      - task: UseDotNet@2
+        displayName: 'Dotnet Core version 3.1.x'
+        inputs:
+          packageType: 'sdk'
+          version: '5.0.x'
+      - task: DotNetCoreCLI@2
+        displayName: 'Restore packages'
+        inputs:
+          command: 'restore'
+          projects: '$(solution)' 
+          #feedsToUse: 'select'
+          #vstsFeed: 'my-vsts-feed' # A series of numbers and letters
+
+    - job: build_solution
+      displayName: Building Solution      
+      dependsOn: cleanup_output
+      condition: succeeded()
+      steps:
+      - checkout: none #skip checking out the default repository resource
+      - task: DotNetCoreCLI@2
+        displayName: 'Run Test Projects using DotNet Core CLI'
+        inputs:
+          command: test
+          publishTestResults: true
+          projects: '$(solution)'
+          arguments: '--configuration $(BuildConfiguration) --logger "trx" --collect "Code coverage"'
+          nobuild: false
+      - task: DotNetCoreCLI@2
+        displayName: 'Publishing $(BuildConfiguration) Artifacts'
+        inputs:
+          command: publish
+          publishWebProjects: false
+          versioningScheme: off          
+          arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory) /p:Version="$(major).$(minor).$(patch)"'
+          zipAfterPublish: true
+      - task: PublishBuildArtifacts@1
+        inputs:
+          pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
+          artifactName: 'linkedin'
+      - task: DotNetCoreCLI@2
+        displayName: 'Push $(BuildConfiguration) packages to internal feed'
+        inputs:
+          command: 'push'
+          packagesToPush: '$(Build.SourcesDirectory)/**/*.nupkg'
+          nuGetFeedType: 'internal'
+          publishVstsFeed: '36988b59-0d40-4266-b5e9-91f9d86b67e6'
+      - task: PostBuildCleanup@3
