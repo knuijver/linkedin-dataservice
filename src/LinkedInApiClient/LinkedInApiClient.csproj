@@ -2,9 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Authors>r.knuijver</Authors>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Authors>R. Knuijver</Authors>
     <Company>Tasper</Company>
+    <PackageTags>LinkedIn</PackageTags>
+    <Description>LinkedIn API v2</Description>
   </PropertyGroup>
 
   <ItemGroup>
