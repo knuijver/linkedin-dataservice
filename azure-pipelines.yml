@@ -33,7 +33,7 @@ stages:
       - script: echo Got stuf to do, linkedin_$(major).$(minor).$(patch)
         displayName: 'Run a one-line script'
       - task: UseDotNet@2
-        displayName: 'Dotnet Core version 3.1.x'
+        displayName: 'Dotnet Core version 5.0.x'
         inputs:
           packageType: 'sdk'
           version: '5.0.x'
