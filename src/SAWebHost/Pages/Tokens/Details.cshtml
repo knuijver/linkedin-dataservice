@@ -1,4 +1,4 @@
-﻿@page
+﻿@page "{id}"
 @model SAWebHost.Pages.Tokens.DetailsModel
 
 @{
@@ -16,7 +16,7 @@
             @Html.DisplayNameFor(model => model.AccessTokenEntry.AccessToken)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.AccessTokenEntry.AccessToken)
+            <textarea asp-for="AccessTokenEntry.AccessToken" style="width:100%" rows="5"></textarea>            
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.AccessTokenEntry.ExpiresIn)
@@ -28,7 +28,7 @@
             @Html.DisplayNameFor(model => model.AccessTokenEntry.RefreshToken)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.AccessTokenEntry.RefreshToken)
+            <textarea asp-for="AccessTokenEntry.RefreshToken" style="width:100%" rows="5"></textarea>
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.AccessTokenEntry.RefreshTokenExpiresIn)

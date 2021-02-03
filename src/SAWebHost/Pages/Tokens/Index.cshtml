@@ -21,9 +21,6 @@
                 @Html.DisplayNameFor(model => model.AccessTokenEntry[0].ExpiresIn)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.AccessTokenEntry[0].RefreshToken)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.AccessTokenEntry[0].RefreshTokenExpiresIn)
             </th>
             <th>
@@ -36,16 +33,13 @@
 @foreach (var item in Model.AccessTokenEntry) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.AccessToken)
+                @Html.DisplayFor(modelItem => item.Id)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ExpiresIn)
+                <span>@((item.CreatedOn.AddSeconds(item.ExpiresIn) - item.CreatedOn).ToString(@"dd\.hh\:mm"))</span>
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.RefreshToken)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RefreshTokenExpiresIn)
+                <span>@((item.CreatedOn.AddSeconds(item.RefreshTokenExpiresIn) - item.CreatedOn).ToString(@"dd\.hh\:mm"))</span>                
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.CreatedOn)
