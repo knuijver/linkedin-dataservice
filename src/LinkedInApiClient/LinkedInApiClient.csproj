@@ -3,10 +3,13 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Authors>R. Knuijver</Authors>
+    <Authors>Tasper and contributors</Authors>
     <Company>Tasper</Company>
-    <PackageTags>LinkedIn</PackageTags>
+    <PackageTags>LinkedIn, v2, Rest.Li</PackageTags>
     <Description>LinkedIn API v2</Description>
+    <Copyright></Copyright>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageLicenseExpression>https://opensource.org/licenses/BSD-3-Clause</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>

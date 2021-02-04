@@ -10,6 +10,7 @@ using SAWebHost.Data.Dto;
 
 namespace SAWebHost.Controllers
 {
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class TokensController : ControllerBase

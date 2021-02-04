@@ -36,10 +36,10 @@
                 @Html.DisplayFor(modelItem => item.Id)
             </td>
             <td>
-                <span>@((item.CreatedOn.AddSeconds(item.ExpiresIn) - item.CreatedOn).ToString(@"dd\.hh\:mm"))</span>
+                <span>@((item.CreatedOn.AddSeconds(item.ExpiresIn) - DateTimeOffset.Now).ToString(@"dd\.hh\:mm\:ss"))</span>
             </td>
             <td>
-                <span>@((item.CreatedOn.AddSeconds(item.RefreshTokenExpiresIn) - item.CreatedOn).ToString(@"dd\.hh\:mm"))</span>                
+                <span>@((item.CreatedOn.AddSeconds(item.RefreshTokenExpiresIn) - DateTimeOffset.Now).ToString(@"dd\.hh\:mm\:ss"))</span>                
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.CreatedOn)

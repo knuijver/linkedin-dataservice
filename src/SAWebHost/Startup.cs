@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -8,10 +9,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using SAWebHost.Data;
+using SAWebHost.Impl;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SAWebHost
@@ -51,6 +55,22 @@ namespace SAWebHost
                 options.AccessDeniedPath = "/Identity/Account/AccessDenied";
                 options.SlidingExpiration = true;
             });
+
+            services.AddAuthentication()
+                .AddCookie()
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = Configuration["JwtAuth:Issuer"],
+                        ValidAudience = Configuration["JwtAuth:Issuer"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtAuth:Key"]))
+                    };
+                });
             /*
             services.AddAuthentication(options =>
             {
@@ -66,6 +86,8 @@ namespace SAWebHost
                 //options.SaveTokens = true;
             });
             */
+
+            services.AddSingleton<IBase64QrCodeGenerator, Base64QrCodeGenerator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using IdentityModel.Client;
 using LinkedInApiClient.Authentication;
 using LinkedInApiClient.Types;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -18,6 +19,7 @@ using SAWebHost.Data.Dto;
 
 namespace SAWebHost.Pages.Tokens
 {
+    [Authorize]
     public class CreateModel : PageModel
     {
         private readonly SAWebHostContext context;

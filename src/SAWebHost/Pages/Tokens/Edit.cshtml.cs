@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -11,6 +12,7 @@ using SAWebHost.Data.Dto;
 
 namespace SAWebHost.Pages.Tokens
 {
+    [Authorize]
     public class EditModel : PageModel
     {
         private readonly SAWebHost.Data.SAWebHostContext _context;
@@ -18,10 +20,17 @@ namespace SAWebHost.Pages.Tokens
         public EditModel(SAWebHost.Data.SAWebHostContext context)
         {
             _context = context;
+            ApplicationOptions = new SelectList(context.LinkedInProvider, nameof(LinkedInProvider.Id), nameof(LinkedInProvider.ApplicationName));
+            OrganizationOptions = new SelectList(context.Organization, nameof(Organization.Id), nameof(Organization.Name));
+
         }
 
         [BindProperty]
         public AccessTokenEntry AccessTokenEntry { get; set; }
+
+        public SelectList ApplicationOptions { get; }
+
+        public SelectList OrganizationOptions { get; }
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
