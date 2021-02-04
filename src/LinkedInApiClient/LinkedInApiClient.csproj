@@ -7,9 +7,6 @@
     <Company>Tasper</Company>
     <PackageTags>LinkedIn, v2, Rest.Li</PackageTags>
     <Description>LinkedIn API v2</Description>
-    <Copyright></Copyright>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageLicenseExpression>https://opensource.org/licenses/BSD-3-Clause</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
