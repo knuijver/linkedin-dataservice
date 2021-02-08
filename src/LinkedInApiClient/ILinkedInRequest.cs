@@ -9,7 +9,7 @@ namespace LinkedInApiClient
     {
     }
 
-    public interface ILinkedInRequest<TResponse> : IBaseApiRequest
+    public interface ILinkedInRequest<out TResponse> : IBaseApiRequest
     {
         string TokenId { get; }
     }

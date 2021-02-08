@@ -6,8 +6,16 @@ namespace LinkedInApiClient
 {
     static class UrlHelper
     {
+        /// <summary>
+        /// Append all key, value pairs as querystring to the given URL.
+        /// We don't check for any duplicate keys on the given URL.
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="query"></param>
+        /// <returns></returns>
         public static string AppendQueryToUrl(string url, IEnumerable<KeyValuePair<string, string>> query)
         {
+            //var f = query.Where(w => !string.IsNullOrWhiteSpace(w.Value));
             if (!query.Any())
             {
                 return url;
@@ -16,7 +24,7 @@ namespace LinkedInApiClient
             {
                 return url
                     + (url.Contains("?") ? "&" : "?")
-                    + string.Join("&", query.Select(x => Uri.EscapeDataString(x.Key) + "=" + Uri.EscapeDataString(x.Value)));
+                    + string.Join("&", query.Select(x => Uri.EscapeDataString(x.Key) + "=" + (x.Value == null ? "" : Uri.EscapeDataString(x.Value))));
             }
         }
 

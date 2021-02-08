@@ -1,4 +1,6 @@
 ﻿using LinkedInApiClient.Types;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SAWebHost.Data;
 using System;
@@ -11,6 +13,8 @@ using System.Threading.Tasks;
 
 namespace SAWebHost.Controllers
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    //[Authorize("JwtBearer")]
     [Route("api/[controller]")]
     [ApiController]
     public class FansController : ControllerBase
@@ -33,7 +37,7 @@ namespace SAWebHost.Controllers
                 switch (id.EntityType)
                 {
                     case "organization":
-                        return Ok(await context.Organization.FindAsync(new []{ id.ToString() }, ct));
+                        return Ok(await context.Organization.FindAsync(new[] { id.ToString() }, ct));
 
                     case "token":
                         return Ok(await context.AccessTokenEntry.FindAsync(new[] { id.ToString() }, ct));

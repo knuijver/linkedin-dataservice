@@ -25,19 +25,4 @@ namespace LinkedInApiClient.UseCases.AccessControl
         [JsonPropertyName("organization~")]
         public OrganizationInfo Organization { get; set; }
     }
-
-    public class AssigneePerson
-    {
-        [JsonPropertyName("localizedFirstName")]
-        public string FirstName { get; set; }
-
-        [JsonPropertyName("localizedLastName")]
-        public string LastName { get; set; }
-    }
-
-    public class OrganizationInfo
-    {
-        [JsonPropertyName("localizedName")]
-        public string Name { get; set; }
-    }
 }

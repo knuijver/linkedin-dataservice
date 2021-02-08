@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Authentication.Certificate;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -15,6 +16,8 @@ using SAWebHost.Impl;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -40,10 +43,12 @@ namespace SAWebHost
 
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddControllers();
-            services.AddRazorPages();
+            services.AddRazorPages()
+                .AddRazorRuntimeCompilation();
 
             services.ConfigureApplicationCookie(options =>
             {
@@ -58,19 +63,31 @@ namespace SAWebHost
 
             services.AddAuthentication()
                 .AddCookie()
+                //.AddIdentityServerAuthentication()
                 .AddJwtBearer(options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
                         ValidIssuer = Configuration["JwtAuth:Issuer"],
-                        ValidAudience = Configuration["JwtAuth:Issuer"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtAuth:Key"]))
+                        ValidAudience = Configuration["JwtAuth:Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtAuth:Secret"]))
                     };
                 });
+
+            //services.AddAuthorization(options =>
+            //{
+            //    options.AddPolicy("JwtBearer", policy =>
+            //    {
+            //        policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
+            //    });
+            //});
+
+            //CertificateAuthentication(services);
+
             /*
             services.AddAuthentication(options =>
             {
@@ -88,6 +105,73 @@ namespace SAWebHost
             */
 
             services.AddSingleton<IBase64QrCodeGenerator, Base64QrCodeGenerator>();
+            services.AddSingleton<ICertificateValidationService, StoreCertificateValidationService>();
+        }
+
+        private static void CertificateAuthentication(IServiceCollection services)
+        {
+            services.AddAuthentication()
+                .AddCertificate(options =>
+                {
+                    options.AllowedCertificateTypes = CertificateTypes.All;
+                    options.Events = new CertificateAuthenticationEvents
+                    {
+                        OnCertificateValidated = context =>
+                        {
+                            var validationService = context.HttpContext.RequestServices.GetRequiredService<ICertificateValidationService>();
+                            if (validationService.ValidateCertificate(context.ClientCertificate))
+                            {
+                                var claims = new[]
+                                {
+                                    new Claim(
+                                        ClaimTypes.NameIdentifier,
+                                        context.ClientCertificate.Subject,
+                                        ClaimValueTypes.String,
+                                        context.Options.ClaimsIssuer
+                                        ),
+                                    new Claim(
+                                        ClaimTypes.Name,
+                                        context.ClientCertificate.Subject,
+                                        ClaimValueTypes.String,
+                                        context.Options.ClaimsIssuer
+                                        )
+                                };
+
+                                context.Principal = new ClaimsPrincipal(new ClaimsIdentity(claims, context.Scheme.Name));
+
+                                context.Success();
+                            }
+                            else
+                            {
+                                context.Fail("invalid certificate");
+                            }
+                            return Task.CompletedTask;
+                        },
+                        OnAuthenticationFailed = context =>
+                        {
+                            context.Fail("invalid certificate");
+                            return Task.CompletedTask;
+                        }
+                    };
+                })
+                .AddCertificateCache();
+
+            services.AddCertificateForwarding(options =>
+            {
+                options.CertificateHeader = "X-CLIENT-CERT";
+                options.HeaderConverter = (headerValue) =>
+                {
+                    X509Certificate2 clientCertificate = null;
+
+                    if (!string.IsNullOrWhiteSpace(headerValue))
+                    {
+                        byte[] bytes = StringToByteArray(headerValue);
+                        clientCertificate = new X509Certificate2(bytes);
+                    }
+
+                    return clientCertificate;
+                };
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -110,6 +194,7 @@ namespace SAWebHost
 
             app.UseRouting();
 
+            app.UseCertificateForwarding();
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -120,6 +205,19 @@ namespace SAWebHost
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
             });
+        }
+
+        private static byte[] StringToByteArray(string hex)
+        {
+            int NumberChars = hex.Length;
+            byte[] bytes = new byte[NumberChars / 2];
+
+            for (int i = 0; i < NumberChars; i += 2)
+            {
+                bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
+            }
+
+            return bytes;
         }
     }
 }

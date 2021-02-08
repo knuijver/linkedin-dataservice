@@ -9,11 +9,13 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
+#nullable enable
+
 namespace LinkedInApiClient
 {
-    public class LinkedInHttpClient
+    public class LinkedInHttpClient : IDisposable
     {
-        HttpClient client;
+        private readonly HttpClient client;
 
         public LinkedInHttpClient() : this(new HttpClientHandler())
         {
@@ -24,10 +26,17 @@ namespace LinkedInApiClient
             this.client = new HttpClient(handler);
             this.client.BaseAddress = new Uri(LinkedInConstants.DefaultBaseUrl, UriKind.Absolute);
             this.client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            //this.client.DefaultRequestHeaders.Add("X-Restli-Protocol-Version", "2.0.0");
         }
 
-        public static HttpRequestMessage CreateRequest(HttpMethod method, Uri uri, string token, HttpContent content = null)
+        /// <summary>
+        /// Create a HttpRequestMessage with HTTP2 set as default and optionally add a Bearer token
+        /// </summary>
+        /// <param name="method"><see cref="HttpMethod"/></param>
+        /// <param name="uri"><see cref="Uri"/></param>
+        /// <param name="token">optional Bearer token</param>
+        /// <param name="content"><see cref="HttpContent"/></param>
+        /// <returns></returns>
+        public static HttpRequestMessage CreateRequest(HttpMethod method, Uri uri, string? token, HttpContent? content = null)
         {
             var message = new HttpRequestMessage(method, uri)
             {
@@ -39,9 +48,18 @@ namespace LinkedInApiClient
             if (token != null)
                 message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
+            //message.Headers.Add("X-Restli-Protocol-Version", "2.0.0");
+
             return message;
         }
 
+        /// <summary>
+        /// Send the HttRequestMessage and read the Response as a String if request was successful,
+        /// Otherwise the result will contain an HttpLinkedInError or incase of less unexpected exceptions it will be a LinkedInCaughtException
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public async Task<Result<LinkedInError, string>> ExecuteRequest(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             try
@@ -72,12 +90,19 @@ namespace LinkedInApiClient
               ex is HttpRequestException ||
               ex is JsonException)
             {
-                return Result.Fail(LinkedInHttpError.With(HttpStatusCode.BadRequest, ex.Message));
+                return Result.Fail(LinkedInCaughtException.Create($"A {request.Method.Method} request on [{request.RequestUri?.AbsoluteUri ?? "<uri is null>"}] failed.", ex));
             }
         }
 
-
-        public async Task<Result<LinkedInError, T>> ExecuteRequest<T>(HttpRequestMessage request, CancellationToken cancellationToken)
+        /// <summary>
+        /// Send the HttRequestMessage and read the Response as an object of type T when the request is successful,
+        /// otherwise the result will contain an HttpLinkedInError or incase of less unexpected exceptions it will be a LinkedInCaughtException
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="request"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<Result<LinkedInError, T?>> ExecuteRequest<T>(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             var response = await ExecuteRequest(request, cancellationToken);
             if (response.IsSuccess)
@@ -91,7 +116,7 @@ namespace LinkedInApiClient
             }
         }
 
-        public T ConvertTo<T>(string response)
+        private T? ConvertTo<T>(string response)
         {
             T result = default;
             if (result is JsonElement)
@@ -106,7 +131,7 @@ namespace LinkedInApiClient
             }
             else if (typeof(T).IsClass)
             {
-                result = JsonSerializer.Deserialize<T>(response);                
+                result = JsonSerializer.Deserialize<T>(response);
             }
             else
             {
@@ -116,28 +141,49 @@ namespace LinkedInApiClient
             return result;
         }
 
-        public static HttpContent FormData(IEnumerable<KeyValuePair<string, string>> data)
-            => new FormUrlEncodedContent(data);
+        /// <summary>
+        /// Create an FormUrlEncodedContent from a KeyValuePair collection with a non-nullable Key.
+        /// example Dictionary&lt;string,string?&gt;
+        /// <see cref="https://github.com/dotnet/runtime/issues/38494"/>
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static HttpContent FormData(IEnumerable<KeyValuePair<string, string?>> data)
+            => new FormUrlEncodedContent((IEnumerable<KeyValuePair<string?, string?>>)data);
 
+        /// <summary>
+        /// Send an HTTP Get request for the given query object, optionally authenticate using a Bearer token.
+        /// </summary>
+        /// <param name="token">Bearer token</param>
+        /// <param name="request">A LinkedIn Query object</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public Task<Result<LinkedInError, string>> GetAsync(string token, IBaseApiRequest request, CancellationToken cancellationToken)
         {
             var message = CreateRequest(HttpMethod.Get, request.HttpRequestUrl(), token);
             return ExecuteRequest(message, cancellationToken);
         }
 
-        public Task<Result<LinkedInError, TResponse>> GetAsync<TResponse>(string token, IBaseApiRequest request, CancellationToken cancellationToken)
+        /// <summary>
+        /// Send an HTTP Get request for the given query object, optionally authenticate using a Bearer token.
+        /// </summary>
+        /// <param name="token">Bearer token</param>
+        /// <param name="request">A LinkedIn Query object</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public Task<Result<LinkedInError, TResponse?>> GetAsync<TResponse>(string token, IBaseApiRequest request, CancellationToken cancellationToken)
         {
             var message = CreateRequest(HttpMethod.Get, request.HttpRequestUrl(), token);
             return ExecuteRequest<TResponse>(message, cancellationToken);
         }
 
-        public static HttpContent JsonContent(object content)
+        internal static HttpContent JsonContent(object content)
         {
-            var json = content is string ? (content as string) : JsonSerializer.Serialize(content);
+            var json = content is string str ? str : JsonSerializer.Serialize(content);
             return new StringContent(json, Encoding.UTF8, "application/json");
         }
 
-        public Task<Result<LinkedInError, RefreshAccessToken>> RefreshAccessToken(
+        public Task<Result<LinkedInError, RefreshAccessToken?>> RefreshAccessToken(
             Uri uri,
             string clientId,
             string secret,
@@ -149,7 +195,7 @@ namespace LinkedInApiClient
                 uri,
                 null,
                 FormData(
-                    new Dictionary<string, string>
+                    new Dictionary<string, string?>
                     {
                         ["grant_type"] = "refresh_token",
                         ["client_id"] = clientId,
@@ -160,7 +206,7 @@ namespace LinkedInApiClient
             return ExecuteRequest<RefreshAccessToken>(message, cancellationToken);
         }
 
-        public Task<Result<LinkedInError, AccessTokenResponse>> RequestAccessToken(
+        public Task<Result<LinkedInError, AccessTokenResponse?>> RequestAccessToken(
             Uri uri,
             string clientId,
             string secret,
@@ -171,7 +217,7 @@ namespace LinkedInApiClient
                 uri,
                 null,
                 FormData(
-                    new Dictionary<string, string>
+                    new Dictionary<string, string?>
                     {
                         ["grant_type"] = "client_credentials",
                         ["client_id"] = clientId,
@@ -190,11 +236,11 @@ namespace LinkedInApiClient
             CancellationToken cancellationToken)
         {
             var message = CreateRequest(
-               HttpMethod.Post,
+               HttpMethod.Get,
                uri,
                null,
                FormData(
-                   new Dictionary<string, string>
+                   new Dictionary<string, string?>
                    {
                        ["response_type"] = "code",
                        ["client_id"] = clientId,
@@ -204,6 +250,22 @@ namespace LinkedInApiClient
                    }));
 
             return ExecuteRequest<JsonElement>(message, cancellationToken);
+        }
+
+        protected void Dispose(bool disposing)
+        {
+            client?.Dispose();
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        ~LinkedInHttpClient()
+        {
+            Dispose(false);
         }
     }
 }

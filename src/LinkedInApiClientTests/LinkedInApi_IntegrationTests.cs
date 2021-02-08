@@ -1,5 +1,8 @@
 using System;
+using System.IO;
 using System.Net;
+using System.Net.Http;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -207,6 +210,7 @@ namespace LinkedInApiClientTests
                 CommonURN.OrganizationId("37246747")
                 );
 
+            
             var result = await SendRequest(message);
 
             if (!result.IsSuccess)
@@ -232,6 +236,12 @@ namespace LinkedInApiClientTests
 
         }
 
+        [TestMethod]
+        public async Task ClinetAuthRequest()
+        {
+            var req = await GetApiDataUsingHttpClientHandler();
+        }
+
         public async Task<Result<LinkedInError, T>> SendRequest<T>(ILinkedInRequest<T> request)
         {
             request.Validate();
@@ -241,6 +251,29 @@ namespace LinkedInApiClientTests
 
             var result = await request.Handle(tokenRegistry, client, CancellationToken.None);
             return result;
+        }
+
+        private async Task<JsonDocument> GetApiDataUsingHttpClientHandler()
+        {
+            var cert = new X509Certificate2(Path.Combine("D:\\Certificates\\", "SAWebHost.pfx"), "1234");
+            var handler = new HttpClientHandler();
+            handler.ClientCertificates.Add(cert);
+            var client = new HttpClient(handler);
+
+            var request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri("https://localhost:5011/api/fans/urn:fan:token:ad2c9a3e"),
+                Method = HttpMethod.Get,
+            };
+            var response = await client.SendAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var data = JsonDocument.Parse(responseContent);
+                return data;
+            }
+
+            throw new ApplicationException($"Status code: {response.StatusCode}, Error: {response.ReasonPhrase}");
         }
     }
 }

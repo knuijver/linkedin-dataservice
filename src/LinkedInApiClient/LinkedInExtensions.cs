@@ -30,7 +30,9 @@ namespace LinkedInApiClient
             }
 
             Validate((IBaseApiRequest)request);
-        }        
+        }
+
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         public static void Validate(this IBaseApiRequest request)
         {
             if (request.QueryParameters == null)
@@ -44,27 +46,12 @@ namespace LinkedInApiClient
             }
         }
 
-        //public static async Task<Result<LinkedInError, JsonElement>> Handle(this ILinkedInRequest request, IAccessTokenRegistry tokenRegistry, LinkedInHttpClient client, CancellationToken cancellationToken)
-        //{
-        //    var token = await tokenRegistry.AccessTokenAsync(request.TokenId, cancellationToken);
-        //    if (token.IsSuccess)
-        //    {
-        //        var result = await client.GetAsync(token.Data, request, cancellationToken).ConfigureAwait(false);
-        //        return result;
-        //    }
-        //    else
-        //    {
-        //        return Result.Fail(new LinkedInError(token.Error));
-        //    }
-        //}
-        public static async Task<Result<LinkedInError, T>> Handle<T>(this ILinkedInRequest<T> request, IAccessTokenRegistry tokenRegistry, LinkedInHttpClient client, CancellationToken cancellationToken)
+        public static async Task<Result<LinkedInError, T?>> Handle<T>(this ILinkedInRequest<T> request, IAccessTokenRegistry tokenRegistry, LinkedInHttpClient client, CancellationToken cancellationToken)
         {
             var token = await tokenRegistry.AccessTokenAsync(request.TokenId, cancellationToken);
             if (token.IsSuccess)
             {
-
-                var result = await client.GetAsync<T>(token.Data, request, cancellationToken).ConfigureAwait(false);
-                return result;
+                return await client.GetAsync<T>(token.Data, request, cancellationToken).ConfigureAwait(false);
             }
             else
             {
@@ -77,6 +64,7 @@ namespace LinkedInApiClient
             var json = element.GetRawText();
             return JsonSerializer.Deserialize<T>(json, options);
         }
+
         public static T? ToObject<T>(this JsonDocument document, JsonSerializerOptions? options = null)
         {
             var json = document.RootElement.GetRawText();

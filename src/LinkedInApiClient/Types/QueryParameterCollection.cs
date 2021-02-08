@@ -3,11 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
+#nullable enable
+
 namespace LinkedInApiClient.Types
 {
+    /// <summary>
+    /// URL query parameter collection
+    /// this is a Mutable collection but that may change in a future version to be immutable.
+    /// </summary>
     public class QueryParameterCollection : IEnumerable<KeyValuePair<string, string>>
     {
-        IDictionary<string, string> parameters;
+        private IDictionary<string, string> parameters;
 
         public static readonly QueryParameterCollection EmptyParameters = new QueryParameterCollection();
 
@@ -54,6 +60,12 @@ namespace LinkedInApiClient.Types
             return collection;
         }
 
+        /// <summary>
+        /// Adds all key, value pairs as querystring to the given URL.
+        /// We do not check for existing or duplicate keys on the given URL.
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
         public string ToUrlQueryString(string url) =>
             UrlHelper.AppendQueryToUrl(url, this.parameters);
 

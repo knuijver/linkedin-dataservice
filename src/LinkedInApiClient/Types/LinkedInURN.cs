@@ -4,6 +4,9 @@ using System.Text.Json.Serialization;
 
 namespace LinkedInApiClient.Types
 {
+    /// <summary>
+    /// Represents an URN string 'urn:{namespace}:{entity}:{id}'
+    /// </summary>
     [JsonConverter(typeof(LinkedInURNConverter))]
     public struct LinkedInURN
     {
@@ -46,6 +49,11 @@ namespace LinkedInApiClient.Types
             id = this.Id;
         }
 
+        /// <summary>
+        /// When parsing an URN string with an Invalid format it will, return a LinkedInURN with HasValue set to False.
+        /// </summary>
+        /// <param name="urn"></param>
+        /// <returns></returns>
         public static LinkedInURN Parse(string urn)
         {
             if (!string.IsNullOrWhiteSpace(urn))
@@ -61,11 +69,3 @@ namespace LinkedInApiClient.Types
         }
     }
 }
-/*
-urn:li:like:({personUrn},{activityUrn})	
-Like URN can be  translated here  using the V2 Activities API.
-Social Action API
-
-urn:li:organization:{id}	
-
-*/

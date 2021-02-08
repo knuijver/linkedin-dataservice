@@ -12,5 +12,9 @@ namespace LinkedInApiClient
 
         public Exception Exception { get; set; }
 
+        public static LinkedInError Create(string message, Exception caughtException)
+        {
+            return new LinkedInCaughtException(message, caughtException);
+        }
     }
 }

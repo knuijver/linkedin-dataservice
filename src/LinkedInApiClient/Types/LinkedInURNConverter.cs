@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 
 namespace LinkedInApiClient.Types
 {
+    /// <summary>
+    /// Convert between URN and Json when using System.Text.Json serialization.
+    /// Converter can be used as an Attribute on type definition of value members.
+    /// </summary>
     public class LinkedInURNConverter : JsonConverter<LinkedInURN>
     {
         public override LinkedInURN Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

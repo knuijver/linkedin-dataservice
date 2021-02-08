@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.Kestrel.Https;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace SAWebHost
@@ -20,7 +23,18 @@ namespace SAWebHost
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    webBuilder.UseStartup<Startup>()
+                        .ConfigureKestrel(options=> {
+                            options.ConfigureHttpsDefaults(opt =>
+                            {
+                                //opt.AllowAnyClientCertificate();
+                                //opt.ClientCertificateValidation = ValidateCert;
+                                opt.ClientCertificateMode = ClientCertificateMode.AllowCertificate;
+                            });
+                        });
                 });
+
+        static bool ValidateCert(X509Certificate2 cert, X509Chain chain, SslPolicyErrors ssl)
+            => true;
     }
 }
