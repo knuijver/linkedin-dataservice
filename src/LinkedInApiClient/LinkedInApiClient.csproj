@@ -15,10 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="LI-In-Bug.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
+    <None Include="LI-In-Bug.png" Pack="true" PackagePath="" />
   </ItemGroup>
 
 </Project>
