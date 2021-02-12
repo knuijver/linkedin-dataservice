@@ -7,13 +7,22 @@ using System.Threading.Tasks;
 
 namespace LinkedInApiClient.UseCases.Shares
 {
+    /// <summary>
+    /// https://docs.microsoft.com/nl-nl/linkedin/marketing/integrations/community-management/shares/share-api#look-up-share-by-id
+    /// </summary>
     public class LookUpShareById : ILinkedInRequest
     {
-        public LookUpShareById(string tokenId, LinkedInURN shareId, QueryParameterCollection queryParameters)
+        public LookUpShareById(string tokenId, LinkedInURN shareId)
         {
+            if (!new[] { "share", "ugcPost", "comment" }.Contains(shareId.EntityType))
+                throw new ArgumentException($"{nameof(shareId)} has an invalid URN Type (shareUrn|ugcPostUrn|commentUrn)", nameof(shareId));
+
             TokenId = tokenId;
-            Url = $"shares/{shareId.UrlEncode()}";
-            QueryParameters = queryParameters;
+            Url = $"shares/{shareId.Id}";
+            QueryParameters = new QueryParameterCollection
+            {
+                ["projections"] = "(*,created(*,actor~(localizedLastName,localizedFirstName,vanityName,localizedHeadline)))"
+            };
         }
 
         public string TokenId { get; }
