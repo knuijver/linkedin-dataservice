@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
@@ -58,13 +60,28 @@ namespace LinkedInApiClient.Types
         {
             if (!string.IsNullOrWhiteSpace(urn))
             {
-                var parts = urn.Split(":");
-                if (parts[0] == "urn" && parts.Length >= 3)
+                var parts = new string[4];
+                var count = 0;
+                while (count <= parts.Length || urn.Length <= 0)
+                {
+                    var pos = urn.IndexOf(':');
+                    if (pos > 0 && urn[0] != '(')
+                    {
+                        parts[count++] = urn.Substring(0, pos);
+                        urn = urn.Substring(++pos);
+                    }
+                    else
+                    {
+                        parts[count++] = urn;
+                        break;
+                    }
+                };
+
+                if (parts[0] == "urn")
                 {
                     return new LinkedInURN(parts[1], parts[2], parts[3]);
                 }
             }
-
             return new LinkedInURN();
         }
     }
