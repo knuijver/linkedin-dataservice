@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Moq.Protected;
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http;
@@ -27,6 +28,42 @@ namespace LinkedInApiClientTests
             {
                 Assert.Fail($"{nameof(LinkedInConstants.DefaultTokenEndpoint)} is not defined as an Absolute Url");
             }
+        }
+
+        [TestMethod]
+        public void UrnParsing_StringMustStartWith_urn()
+        {
+            var urn = LinkedInURN.Parse("urn:li:share:384576");
+
+            Assert.IsTrue(urn.HasValue);
+
+            Assert.AreEqual("li", urn.Namespace);
+            Assert.AreEqual("share", urn.EntityType);
+            Assert.AreEqual("384576", urn.Id);            
+        }
+
+        [TestMethod]
+        public void UrnParsing_CanExcept_NestedIdSegment()
+        {
+            var urn = LinkedInURN.Parse("urn:li:like:(urn:li:person:y635rRy2m3,urn:li:activity:6762019589283995648)");
+
+            Assert.IsTrue(urn.HasValue);
+
+            Assert.AreEqual("li", urn.Namespace);
+            Assert.AreEqual("like", urn.EntityType);
+            Assert.AreEqual("(urn:li:person:y635rRy2m3,urn:li:activity:6762019589283995648)", urn.Id);
+        }
+
+        [TestMethod]
+        public void UrnParsing_CanExctract_References()
+        {
+            var urn = LinkedInURN.Parse("urn:li:like:(urn:li:person:y635rRy2m3,urn:li:activity:6762019589283995648)");
+
+            Assert.IsTrue(urn.HasReferences());
+
+            var refs = urn.IdReferences().ToArray();
+
+            Assert.AreEqual(2, refs.Length);
         }
 
         [TestMethod]

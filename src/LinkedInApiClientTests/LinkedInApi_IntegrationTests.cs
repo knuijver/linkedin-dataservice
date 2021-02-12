@@ -14,13 +14,14 @@ using LinkedInApiClient.UseCases.CareerPageStatistics;
 using LinkedInApiClient.UseCases.EmailAddress;
 using LinkedInApiClient.UseCases.Organizations;
 using LinkedInApiClient.UseCases.Shares;
+using LinkedInApiClient.UseCases.Social;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LinkedInApiClientTests
 {
     [TestClass]
     [TestCategory("Integration Tests")]
-    [Ignore("Only run in dev env. may require new AccessTokens")]
+    //[Ignore("Only run in dev env. may require new AccessTokens")]
     public class LinkedInApi_IntegrationTests
     {
         [TestMethod]
@@ -110,6 +111,19 @@ namespace LinkedInApiClientTests
             if (!result.IsSuccess) Assert.Fail(result.Error.Message);
         }
 
+        [TestMethod]
+        public async Task RetrieveLikesOnShares()
+        {
+            var message = new RetrieveLikesOnShares(
+                DummyTokenRegistry.ValidTokenId,
+                CommonURN.Share("6762019588700987393")
+                );
+
+            var result = await SendRequest(message);
+
+            if (!result.IsSuccess) Assert.Fail(result.Error.Message);
+        }
+
 
         [TestMethod]
         public async Task RetrieveAnAdministeredOrganization()
@@ -155,8 +169,7 @@ namespace LinkedInApiClientTests
         {
             var message = new LookUpShareById(
                 DummyTokenRegistry.ValidTokenId,
-                CommonURN.Share("123"),
-                QueryParameterCollection.EmptyParameters);
+                CommonURN.Share("123"));
 
             var result = await SendRequest(message);
 

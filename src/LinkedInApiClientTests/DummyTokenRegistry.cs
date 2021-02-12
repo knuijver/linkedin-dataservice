@@ -23,9 +23,9 @@ namespace LinkedInApiClientTests
         public static TokenRegisterEntry TokenEntry = new TokenRegisterEntry
         {
             TokenId = null,
-            AccessToken = "AQVqLUHWoWdJd-aWrtU1g4I-97jrWJjvTj2206Eeo7nmWuwhM_HzD0TfCZI-xTewEdUiQZwLI11Tbg8_0J_vDoj_SZWN2EmvrGLB2bHQFVQrfSoMSq7IEyMRy4HAQtRXFTFw2guxT3ZR7tTbqcXxivq0P7L_wLCJOmtLCgTiShGhVyecAKFQ9zPj5uzV6ZEyRq5qyzf-djg8BsZi6_ahtGk8udqDnx9CJfYd1nS8U7rE0UN1-Vk-jYMzmrWP49Qwf-xbAIgljndpnZvbNx9DMzIjfr3T2ozvIpVHTJud-tX1khd1Paa9IOy2qHaOg40tH93ecLhJi51KEPc1trqM6E-v6641Ng",
+            AccessToken = "AQUFVymZgoizQFo51Mg-XRCfLKm_nqVOjhc3nrlaO73FEZ60ZECUw7aheQzraeUcNA1szOJec6lQWFWfmt-U-5Br55CGd1ZkmQDQvmlHxL0jiJmJLmz8xn-Do0jHuB7YTqj1zJPICqycSm835u0yIOuokwWECl9HDA2q6W4xbffz54-zIQ_JazAdyhT5Be4HsZQEaMOhB2Zmr11bJpqyOV1a6N64AZGnubQfWLwoTlhwvPJJMy604xWloteV9hWEXzVKDTBLVJfh4-q3h5KbvmfT6sBk1YYGVVaWNRjT8BXiW8QjeQRPNi-KR1Usr5JV2H1UeUG3QMfGLF6aqOAqkWKG3TTUAg",
             ExpiresIn = 5183999,
-            RefreshToken = "AQUy42CZFN51U4HGFbtPPsKrpD-m8B1W6ptUWhgmPhRJAf5-8bIYdBqxXwX-9cOiNcg91mfecFIIS6jjfQmHTYFVtf725XO1K499FG0dKJdx225JOTOtS8tywYMsurVwB6Z0BNthVhsb7DbEFNLRT0mFK9e5GMQ3edxVMBDS16snVPGCmzW_UrbacKGitQhaLt8DPC-DBviCxFCkshPCnSu1y7XPDhNiWQn-6h01mIU9L7t9L8N34q1NJ4UAGXMtrZa8Q9qF6umDzPfSbJS4JnAclkGmXkgZsCYU2O5hggsu6SVjJ7VBVJkUkg8HsaBi1cTtJSQ-0tqiUiwqm517xmrSlvd-bQ",
+            RefreshToken = "AQXLYQ8lXhOInpLwcnnXGJbxxO1j6moIbKQFr1vbA6vA51NFgPBnQDmSmGA46QDUFBrPfR5En3Ypk6fSbWwS9D39eqqjPkZbZ8Z-cBTGWASD6gnla4Fp-i8mda6G3SDzSHvC13csCMx1pkfdicu1E3SABX98J7UNSTqGLpOOoL7DBkm9vSNtDEOOSmHrBG6NeptqFWGG4ozLA1bRwd2ZhlmjKf1krF51D1NuT8NeGchwNTit0MvWnLayJWk8_Zq8J8HJOrcDvfuAnca_yrtSqTaHia5aZyBvTDtBp5Xm9Kos5KK4TE_U6hSSsLhuTUUWzt88CFfpKiPAigeHZiZDGbIY5Ce1MA",
             RefreshTokenExpiresIn = 31535999,
             TokenType = null
         };
