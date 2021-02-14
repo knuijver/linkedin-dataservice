@@ -23,7 +23,7 @@ namespace LinkedInApiClient.UseCases.Organizations
                 ["q"] = "owners",
                 ["owners"] = organizationUrn,
                 ["sharesPerOwner"] = "1000",
-                ["projection"] = "(elements*(*,created(*,actor~(localizedLastName,localizedFirstName,vanityName,localizedHeadline))))"
+                ["projection"] = "(*,elements*(*,created(*,actor~(localizedLastName,localizedFirstName,vanityName,localizedHeadline))))"
             };
         }
 

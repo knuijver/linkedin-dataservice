@@ -15,7 +15,7 @@ namespace LinkedInApiClient.UseCases.EmailAddress
         public QueryParameterCollection QueryParameters { get; } = new QueryParameterCollection
         {
             ["q"] = "members",
-            ["projection"] = "(elements*(handle~))"
+            ["projection"] = "(*,elements*(handle~))"
         };
 
         public string TokenId { get; }

@@ -24,7 +24,7 @@ namespace LinkedInApiClient.UseCases.AccessControl
                 ["organization"] = organizationUrn,
                 ["role"] = "ADMINISTRATOR", // Limit results to specific roles, such as ADMINISTRATOR or DIRECT_SPONSORED_CONTENT_POSTER
                 ["state"] = "APPROVED", // Limit results to specific role states, such as APPROVED or REQUESTED.
-                ["projection"] = "(elements*(*,roleAssignee~(localizedFirstName, localizedLastName), organization~(localizedName)))"
+                ["projection"] = "(*,elements*(*,roleAssignee~(localizedFirstName, localizedLastName), organization~(localizedName)))"
             };
         }
 

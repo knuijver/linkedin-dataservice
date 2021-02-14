@@ -33,45 +33,4 @@ namespace LinkedInApiClient.UseCases.Social
         public string Url { get; }
         public QueryParameterCollection QueryParameters { get; }
     }
-
-
-    public class LikesOnShares
-    {
-        [JsonPropertyName("actor")]
-        public LinkedInURN ActorUrn { get; set; }
-
-        [JsonPropertyName("actor~")]
-        public Actor Actor { get; set; }
-
-        [JsonPropertyName("created")]
-        public Created Created { get; set; }
-
-        [JsonPropertyName("lastModified")]
-        public Lastmodified LastModified { get; set; }
-
-        [JsonPropertyName("$URN")]
-        public LinkedInURN LikeUrn { get; set; }
-
-        [JsonPropertyName("object")]
-        public LinkedInURN ObjectUrn { get; set; }
-    }
-
-    public class Created
-    {
-        [JsonPropertyName("actor")]
-        public LinkedInURN ActorUrn { get; set; }
-
-        [JsonPropertyName("time")]
-        public long Time { get; set; }
-    }
-
-    public class Lastmodified
-    {
-        [JsonPropertyName("actor")]
-        public LinkedInURN ActorUrn { get; set; }
-
-        [JsonPropertyName("time")]
-        public long Time { get; set; }
-    }
-
 }

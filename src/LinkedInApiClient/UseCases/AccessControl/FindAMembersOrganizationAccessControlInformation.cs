@@ -22,7 +22,7 @@ namespace LinkedInApiClient.UseCases.AccessControl
             QueryParameters = new QueryParameterCollection
             {
                 ["q"] = "roleAssignee",
-                ["projection"] = "(elements*(*,roleAssignee~(localizedFirstName, localizedLastName), organization~(localizedName)))"
+                ["projection"] = "(*,elements*(*,roleAssignee~(localizedFirstName, localizedLastName), organization~(localizedName)))"
             };
         }
 

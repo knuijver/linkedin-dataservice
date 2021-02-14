@@ -11,4 +11,14 @@ namespace LinkedInApiClient.UseCases.Models
         [JsonPropertyName("paging")]
         public Paging Paging { get; set; }
     }
+
+    public static class PaginationExtensions
+    {
+        public static ILinkedInRequest<TElement> NextPageRequest<TElement>(this PagedResponse<TElement> model, ILinkedInRequest<TElement> request)
+        {
+            var next = model.Paging.Start + model.Paging.Count;
+            request.QueryParameters["start"] = next.ToString();
+            return request;
+        }
+    }
 }
