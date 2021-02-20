@@ -18,4 +18,8 @@
     <None Include="LI-In-Bug.png" Pack="true" PackagePath="" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="NewFolder\" />
+  </ItemGroup>
+
 </Project>

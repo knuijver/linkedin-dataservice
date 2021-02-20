@@ -13,7 +13,7 @@ namespace LinkedInApiClient.UseCases.AccessControl
     /// https://docs.microsoft.com/en-us/linkedin/marketing/integrations/community-management/organizations/organization-access-control#find-a-members-organization-access-control-information
     /// Projection: https://docs.microsoft.com/en-us/linkedin/shared/api-guide/concepts/projections?context=linkedin/marketing/context
     /// </summary>
-    public class FindAMembersOrganizationAccessControlInformation : ILinkedInRequest<PagedResponse<OrganizationRoleEntry>>
+    public class FindAMembersOrganizationAccessControlInformation : ILinkedInRequest<Paged<OrganizationRoleEntry>>
     {
         public FindAMembersOrganizationAccessControlInformation(string tokenId)
         {

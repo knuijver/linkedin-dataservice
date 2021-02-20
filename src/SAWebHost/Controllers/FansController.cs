@@ -13,8 +13,8 @@ using System.Threading.Tasks;
 
 namespace SAWebHost.Controllers
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    //[Authorize("JwtBearer")]
+    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize("JwtBearer")]
     [Route("api/[controller]")]
     [ApiController]
     public class FansController : ControllerBase

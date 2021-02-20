@@ -31,6 +31,15 @@ namespace LinkedInApiClientTests
         }
 
         [TestMethod]
+        public void URNEncoding_For_RestLi_V2()
+        {
+            var urn = CommonURN.OrganizationId("37246747");
+            var encoded = urn.UrlEncode();
+
+            Assert.AreEqual("urn%3Ali%3Aorganization%3A37246747", encoded);
+        }
+
+        [TestMethod]
         public void UrnParsing_StringMustStartWith_urn()
         {
             var urn = LinkedInURN.Parse("urn:li:share:384576");
@@ -39,7 +48,7 @@ namespace LinkedInApiClientTests
 
             Assert.AreEqual("li", urn.Namespace);
             Assert.AreEqual("share", urn.EntityType);
-            Assert.AreEqual("384576", urn.Id);            
+            Assert.AreEqual("384576", urn.Id);
         }
 
         [TestMethod]
@@ -55,7 +64,7 @@ namespace LinkedInApiClientTests
         }
 
         [TestMethod]
-        public void UrnParsing_CanExctract_References()
+        public void UrnParsing_CanExtract_References()
         {
             var urn = LinkedInURN.Parse("urn:li:like:(urn:li:person:y635rRy2m3,urn:li:activity:6762019589283995648)");
 
@@ -64,6 +73,34 @@ namespace LinkedInApiClientTests
             var refs = urn.IdReferences().ToArray();
 
             Assert.AreEqual(2, refs.Length);
+        }
+
+        [TestMethod]
+        public async Task IEJ()
+        {
+            
+            var result = await LinkedIn.FindOrganizationAdministrators(
+                DummyTokenRegistry.ValidTokenId,
+                CommonURN.OrganizationId("334345345"))
+                .Handle(DummyTokenRegistry.Create(), new LinkedInHttpClient(), CancellationToken.None);
+
+            result
+                .IfHttpError(err =>
+                {
+
+                })
+                .IfTokenFailure(err =>
+                {
+
+                })
+                .IfException(err =>
+                {
+
+                });
+
+            if (result.IsSuccess)
+            {
+            }
         }
 
         [TestMethod]

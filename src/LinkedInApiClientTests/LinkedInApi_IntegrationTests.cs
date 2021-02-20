@@ -34,12 +34,17 @@ namespace LinkedInApiClientTests
         }
 
         [TestMethod]
-        public void URNEncoding()
+        public async Task RetrieveAllFunctions()
         {
-            var urn = CommonURN.OrganizationId("37246747");
-            var encoded = urn.UrlEncode();
+            var message = LinkedIn.Standardized.AllFunctions(DummyTokenRegistry.ValidTokenId);
 
-            Assert.AreEqual("urn%3Ali%3Aorganization%3A37246747", encoded);
+            var result = await SendRequest(message);
+
+            if (!result.IsSuccess) Assert.Fail(result.Error.Message);
+
+            var function = result.Data.Elements[^5];
+            string functionName = function.Name;
+            Console.WriteLine($"URN: {function.FunctionURN} = {functionName}");
         }
 
         [TestMethod]
@@ -223,7 +228,7 @@ namespace LinkedInApiClientTests
                 CommonURN.OrganizationId("37246747")
                 );
 
-            
+
             var result = await SendRequest(message);
 
             if (!result.IsSuccess)

@@ -18,7 +18,7 @@ namespace LinkedInApiClient.UseCases.Social
         public Created Created { get; set; }
 
         [JsonPropertyName("lastModified")]
-        public Lastmodified LastModified { get; set; }
+        public LastModified LastModified { get; set; }
 
         [JsonPropertyName("$URN")]
         public LinkedInURN LikeUrn { get; set; }

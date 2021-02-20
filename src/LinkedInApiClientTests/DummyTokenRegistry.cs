@@ -30,19 +30,24 @@ namespace LinkedInApiClientTests
             TokenType = null
         };
 
-        public Task<Result<string, string>> AccessTokenAsync(string tokenId, CancellationToken cancellationToken)
+        public Task<Result<TokenFailure, string>> AccessTokenAsync(string tokenId, CancellationToken cancellationToken)
         {
             if (ValidTokenId == tokenId)
-                return Task.FromResult<Result<string, string>>(Result.Success(TokenEntry.AccessToken));
+                return Task.FromResult<Result<TokenFailure, string>>(Result.Success(TokenEntry.AccessToken));
             else
-                return Task.FromResult<Result<string, string>>(Result.Fail($"Invalid token id [{tokenId}]"));
+                return Task.FromResult<Result<TokenFailure, string>>(Result.Fail(TokenFailure.Why("AccessToken", $"Invalid token id [{tokenId}]")));
         }
 
-        public Task<Result<string, string>> UpdateAccessTokenAsync(string tokenId, string accessToken, string expiresIn, string refreshToken, CancellationToken cancellationToken)
+        public Task<Result<TokenFailure, string>> UpdateAccessTokenAsync(string tokenId, string accessToken, string expiresIn, string refreshToken, CancellationToken cancellationToken)
         {
-            return Task.FromResult<Result<string, string>>(Result.Success(string.Empty));
+            return Task.FromResult<Result<TokenFailure, string>>(Result.Success(string.Empty));
         }
 
         public static IAccessTokenRegistry Create() => new DummyTokenRegistry();
+
+        public Task<Result<TokenFailure, ValueTuple>> RefreshTokenAsync(string tokenId, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

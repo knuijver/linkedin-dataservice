@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace LinkedInApiClient.UseCases.Organizations
 {
-    public class OrganizationShares : ILinkedInRequest<PagedResponse<OrganizationShare>>
+    public class OrganizationShares : ILinkedInRequest<Paged<OrganizationShare>>
     {
         public OrganizationShares(string tokenId, LinkedInURN organizationUrn)
         {

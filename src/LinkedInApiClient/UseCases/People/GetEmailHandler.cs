@@ -26,7 +26,7 @@ namespace LinkedInApiClient.UseCases.EmailAddress
             }
             else
             {
-                return Result.Fail(new LinkedInError(token.Error));
+                return Result.Fail(LinkedInAccessTokenError.Create(token.Error));
             }
         }
     }

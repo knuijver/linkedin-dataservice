@@ -9,7 +9,7 @@ namespace LinkedInApiClient.UseCases.Social
     /// <summary>
     /// https://docs.microsoft.com/nl-nl/linkedin/marketing/integrations/community-management/shares/network-update-social-actions#retrieve-likes-on-shares
     /// </summary>
-    public class RetrieveLikesOnShares : ILinkedInRequest<PagedResponse<LikesOnShares>>
+    public class RetrieveLikesOnShares : ILinkedInRequest<Paged<LikesOnShares>>
     {
         /// <summary>
         /// 

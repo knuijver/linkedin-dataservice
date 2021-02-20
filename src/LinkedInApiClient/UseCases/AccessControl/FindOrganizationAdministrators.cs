@@ -9,7 +9,7 @@ namespace LinkedInApiClient.UseCases.AccessControl
     /// https://docs.microsoft.com/en-us/linkedin/marketing/integrations/community-management/organizations/organization-access-control#find-organization-administrators
     /// Projection: https://docs.microsoft.com/en-us/linkedin/shared/api-guide/concepts/projections?context=linkedin/marketing/context
     /// </summary>
-    public class FindOrganizationAdministrators : ILinkedInRequest<PagedResponse<OrganizationRoleEntry>>
+    public class FindOrganizationAdministrators : ILinkedInRequest<Paged<OrganizationRoleEntry>>
     {
         public FindOrganizationAdministrators(string tokenId, LinkedInURN organizationUrn)
         {

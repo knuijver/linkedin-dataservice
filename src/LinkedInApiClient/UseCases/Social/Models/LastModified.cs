@@ -5,7 +5,7 @@ using LinkedInApiClient.Types;
 
 namespace LinkedInApiClient.UseCases.Social
 {
-    public class Lastmodified
+    public class LastModified
     {
         [JsonPropertyName("actor")]
         public LinkedInURN ActorUrn { get; set; }

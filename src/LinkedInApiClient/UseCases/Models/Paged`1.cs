@@ -3,10 +3,10 @@ using System.Text.Json.Serialization;
 
 namespace LinkedInApiClient.UseCases.Models
 {
-    public class PagedResponse<TElement>
+    public class Paged<TElement>
     {
         [JsonPropertyName("elements")]
-        public ICollection<TElement> Elements { get; set; }
+        public IReadOnlyList<TElement> Elements { get; set; }
 
         [JsonPropertyName("paging")]
         public Paging Paging { get; set; }
@@ -14,7 +14,7 @@ namespace LinkedInApiClient.UseCases.Models
 
     public static class PaginationExtensions
     {
-        public static ILinkedInRequest<TElement> NextPageRequest<TElement>(this PagedResponse<TElement> model, ILinkedInRequest<TElement> request)
+        public static ILinkedInRequest<TElement> NextPageRequest<TElement>(this Paged<TElement> model, ILinkedInRequest<TElement> request)
         {
             var next = model.Paging.Start + model.Paging.Count;
             request.QueryParameters["start"] = next.ToString();

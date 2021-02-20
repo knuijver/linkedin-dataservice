@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+//using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -63,28 +64,40 @@ namespace SAWebHost
 
             services.AddAuthentication()
                 .AddCookie()
-                //.AddIdentityServerAuthentication()
-                .AddJwtBearer(options =>
+                .AddIdentityServerAuthentication("Bearer", options =>
+                {                    
+                    options.Authority = Configuration["Identity:Authority"];
+                    //options.RequireHttpsMetadata = Environment.is;
+
+                    options.ApiName = Configuration["Identity:ApiName"];
+                    options.ApiSecret = Configuration["Identity:ApiSecret"];
+
+                    options.EnableCaching = true;
+                    options.CacheDuration = TimeSpan.FromMinutes(10);
+                });
+            //.AddJwtBearer(options =>
+            //{
+            //    options.TokenValidationParameters = new TokenValidationParameters
+            //    {
+            //        ValidateIssuer = false,
+            //        ValidateAudience = false,
+            //        ValidateLifetime = true,
+            //        ValidateIssuerSigningKey = true,
+            //        ValidIssuer = Configuration["JwtAuth:Issuer"],
+            //        ValidAudience = Configuration["JwtAuth:Audience"],
+            //        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtAuth:Secret"]))
+            //    };
+            //});
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("JwtBearer", policy =>
                 {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = false,
-                        ValidateAudience = false,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidIssuer = Configuration["JwtAuth:Issuer"],
-                        ValidAudience = Configuration["JwtAuth:Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtAuth:Secret"]))
-                    };
+                    policy.AddAuthenticationSchemes("Bearer");
+                    policy.RequireScope("read");
                 });
 
-            //services.AddAuthorization(options =>
-            //{
-            //    options.AddPolicy("JwtBearer", policy =>
-            //    {
-            //        policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
-            //    });
-            //});
+            }).AddAuthorizationPolicyEvaluator();
 
             //CertificateAuthentication(services);
 
