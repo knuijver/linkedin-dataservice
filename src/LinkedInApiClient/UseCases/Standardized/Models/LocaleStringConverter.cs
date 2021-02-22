@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LinkedInApiClient.Types;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
@@ -8,30 +9,36 @@ using System.Text.Json.Serialization;
 
 namespace LinkedInApiClient.UseCases.Standardized
 {
-    public class NameValuePairConverter : JsonConverter<IDictionary<string, string?>>
+    public class LocaleStringConverter : JsonConverter<LocaleString>
     {
-        public override IDictionary<string, string?> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override LocaleString Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             if (reader.TokenType != JsonTokenType.StartObject)
             {
                 throw new JsonException();
             }
 
-            var result = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
+            LocaleString localeString = new LocaleString();
             while (reader.Read())
             {
                 if (reader.TokenType == JsonTokenType.EndObject)
                 {
-                    return result;
+                    return localeString;
                 }
 
                 if (reader.TokenType == JsonTokenType.PropertyName)
                 {
                     var propertyName = reader.GetString();
                     if (string.IsNullOrWhiteSpace(propertyName)) throw new ArgumentException("field names can't be empty");
+                    var parts = propertyName.Split('_');
+                    localeString.Locale = new Locale()
+                    {
+                        Language = parts[0],
+                        Country = parts[1]
+                    };
 
                     reader.Read();
-                    result[propertyName] = reader.GetString();
+                    localeString.Value = reader.GetString();
                 }
                 else
                 {
@@ -42,14 +49,11 @@ namespace LinkedInApiClient.UseCases.Standardized
             throw new JsonException();
         }
 
-        public override void Write(Utf8JsonWriter writer, IDictionary<string, string?> value, JsonSerializerOptions options)
+        public override void Write(Utf8JsonWriter writer, LocaleString value, JsonSerializerOptions options)
         {
             writer.WriteStartObject();
 
-            foreach (var item in value)
-            {
-                writer.WriteString(item.Key, item.Value);
-            }
+            writer.WriteString(value.Locale.ToString(), value.Value);
 
             writer.WriteEndObject();
         }

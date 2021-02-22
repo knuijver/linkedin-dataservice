@@ -8,14 +8,16 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
+#nullable enable
+
 namespace LinkedInApiClient.UseCases.Standardized
 {
     /// <summary>
     /// https://docs.microsoft.com/nl-nl/linkedin/shared/references/v2/standardized-data/functions#get_all
     /// </summary>
-    public class AllFunctions : ILinkedInRequest<Paged<JobsFunction>>
+    public class GetAllFunctions : ILinkedInRequest<Paged<JobsFunction>>
     {
-        public AllFunctions(string tokenId, string? localeString = null)
+        public GetAllFunctions(string tokenId, string? localeString = null)
         {
             TokenId = tokenId;
             Url = "functions";

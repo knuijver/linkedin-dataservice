@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -21,7 +22,7 @@ namespace LinkedInApiClientTests
 {
     [TestClass]
     [TestCategory("Integration Tests")]
-    [Ignore("Only run in dev env. may require new AccessTokens")]
+   [Ignore("Only run in dev env. may require new AccessTokens")]
     public class LinkedInApi_IntegrationTests
     {
         [TestMethod]
@@ -36,7 +37,9 @@ namespace LinkedInApiClientTests
         [TestMethod]
         public async Task RetrieveAllFunctions()
         {
-            var message = LinkedIn.Standardized.AllFunctions(DummyTokenRegistry.ValidTokenId);
+            var message = LinkedIn.Standardized.AllFunctions(
+                DummyTokenRegistry.ValidTokenId, 
+                Locale.From(new CultureInfo("nl-NL")));
 
             var result = await SendRequest(message);
 
@@ -45,6 +48,16 @@ namespace LinkedInApiClientTests
             var function = result.Data.Elements[^5];
             string functionName = function.Name;
             Console.WriteLine($"URN: {function.FunctionURN} = {functionName}");
+        }
+
+        [TestMethod]
+        public async Task RetrieveAllCountries()
+        {
+            var message = LinkedIn.Standardized.GetAllCountries(DummyTokenRegistry.ValidTokenId, Locale.Default);
+
+            var result = await SendRequest(message);
+
+            if (!result.IsSuccess) Assert.Fail(result.Error.Message);
         }
 
         [TestMethod]

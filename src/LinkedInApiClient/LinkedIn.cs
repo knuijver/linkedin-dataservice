@@ -30,10 +30,17 @@ namespace LinkedInApiClient
 
         public static class Standardized
         {
-            public static AllFunctions AllFunctions(string tokenId)
-            {
-                return new AllFunctions(tokenId);
-            }
+            public static GetAllFunctions AllFunctions(string tokenId, Locale locale)
+                => new GetAllFunctions(tokenId, locale.ToString());
+
+            public static GetAllCountries GetAllCountries(string tokenId, Locale locale)
+                => new GetAllCountries(tokenId, locale);
+
+            public static GetAllCountryGroups GetAllCountryGroups(string tokenId, Locale locale)
+                => new GetAllCountryGroups(tokenId, locale);
+
+            public static GetAllSeniorities GetAllSeniorities(string tokenId, Locale locale)
+                => new GetAllSeniorities(tokenId, locale);
         }
     }
 }
