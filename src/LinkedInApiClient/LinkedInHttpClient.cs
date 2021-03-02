@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using LinkedInApiClient.Messages;
 
 #nullable enable
 
@@ -25,7 +26,7 @@ namespace LinkedInApiClient
         public LinkedInHttpClient(HttpMessageHandler handler)
         {
             this.client = new HttpClient(handler);
-            this.client.BaseAddress = new Uri(LinkedInConstants.DefaultBaseUrl, UriKind.Absolute);
+            this.client.UseDefaultLinkedInBaseUrl();
             this.client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
@@ -37,9 +38,9 @@ namespace LinkedInApiClient
         /// <param name="token">optional Bearer token</param>
         /// <param name="content"><see cref="HttpContent"/></param>
         /// <returns></returns>
-        public static HttpRequestMessage CreateRequest(HttpMethod method, Uri uri, string? token, HttpContent? content = null)
+        public static LinkedInRequest CreateRequest(HttpMethod method, Uri uri, string? token, HttpContent? content = null)
         {
-            var message = new HttpRequestMessage(method, uri)
+            var message = new LinkedInRequest(method, uri)
             {
                 Content = content,
                 Version = new Version(2, 0),
@@ -143,25 +144,17 @@ namespace LinkedInApiClient
         }
 
         /// <summary>
-        /// Create an FormUrlEncodedContent from a KeyValuePair collection with a non-nullable Key.
-        /// example Dictionary&lt;string,string?&gt;
-        /// <see cref="https://github.com/dotnet/runtime/issues/38494"/>
-        /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        public static HttpContent FormData(IEnumerable<KeyValuePair<string, string?>> data)
-            => new FormUrlEncodedContent((IEnumerable<KeyValuePair<string?, string?>>)data);
-
-        /// <summary>
         /// Send an HTTP Get request for the given query object, optionally authenticate using a Bearer token.
         /// </summary>
         /// <param name="token">Bearer token</param>
         /// <param name="request">A LinkedIn Query object</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public Task<Result<LinkedInError, string>> GetAsync(string token, IBaseApiRequest request, CancellationToken cancellationToken)
+        public Task<Result<LinkedInError, string>> GetAsync(string token, LinkedInRequest request, CancellationToken cancellationToken)
         {
-            var message = CreateRequest(HttpMethod.Get, request.HttpRequestUrl(), token);
+            request.Method = HttpMethod.Get;
+            request.Prepare();
+
             return ExecuteRequest(message, cancellationToken);
         }
 
@@ -172,16 +165,12 @@ namespace LinkedInApiClient
         /// <param name="request">A LinkedIn Query object</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public Task<Result<LinkedInError, TResponse?>> GetAsync<TResponse>(string token, IBaseApiRequest request, CancellationToken cancellationToken)
+        public Task<Result<LinkedInError, TResponse?>> GetAsync<TResponse>(string token, LinkedInRequest request, CancellationToken cancellationToken)
         {
-            var message = CreateRequest(HttpMethod.Get, request.HttpRequestUrl(), token);
-            return ExecuteRequest<TResponse>(message, cancellationToken);
-        }
+            request.Method = HttpMethod.Get;
+            request.Prepare();
 
-        internal static HttpContent JsonContent(object content)
-        {
-            var json = content is string str ? str : JsonSerializer.Serialize(content);
-            return new StringContent(json, Encoding.UTF8, "application/json");
+            return ExecuteRequest<TResponse>(message, cancellationToken);
         }
 
         public Task<Result<LinkedInError, RefreshAccessToken?>> RefreshAccessToken(
@@ -195,7 +184,7 @@ namespace LinkedInApiClient
                 HttpMethod.Post,
                 uri,
                 null,
-                FormData(
+                ContentHelpers.FormData(
                     new Dictionary<string, string?>
                     {
                         ["grant_type"] = "refresh_token",
@@ -217,7 +206,7 @@ namespace LinkedInApiClient
                 HttpMethod.Post,
                 uri,
                 null,
-                FormData(
+                ContentHelpers.FormData(
                     new Dictionary<string, string?>
                     {
                         ["grant_type"] = "client_credentials",
@@ -240,7 +229,7 @@ namespace LinkedInApiClient
                HttpMethod.Get,
                uri,
                null,
-               FormData(
+               ContentHelpers.FormData(
                    new Dictionary<string, string?>
                    {
                        ["response_type"] = "code",
@@ -269,7 +258,7 @@ namespace LinkedInApiClient
             Dispose(false);
         }
     }
-
+    /*
     class RetryFailedRequest : DelegatingHandler
     {
         private string tokenEndpointUrl = LinkedInConstants.DefaultTokenEndpoint;
@@ -299,7 +288,7 @@ namespace LinkedInApiClient
 
             var message = new HttpRequestMessage(HttpMethod.Post, LinkedInConstants.DefaultTokenEndpoint)
             {
-                Content = LinkedInHttpClient.FormData(new Dictionary<string, string?>
+                Content = ContentHelpers.FormData(new Dictionary<string, string?>
                 {
                     ["grant_type"] = "refresh_token",
                     ["client_id"] = clientId,
@@ -340,4 +329,5 @@ namespace LinkedInApiClient
             return default;
         }
     }
+    */
 }

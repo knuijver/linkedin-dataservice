@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 #nullable enable
 
-namespace LinkedInApiClient.UseCases.Standardized
+namespace LinkedInApiClient.UseCases.Standardized.Models
 {
     public class NameValuePairConverter : JsonConverter<IDictionary<string, string?>>
     {

@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Text.Json;
 
-namespace LinkedInApiClient.UseCases.EmailAddress
+namespace LinkedInApiClient.UseCases.People
 {
     public class GetEmailHandler : LinkedInRequestHandler<GetEmail, JsonElement>
     {

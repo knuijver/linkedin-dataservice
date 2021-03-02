@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text.Json.Serialization;
 
-namespace LinkedInApiClient.UseCases.Standardized
+namespace LinkedInApiClient.UseCases.Standardized.Models
 {
     public class JobsFunction
     {

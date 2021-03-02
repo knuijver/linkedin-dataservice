@@ -1,5 +1,4 @@
-﻿using LinkedInApiClient.UseCases;
-using LinkedInApiClient.UseCases.EmailAddress;
+﻿using LinkedInApiClient.UseCases.People;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.WebUtilities;
@@ -55,8 +54,8 @@ namespace LinkedInApiClient.Authentication
 
             var handler = new LinkedInHttpClient();
 
-            var email = await new GetEmail(null).Handle(null, handler, CancellationToken.None);
-            var profile = await handler.GetAsync<JsonElement>(tokens.AccessToken, new GetProfile(null), CancellationToken.None);
+            var email = await new GetEmail(null).HandleAsync(null, handler, CancellationToken.None);
+            var profile = await handler.GetAsync<JsonElement>(tokens.AccessToken, new GetMyProfile(null), CancellationToken.None);
 
             var context = new OAuthCreatingTicketContext(
                 new ClaimsPrincipal(identity),

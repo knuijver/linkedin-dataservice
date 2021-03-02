@@ -8,12 +8,13 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using LinkedInApiClient;
+using LinkedInApiClient.Messages;
 using LinkedInApiClient.Types;
 using LinkedInApiClient.UseCases;
 using LinkedInApiClient.UseCases.AccessControl;
 using LinkedInApiClient.UseCases.CareerPageStatistics;
-using LinkedInApiClient.UseCases.EmailAddress;
 using LinkedInApiClient.UseCases.Organizations;
+using LinkedInApiClient.UseCases.People;
 using LinkedInApiClient.UseCases.Shares;
 using LinkedInApiClient.UseCases.Social;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -22,7 +23,7 @@ namespace LinkedInApiClientTests
 {
     [TestClass]
     [TestCategory("Integration Tests")]
-   [Ignore("Only run in dev env. may require new AccessTokens")]
+   //[Ignore("Only run in dev env. may require new AccessTokens")]
     public class LinkedInApi_IntegrationTests
     {
         [TestMethod]
@@ -86,7 +87,7 @@ namespace LinkedInApiClientTests
         [TestMethod]
         public async Task Profile()
         {
-            var message = new GetProfile(DummyTokenRegistry.ValidTokenId);
+            var message = new GetMyProfile(DummyTokenRegistry.ValidTokenId);
 
             var result = await SendRequest(message);
 
@@ -225,7 +226,7 @@ namespace LinkedInApiClientTests
         [TestMethod]
         public async Task FindAMembersOrganizationAccessControlInformation()
         {
-            var message = new FindAMembersOrganizationAccessControlInformation(DummyTokenRegistry.ValidTokenId);
+            var message = new FindAMembersOrganizationAccessControlInformationRequest(DummyTokenRegistry.ValidTokenId);
 
             var result = await SendRequest(message);
 
@@ -262,7 +263,12 @@ namespace LinkedInApiClientTests
         [TestMethod]
         public async Task ResponseTypeChecking()
         {
-            var req = GenericApiQuery.Create<string>("HelloWorld", "test", QueryParameterCollection.EmptyParameters);
+            var req = new LinkedInRequest
+            {
+                AccessToken = "HelloWorld",
+                Address = "test"
+            };
+
             await SendRequest(req);
 
         }
@@ -273,15 +279,16 @@ namespace LinkedInApiClientTests
             var req = await GetApiDataUsingHttpClientHandler();
         }
 
-        public async Task<Result<LinkedInError, T>> SendRequest<T>(ILinkedInRequest<T> request)
+        public async Task<Result<LinkedInError, string>> SendRequest(LinkedInRequest request)
         {
             request.Validate();
 
             var tokenRegistry = DummyTokenRegistry.Create();
             var client = new LinkedInHttpClient();
 
-            var result = await request.Handle(tokenRegistry, client, CancellationToken.None);
-            return result;
+            return client.GetAsync(null, request, CancellationToken.None);
+            //var result = await request.HandleAsync(tokenRegistry, client, CancellationToken.None);
+            //return result;
         }
 
         private async Task<JsonDocument> GetApiDataUsingHttpClientHandler()

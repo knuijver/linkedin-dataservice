@@ -1,31 +1,57 @@
 ﻿using LinkedInApiClient.Types;
 using LinkedInApiClient.UseCases.AccessControl;
 using LinkedInApiClient.UseCases.CareerPageStatistics;
-using LinkedInApiClient.UseCases.Models;
+using LinkedInApiClient.UseCases.Organizations;
+using LinkedInApiClient.UseCases.People;
 using LinkedInApiClient.UseCases.Standardized;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace LinkedInApiClient
 {
     public static class LinkedIn
     {
-        public static FindAMembersOrganizationAccessControlInformation FindAMembersOrganizationAccessControlInformation(string tokenId)
+        public static class People
         {
-            return new FindAMembersOrganizationAccessControlInformation(tokenId);
+            public static GetMyProfile Me(string tokenId)
+            {
+                return new GetMyProfile(tokenId);
+            }
+
+            public static Task<Result<LinkedInError, string>> MeAsync(LinkedInHttpClient client, IStoredToken token, GetMyProfile me, CancellationToken stoppingToken)
+            {
+                return client.GetAsync(token.AccessToken, me, stoppingToken);
+            }
         }
 
-        public static FindOrganizationAdministrators FindOrganizationAdministrators(string tokenId, LinkedInURN organizationUrn)
+        public static class AccessControl
         {
-            return new FindOrganizationAdministrators(tokenId, organizationUrn);
+            public static FindAMembersOrganizationAccessControlInformationRequest FindAMembersOrganizationAccessControlInformation(string tokenId)
+            {
+                return new FindAMembersOrganizationAccessControlInformationRequest(tokenId);
+            }
+
+            public static FindOrganizationAdministrators FindOrganizationAdministrators(string tokenId, LinkedInURN organizationUrn)
+            {
+                return new FindOrganizationAdministrators(tokenId, organizationUrn);
+            }
+
+            public static RetrieveOrganizationBrandPageStatistics RetrieveOrganizationBrandPageStatistics(LinkedInURN organizationBrand, TimeInterval timeInterval, string tokenId)
+            {
+                return new RetrieveOrganizationBrandPageStatistics(organizationBrand, timeInterval, tokenId);
+            }
         }
 
-        public static RetrieveOrganizationBrandPageStatistics RetrieveOrganizationBrandPageStatistics(LinkedInURN organizationBrand, TimeInterval timeInterval, string tokenId)
+        public static class Organizations
         {
-            return new RetrieveOrganizationBrandPageStatistics(organizationBrand, timeInterval, tokenId);
+            public static FindOrganizationByEmailDomain FindOrganizationByEmailDomain(string tokenId, string emailDomain)
+            {
+                return new FindOrganizationByEmailDomain(tokenId, emailDomain);
+            }
         }
 
         public static class Standardized

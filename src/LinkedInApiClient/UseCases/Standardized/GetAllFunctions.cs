@@ -1,5 +1,6 @@
 ﻿using LinkedInApiClient.Types;
 using LinkedInApiClient.UseCases.Models;
+using LinkedInApiClient.UseCases.Standardized.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,7 @@ namespace LinkedInApiClient.UseCases.Standardized
         {
             TokenId = tokenId;
             Url = "functions";
-            QueryParameters = new QueryParameterCollection
+            QueryParameters = new Parameters
             {
                 ["count"] = "100"
             };
@@ -30,6 +31,6 @@ namespace LinkedInApiClient.UseCases.Standardized
 
         public string TokenId { get; }
         public string Url { get; }
-        public QueryParameterCollection QueryParameters { get; }
+        public Parameters QueryParameters { get; }
     }
 }

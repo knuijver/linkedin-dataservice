@@ -108,7 +108,7 @@ namespace SAWebHost.Pages.Tokens
             }
 
             var provider = await context.LinkedInProvider.FindAsync(AccessTokenEntry.ProviderId);
-            var query = new QueryParameterCollection
+            var query = new LinkedInApiClient.Types.Parameters
             {
                 ["response_type"] = "code",
                 ["client_id"] = provider.ClientId,

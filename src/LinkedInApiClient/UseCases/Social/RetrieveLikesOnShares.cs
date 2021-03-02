@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using LinkedInApiClient.Types;
 using LinkedInApiClient.UseCases.Models;
+using LinkedInApiClient.UseCases.Social.Models;
 
 namespace LinkedInApiClient.UseCases.Social
 {
@@ -23,7 +24,7 @@ namespace LinkedInApiClient.UseCases.Social
 
             TokenId = tokenId;
             Url = $"socialActions/{urn}/likes";
-            QueryParameters = new QueryParameterCollection
+            QueryParameters = new Parameters
             {
                 ["projection"] = "(*,elements*(*,actor~(localizedLastName,localizedFirstName,vanityName,localizedHeadline)))"
             };
@@ -31,6 +32,6 @@ namespace LinkedInApiClient.UseCases.Social
 
         public string TokenId { get; }
         public string Url { get; }
-        public QueryParameterCollection QueryParameters { get; }
+        public Parameters QueryParameters { get; }
     }
 }

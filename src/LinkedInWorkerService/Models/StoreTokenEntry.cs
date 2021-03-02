@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using LinkedInApiClient;
 
 namespace LinkedInWorkerService.Models
 {
-    public class StoreTokenEntry
+    public class StoreTokenEntry : IStoredToken
     {
         [JsonPropertyName("id")]
         public string Id { get; set; }

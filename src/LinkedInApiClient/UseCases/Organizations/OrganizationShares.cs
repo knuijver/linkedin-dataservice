@@ -18,7 +18,7 @@ namespace LinkedInApiClient.UseCases.Organizations
 
             TokenId = tokenId;
             Url = "shares";
-            QueryParameters = new QueryParameterCollection
+            QueryParameters = new Parameters
             {
                 ["q"] = "owners",
                 ["owners"] = organizationUrn,
@@ -29,6 +29,6 @@ namespace LinkedInApiClient.UseCases.Organizations
 
         public string TokenId { get; }
         public string Url { get; }
-        public QueryParameterCollection QueryParameters { get; }
+        public Parameters QueryParameters { get; }
     }
 }

@@ -20,7 +20,6 @@ namespace LinkedInWorkerService.Common
     {
         private readonly ILogger<AccessTokenStore> logger;
 
-        private string storeApiToken = "";
         private readonly IHttpClientFactory clientFactory;
 
 
@@ -119,6 +118,25 @@ namespace LinkedInWorkerService.Common
             await Task.CompletedTask;
 
             return Result.Fail(TokenFailure.Why("", ""));
+        }
+
+        public async Task<Result<TokenFailure, IStoredToken[]>> ListAsync(CancellationToken cancellationToken)
+        {
+            var client = clientFactory.CreateClient(nameof(AccessTokenStore));
+
+            var request = new HttpRequestMessage(HttpMethod.Get, "api/tokens");
+            var response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
+
+            var content = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+            if (response.IsSuccessStatusCode)
+            {
+                IStoredToken[] entry = JsonSerializer.Deserialize<StoreTokenEntry[]>(content);
+                return Result.Success(entry);
+            }
+            else
+            {
+                return Result.Fail(TokenFailure.Why("TokenStore", $"Failed to fetch an access tokens, store responded with status {response.StatusCode} and {response.ReasonPhrase}"));
+            }
         }
     }
 }

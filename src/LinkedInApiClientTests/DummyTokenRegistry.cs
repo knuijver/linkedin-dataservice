@@ -49,5 +49,9 @@ namespace LinkedInApiClientTests
         {
             throw new NotImplementedException();
         }
+        public Task<Result<TokenFailure, IStoredToken[]>> ListAsync(CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

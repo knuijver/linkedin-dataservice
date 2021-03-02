@@ -10,7 +10,7 @@ namespace LinkedInApiClient.Types
     /// Represents an URN string 'urn:{namespace}:{entity}:{id}'
     /// </summary>
     [JsonConverter(typeof(LinkedInURNConverter))]
-    public struct LinkedInURN
+    public struct LinkedInURN : IURN
     {
         public static readonly LinkedInURN None = new LinkedInURN();
 

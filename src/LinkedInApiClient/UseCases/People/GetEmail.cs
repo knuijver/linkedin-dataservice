@@ -1,7 +1,7 @@
 ﻿using System;
 using LinkedInApiClient.Types;
 
-namespace LinkedInApiClient.UseCases.EmailAddress
+namespace LinkedInApiClient.UseCases.People
 {
     public class GetEmail : ILinkedInRequest
     {
@@ -12,7 +12,7 @@ namespace LinkedInApiClient.UseCases.EmailAddress
 
         public string Url { get; } = "emailAddress";
 
-        public QueryParameterCollection QueryParameters { get; } = new QueryParameterCollection
+        public Parameters QueryParameters { get; } = new Parameters
         {
             ["q"] = "members",
             ["projection"] = "(*,elements*(handle~))"

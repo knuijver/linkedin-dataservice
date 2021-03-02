@@ -11,14 +11,14 @@ namespace LinkedInApiClient.Types
         /// </summary>
         /// <param name="urn"></param>
         /// <returns></returns>
-        public static string UrlEncode(this LinkedInURN urn) => Uri.EscapeDataString(urn.ToString());
+        public static string UrlEncode(this IURN urn) => Uri.EscapeDataString(urn.ToString());
 
-        public static bool HasReferences(this LinkedInURN urn)
+        public static bool HasReferences(this IURN urn)
         {
             return (urn.Id.StartsWith('(') && new[] { "urn", ":", "," }.Count(c => urn.Id.Contains(c) == true) >= 2);
         }
 
-        public static IEnumerable<LinkedInURN> IdReferences(this LinkedInURN urn)
+        public static IEnumerable<LinkedInURN> IdReferences(this IURN urn)
         {
             var str = urn.Id.Substring(1, urn.Id.Length - 1);
             return str.Split(",")

@@ -3,13 +3,16 @@ using LinkedInApiClient.Types;
 
 namespace LinkedInApiClient.UseCases.Organizations
 {
+    /// <summary>
+    /// https://docs.microsoft.com/en-us/linkedin/marketing/integrations/community-management/organizations/organization-lookup-api#find-organization-by-vanity-name
+    /// </summary>
     public class FindOrganizationByVanityName : ILinkedInRequest
     {
         public FindOrganizationByVanityName(string tokenId, string vanityName)
         {
             TokenId = tokenId;
             Url = "organizations";
-            QueryParameters = new QueryParameterCollection
+            QueryParameters = new Parameters
             {
                 ["q"] = "vanityName",
                 ["vanityName"] = vanityName
@@ -20,6 +23,6 @@ namespace LinkedInApiClient.UseCases.Organizations
 
         public string Url { get; }
 
-        public QueryParameterCollection QueryParameters { get; }
+        public Parameters QueryParameters { get; }
     }
 }

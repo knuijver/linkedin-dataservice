@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using LinkedInApiClient.Types;
 
-namespace LinkedInApiClient.UseCases.Social
+namespace LinkedInApiClient.UseCases.Social.Models
 {
     public class Created
     {

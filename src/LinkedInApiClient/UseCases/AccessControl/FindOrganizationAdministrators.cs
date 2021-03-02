@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using LinkedInApiClient.Types;
+using LinkedInApiClient.UseCases.AccessControl.Models;
 using LinkedInApiClient.UseCases.Models;
 
 namespace LinkedInApiClient.UseCases.AccessControl
@@ -18,7 +19,7 @@ namespace LinkedInApiClient.UseCases.AccessControl
 
             TokenId = tokenId;
             Url = "organizationAcls";
-            QueryParameters = new QueryParameterCollection
+            QueryParameters = new Parameters
             {
                 ["q"] = "organization",
                 ["organization"] = organizationUrn,
@@ -30,6 +31,6 @@ namespace LinkedInApiClient.UseCases.AccessControl
 
         public string TokenId { get; }
         public string Url { get; }
-        public QueryParameterCollection QueryParameters { get; }
+        public Parameters QueryParameters { get; }
     }
 }

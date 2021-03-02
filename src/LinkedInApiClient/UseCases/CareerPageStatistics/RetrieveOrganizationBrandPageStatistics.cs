@@ -14,7 +14,7 @@ namespace LinkedInApiClient.UseCases.CareerPageStatistics
 
             TokenId = tokenId;
             Url = "brandPageStatistics";
-            QueryParameters = new QueryParameterCollection
+            QueryParameters = new Parameters
             {
                 ["q"] = "brand",
                 ["brand"] = organizationBrand
@@ -23,7 +23,7 @@ namespace LinkedInApiClient.UseCases.CareerPageStatistics
 
         public string Url { get; }
 
-        public QueryParameterCollection QueryParameters { get; }
+        public Parameters QueryParameters { get; }
 
         public string TokenId { get; }
     }

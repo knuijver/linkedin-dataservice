@@ -3,6 +3,7 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using LinkedInApiClient.Messages;
 
 #nullable enable
 
@@ -12,7 +13,7 @@ namespace LinkedInApiClient
     {
         public static DelayedError<LinkedInError> ToResult(this LinkedInError error) => Result.Fail(error);
 
-        public static Uri HttpRequestUrl(this ILinkedInRequest request)
+        public static Uri HttpRequestUrl(this LinkedInRequest request)
         {
             return new Uri(request.QueryParameters.ToUrlQueryString(request.Url), UriKind.Relative);
         }
@@ -46,7 +47,7 @@ namespace LinkedInApiClient
             }
         }
 
-        public static async Task<Result<LinkedInError, T?>> Handle<T>(this ILinkedInRequest<T> request, IAccessTokenRegistry tokenRegistry, LinkedInHttpClient client, CancellationToken cancellationToken)
+        public static async Task<Result<LinkedInError, T?>> HandleAsync<T>(this ILinkedInRequest<T> request, IAccessTokenRegistry tokenRegistry, LinkedInHttpClient client, CancellationToken cancellationToken)
         {
             var token = await tokenRegistry.AccessTokenAsync(request.TokenId, cancellationToken);
             if (token.IsSuccess)

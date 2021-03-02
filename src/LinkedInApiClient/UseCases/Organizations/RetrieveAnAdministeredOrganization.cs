@@ -16,7 +16,7 @@ namespace LinkedInApiClient.UseCases.Organizations
 
         public string Url { get; }
 
-        public QueryParameterCollection QueryParameters { get; } = QueryParameterCollection.EmptyParameters;
+        public Parameters QueryParameters { get; } = Parameters.EmptyParameters;
 
         public string TokenId { get; }
     }

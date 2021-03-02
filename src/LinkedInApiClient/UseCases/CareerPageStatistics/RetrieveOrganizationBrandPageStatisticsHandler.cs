@@ -2,7 +2,6 @@
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using LinkedInApiClient.Types;
 
 namespace LinkedInApiClient.UseCases.CareerPageStatistics
 {
@@ -19,7 +18,7 @@ namespace LinkedInApiClient.UseCases.CareerPageStatistics
 
         protected override Task<Result<LinkedInError, JsonElement>> Handle(RetrieveOrganizationBrandPageStatistics request, CancellationToken cancellationToken)
         {
-            return request.Handle(tokenRegistry, handler, cancellationToken);
+            return request.HandleAsync(tokenRegistry, handler, cancellationToken);
         }
     }
 }

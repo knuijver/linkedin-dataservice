@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace LinkedInApiClient.UseCases.AccessControl
+namespace LinkedInApiClient.UseCases.AccessControl.Models
 {
     /// <summary>
     /// https://docs.microsoft.com/en-us/linkedin/marketing/integrations/community-management/organizations/organization-access-control#organization-roles

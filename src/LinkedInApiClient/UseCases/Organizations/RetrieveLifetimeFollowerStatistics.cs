@@ -3,11 +3,14 @@ using LinkedInApiClient.Types;
 
 namespace LinkedInApiClient.UseCases.Organizations
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class RetrieveLifetimeFollowerStatistics : ILinkedInRequest
     {
         public RetrieveLifetimeFollowerStatistics(string tokenId, LinkedInURN organizationId, TimeInterval timeInterval)
         {
-            QueryParameters = new QueryParameterCollection
+            QueryParameters = new Parameters
             {
                 ["q"] = "organizationalEntity",
                 ["organizationalEntity"] = organizationId
@@ -16,7 +19,7 @@ namespace LinkedInApiClient.UseCases.Organizations
         }
         public string Url { get; } = "organizationalEntityFollowerStatistics";
 
-        public QueryParameterCollection QueryParameters { get; }
+        public Parameters QueryParameters { get; }
 
         public string TokenId { get; }
     }

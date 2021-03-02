@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -33,7 +34,6 @@ namespace SAWebHost.Controllers
         public async Task<ActionResult<Organization>> GetOrganization(string id)
         {
             var organization = await _context.Organization.FindAsync(id);
-
             if (organization == null)
             {
                 return NotFound();
@@ -45,6 +45,7 @@ namespace SAWebHost.Controllers
         // PUT: api/Organizations/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
+        [Authorize("JwtBearer")]
         public async Task<IActionResult> PutOrganization(string id, Organization organization)
         {
             if (id != organization.Id)
@@ -76,6 +77,7 @@ namespace SAWebHost.Controllers
         // POST: api/Organizations
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Authorize("JwtBearer")]
         public async Task<ActionResult<Organization>> PostOrganization(Organization organization)
         {
             _context.Organization.Add(organization);
@@ -100,6 +102,7 @@ namespace SAWebHost.Controllers
 
         // DELETE: api/Organizations/5
         [HttpDelete("{id}")]
+        [Authorize("JwtBearer")]
         public async Task<IActionResult> DeleteOrganization(string id)
         {
             var organization = await _context.Organization.FindAsync(id);

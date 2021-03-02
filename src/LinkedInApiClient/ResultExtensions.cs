@@ -44,5 +44,14 @@ namespace LinkedInApiClient
                 ? Option.Some(result.Data)
                 : Option.None;
         }
+
+        public static bool Try<TError, TData>(this Result<TError, TData> result, out TData data)
+        {
+            data = (result.IsSuccess)
+                ? result.Data
+                : default;
+
+            return result.IsSuccess;
+        }
     }
 }

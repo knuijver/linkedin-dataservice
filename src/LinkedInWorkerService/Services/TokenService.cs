@@ -2,6 +2,7 @@
 using LinkedInWorkerService.Common;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Polly;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +27,11 @@ namespace LinkedInWorkerService.Services
             this.settings = settings;
 
             using var client = new HttpClient();
-            this.discoveryDocument = client.GetDiscoveryDocumentAsync(settings.Value.DiscoveryUrl).Result;
+            var policy = Policy
+               .HandleResult<DiscoveryDocumentResponse>(r => !r.IsError)
+               .WaitAndRetry(3, c => TimeSpan.FromSeconds(2 * c));
+
+            this.discoveryDocument = policy.Execute(() => client.GetDiscoveryDocumentAsync(settings.Value.DiscoveryUrl).Result);
             if (discoveryDocument.IsError)
             {
                 logger.LogError($"Unable to get discovery document. Error is:{discoveryDocument.Error}");
@@ -38,14 +43,20 @@ namespace LinkedInWorkerService.Services
         {
             using var client = new HttpClient();
             var currentSettings = settings.Value;
-            var tokenResponse = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
+
+            var policy = Policy
+               .HandleResult<TokenResponse>(r => !r.IsError)
+               .WaitAndRetryAsync(3, c => TimeSpan.FromSeconds(2 * c));
+
+
+            var tokenResponse = await policy.ExecuteAsync((ct) => client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
             {
                 Address = discoveryDocument.TokenEndpoint,
 
                 ClientId = currentSettings.ClientName,
                 ClientSecret = currentSettings.ClientPassword,
                 Scope = scope
-            }, cancellationToken);
+            }, ct), cancellationToken);
 
             if (tokenResponse.IsError)
             {

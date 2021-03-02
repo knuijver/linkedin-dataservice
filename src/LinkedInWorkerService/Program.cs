@@ -3,6 +3,7 @@ using LinkedInWorkerService.Common;
 using LinkedInWorkerService.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,13 +31,15 @@ namespace LinkedInWorkerService
                     services.AddTransient<StoreApiAuthenticationHandler>();
                     services.AddHttpClient(nameof(AccessTokenStore), client =>
                     {
-                        client.BaseAddress = new Uri("https://sa-tokens.tasper.nl/");
+                        client.BaseAddress = hostContext.Configuration.GetValue<Uri>("TokenStoreUrl");
                     })
                     .AddHttpMessageHandler<StoreApiAuthenticationHandler>();
 
                     services.AddTransient<IAccessTokenRegistry, AccessTokenStore>();
 
-                    services.AddHostedService<Worker>();
+                    services.AddHostedService<InboundMessageWorker>();
+                    services.AddHostedService<LinkedInDataCollectionWorker>();
+                    services.AddHostedService<LinkedInDataCollectionWorker>();
                 });
     }
 }

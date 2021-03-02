@@ -15,12 +15,12 @@ namespace LinkedInApiClient.UseCases.Standardized
         {
             TokenId = tokenId;
             Url = "seniorities";
-            QueryParameters = QueryParameterCollection.EmptyParameters +
+            QueryParameters = Parameters.EmptyParameters +
                 locale.AsQueryParameters();
         }
 
         public string TokenId { get; }
         public string Url { get; }
-        public QueryParameterCollection QueryParameters { get; }
+        public Parameters QueryParameters { get; }
     }
 }

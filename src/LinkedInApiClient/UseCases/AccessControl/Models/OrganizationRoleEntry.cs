@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using LinkedInApiClient.Types;
 
-namespace LinkedInApiClient.UseCases.AccessControl
+namespace LinkedInApiClient.UseCases.AccessControl.Models
 {
     public class OrganizationRoleEntry
     {

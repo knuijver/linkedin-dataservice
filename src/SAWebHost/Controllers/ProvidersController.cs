@@ -46,6 +46,7 @@ namespace SAWebHost.Controllers
         // PUT: api/Providers/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
+        [Authorize("JwtBearer")]
         public async Task<IActionResult> PutLinkedInProvider(string id, LinkedInProvider linkedInProvider)
         {
             if (id != linkedInProvider.Id)
@@ -77,6 +78,7 @@ namespace SAWebHost.Controllers
         // POST: api/Providers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Authorize("JwtBearer")]
         public async Task<ActionResult<LinkedInProvider>> PostLinkedInProvider(LinkedInProvider linkedInProvider)
         {
             _context.LinkedInProvider.Add(linkedInProvider);
@@ -101,6 +103,7 @@ namespace SAWebHost.Controllers
 
         // DELETE: api/Providers/5
         [HttpDelete("{id}")]
+        [Authorize("JwtBearer")]
         public async Task<IActionResult> DeleteLinkedInProvider(string id)
         {
             var linkedInProvider = await _context.LinkedInProvider.FindAsync(id);

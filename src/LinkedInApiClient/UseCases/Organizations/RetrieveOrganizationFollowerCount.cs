@@ -15,7 +15,7 @@ namespace LinkedInApiClient.UseCases.Organizations
                 throw new ArgumentException($"{nameof(organizationId)} has an invalid URN Type", nameof(organizationId));
 
             Url = $"networkSizes/{organizationId}";
-            QueryParameters = new QueryParameterCollection
+            QueryParameters = new Parameters
             {
                 ["edgeType"] = "CompanyFollowedByMember"
             };
@@ -24,7 +24,7 @@ namespace LinkedInApiClient.UseCases.Organizations
 
         public string Url { get; }
 
-        public QueryParameterCollection QueryParameters { get; }
+        public Parameters QueryParameters { get; }
 
         public string TokenId { get; }
     }

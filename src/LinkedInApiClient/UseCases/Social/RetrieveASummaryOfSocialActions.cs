@@ -1,4 +1,5 @@
 ﻿using LinkedInApiClient.Types;
+using LinkedInApiClient.UseCases.Social.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,11 +26,11 @@ namespace LinkedInApiClient.UseCases.Social
 
             TokenId = tokenId;
             Url = $"socialActions/{urn}";
-            QueryParameters = QueryParameterCollection.EmptyParameters;
+            QueryParameters = Parameters.EmptyParameters;
         }
 
         public string TokenId { get; }
         public string Url { get; }
-        public QueryParameterCollection QueryParameters { get; }
+        public Parameters QueryParameters { get; }
     }
 }

@@ -14,7 +14,7 @@ namespace LinkedInApiClient.UseCases.Shares
         {
             TokenId = tokenId;
             Url = "activityFeeds";
-            QueryParameters = new QueryParameterCollection
+            QueryParameters = new Parameters
             {
                 ["q"] = "networkShares"
             };
@@ -26,6 +26,6 @@ namespace LinkedInApiClient.UseCases.Shares
 
         public string TokenId { get; }
         public string Url { get; }
-        public QueryParameterCollection QueryParameters { get; }
+        public Parameters QueryParameters { get; }
     }
 }

@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text.Json.Serialization;
 
-namespace LinkedInApiClient.UseCases.Social
+namespace LinkedInApiClient.UseCases.Social.Models
 {
     public class CommentSummary
     {

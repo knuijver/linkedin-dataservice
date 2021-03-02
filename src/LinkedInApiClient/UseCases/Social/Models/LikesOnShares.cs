@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 using LinkedInApiClient.Types;
 using LinkedInApiClient.UseCases.Models;
 
-namespace LinkedInApiClient.UseCases.Social
+namespace LinkedInApiClient.UseCases.Social.Models
 {
     public class LikesOnShares
     {

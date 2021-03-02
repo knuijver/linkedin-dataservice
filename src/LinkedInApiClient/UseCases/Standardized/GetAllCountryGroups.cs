@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using LinkedInApiClient.Types;
 using LinkedInApiClient.UseCases.Models;
+using LinkedInApiClient.UseCases.Standardized.Models;
 
 namespace LinkedInApiClient.UseCases.Standardized
 {
@@ -15,12 +16,12 @@ namespace LinkedInApiClient.UseCases.Standardized
         {
             TokenId = tokenId;
             Url = "countries";
-            QueryParameters = QueryParameterCollection.EmptyParameters
+            QueryParameters = Parameters.EmptyParameters
                 + locale.AsQueryParameters();
         }
 
         public string TokenId { get; }
         public string Url { get; }
-        public QueryParameterCollection QueryParameters { get; }
+        public Parameters QueryParameters { get; }
     }
 }
