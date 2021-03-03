@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace LinkedInApiClient.Messages
+namespace LinkedInApiClient.Types
 {
     public enum ResponseErrorType
     {

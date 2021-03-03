@@ -1,14 +1,18 @@
 using LinkedInApiClient;
+using LinkedInApiClient.Store;
 using LinkedInApiClient.Types;
+using LinkedInApiClient.Extensions;
 using LinkedInWorkerService.Common.Types;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using LinkedInApiClient.UseCases.AccessControl;
 
 namespace LinkedInWorkerService
 {
@@ -24,7 +28,7 @@ namespace LinkedInWorkerService
         private readonly ILogger<LinkedInDataCollectionWorker> _logger;
         private readonly IAccessTokenRegistry tokenRegistry;
 
-        public LinkedInDataCollectionWorker(ILogger<LinkedInDataCollectionWorker> logger, IAccessTokenRegistry tokenRegistry )
+        public LinkedInDataCollectionWorker(ILogger<LinkedInDataCollectionWorker> logger, IAccessTokenRegistry tokenRegistry)
         {
             this.tokenRegistry = tokenRegistry;
             _logger = logger;
@@ -32,7 +36,9 @@ namespace LinkedInWorkerService
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var client = new LinkedInHttpClient();
+            var client = new HttpClient()
+                .UseDefaultLinkedInBaseUrl();
+
             var accessTokens = await tokenRegistry.ListAsync(CancellationToken.None);
             // all Me
             // or find organizations
@@ -46,30 +52,36 @@ namespace LinkedInWorkerService
             {
                 foreach (var token in tokens)
                 {
-                    //LinkedIn.People.MeAsync(client, token, LinkedIn.People.Me(token.Id), stoppingToken);
-                    //var me = await client.GetAsync(token.AccessToken, LinkedIn.People.Me(token.Id), stoppingToken);
-                    //if(me.Try(out var profile))
-                    //{
-                        
-                    //}
+                    var me = await client.GetMyProfileAsync(new LinkedInApiClient.UseCases.People.GetMyProfileRequest(), stoppingToken);
+                    if (!me.IsError)
+                    {
+
+                    }
                 }
             }
 
-
-            LinkedIn.AccessControl.FindOrganizationAdministrators(URN.TokenStoreUrn("token", "c6379d94"), CommonURN.OrganizationId(""));
-            var req = LinkedIn.AccessControl.FindAMembersOrganizationAccessControlInformation("urn:fan:token:c6379d94");
-            var res = await req.HandleAsync(tokenRegistry, client, stoppingToken);
-
-            if (res.IsSuccess)
+            var accessTokenResult = await tokenRegistry.AccessTokenAsync(URN.TokenStoreUrn("token", "c6379d94"), stoppingToken);
+            if (accessTokenResult.Try(out string accesToken))
             {
-                foreach (var item in res.Data.Elements)
+                await client.FindOrganizationAdministratorsAsync(
+                    new FindOrganizationAdministratorsRequest(CommonURN.OrganizationId(""))
+                        .WithAccessToken(accesToken));
+
+                var res = await client.FindAMembersOrganizationAccessControlInformationAsync(
+                    new FindAMembersOrganizationAccessControlInformationRequest()
+                        .WithAccessToken(accesToken));
+
+                if (res.IsSuccess)
                 {
-                    _logger.LogInformation(JsonSerializer.Serialize(item));
+                    foreach (var item in res.Data.Elements)
+                    {
+                        _logger.LogInformation(JsonSerializer.Serialize(item));
+                    }
                 }
-            }
-            else
-            {
-                _logger.LogWarning("LINKEDIN FAIL: {Message}", res.Error.Message);
+                else
+                {
+                    _logger.LogWarning("LINKEDIN FAIL: {Message}", res.Error.ReasonText);
+                }
             }
 
             while (!stoppingToken.IsCancellationRequested)

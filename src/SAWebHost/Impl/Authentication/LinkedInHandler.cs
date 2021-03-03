@@ -1,4 +1,5 @@
-﻿using LinkedInApiClient.UseCases.People;
+﻿using LinkedInApiClient.Extensions;
+using LinkedInApiClient.UseCases.People;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.WebUtilities;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -52,10 +54,10 @@ namespace LinkedInApiClient.Authentication
 
             var saveToken = JsonSerializer.Serialize(args);
 
-            var handler = new LinkedInHttpClient();
+            var handler = new HttpClient();
 
-            var email = await new GetEmail(null).HandleAsync(null, handler, CancellationToken.None);
-            var profile = await handler.GetAsync<JsonElement>(tokens.AccessToken, new GetMyProfile(null), CancellationToken.None);
+            var email = await handler.GetEmailAsync(new GetEmailRequest().WithAccessToken(tokens.AccessToken), CancellationToken.None);
+            var profile = await handler.ExecuteRequest(new GetMyProfileRequest().WithAccessToken(tokens.AccessToken), CancellationToken.None);
 
             var context = new OAuthCreatingTicketContext(
                 new ClaimsPrincipal(identity),
@@ -65,7 +67,7 @@ namespace LinkedInApiClient.Authentication
                 Options,
                 Backchannel,
                 tokens,
-                profile.Data
+                profile.Json
                 );
 
             context.RunClaimActions();

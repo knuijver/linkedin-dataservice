@@ -1,5 +1,4 @@
-﻿using LinkedInApiClient.Messages;
-using LinkedInApiClient.Types;
+﻿using LinkedInApiClient.Types;
 using LinkedInApiClient.UseCases.AccessControl.Models;
 using LinkedInApiClient.UseCases.Models;
 using System;
@@ -17,23 +16,18 @@ namespace LinkedInApiClient.UseCases.AccessControl
     /// </summary>
     public class FindAMembersOrganizationAccessControlInformationRequest : LinkedInRequest
     {
-        public FindAMembersOrganizationAccessControlInformationRequest(string tokenId)
+        public FindAMembersOrganizationAccessControlInformationRequest()
         {
-            TokenId = tokenId;
-            Url = "organizationAcls";
-            QueryParameters = new Parameters
+            this.Address = "organizationAcls";
+            this.QueryParameters = new Parameters
             {
                 ["q"] = "roleAssignee",
                 ["projection"] = "(*,elements*(*,roleAssignee~(localizedFirstName, localizedLastName), organization~(localizedName)))"
             };
         }
-
-        public string TokenId { get; }
-        public string Url { get; }
-        public Parameters QueryParameters { get; }
     }
 
-    public class FindAMembersOrganizationAccessControlInformationResponse : LinkedInResponse //Paged<OrganizationRoleEntry>
+    public class FindAMembersOrganizationAccessControlInformationResponse : Paged<OrganizationRoleEntry>
     {
     }
 }

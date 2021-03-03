@@ -6,21 +6,16 @@ namespace LinkedInApiClient.UseCases.Organizations
     /// <summary>
     /// 
     /// </summary>
-    public class RetrieveLifetimeFollowerStatistics : ILinkedInRequest
+    public class RetrieveLifetimeFollowerStatisticsRequest : LinkedInRequest
     {
-        public RetrieveLifetimeFollowerStatistics(string tokenId, LinkedInURN organizationId, TimeInterval timeInterval)
+        public RetrieveLifetimeFollowerStatisticsRequest(LinkedInURN organizationId, TimeInterval timeInterval)
         {
+            Address = "organizationalEntityFollowerStatistics";
             QueryParameters = new Parameters
             {
                 ["q"] = "organizationalEntity",
                 ["organizationalEntity"] = organizationId
             } + timeInterval.AsQueryParameters();
-            TokenId = tokenId;
         }
-        public string Url { get; } = "organizationalEntityFollowerStatistics";
-
-        public Parameters QueryParameters { get; }
-
-        public string TokenId { get; }
     }
 }

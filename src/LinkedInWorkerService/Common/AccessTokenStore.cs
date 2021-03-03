@@ -1,4 +1,5 @@
 ﻿using LinkedInApiClient;
+using LinkedInApiClient.Store;
 using LinkedInApiClient.Types;
 using LinkedInWorkerService.Models;
 using Microsoft.Extensions.Logging;
@@ -45,7 +46,7 @@ namespace LinkedInWorkerService.Common
 
             var message = new HttpRequestMessage(HttpMethod.Post, LinkedInConstants.DefaultTokenEndpoint)
             {
-                Content = LinkedInHttpClient.FormData(new Dictionary<string, string?>
+                Content = ContentHelpers.FormData(new Dictionary<string, string?>
                 {
                     ["grant_type"] = "refresh_token",
                     ["client_id"] = clientId,
@@ -63,7 +64,7 @@ namespace LinkedInWorkerService.Common
             return await response.Content.ReadAsStringAsync();
         }
 
-        public async Task<Result<TokenFailure, string>> AccessTokenAsync(string tokenId, CancellationToken cancellationToken)
+        public async Task<Result<LinkedInError, string>> AccessTokenAsync(string tokenId, CancellationToken cancellationToken)
         {
             /*
             var policy = Policy
@@ -83,11 +84,11 @@ namespace LinkedInWorkerService.Common
                 );
             */
 
-            var client  = clientFactory.CreateClient(nameof(AccessTokenStore));
+            var client = clientFactory.CreateClient(nameof(AccessTokenStore));
 
             var request = new HttpRequestMessage(HttpMethod.Get, $"api/fans/{tokenId}");
             var response = await client.SendAsync(request, cancellationToken);
-            
+
             var content = await response.Content.ReadAsStringAsync();
             if (response.IsSuccessStatusCode)
             {
@@ -96,7 +97,9 @@ namespace LinkedInWorkerService.Common
             }
             else
             {
-                return Result.Fail(TokenFailure.Why("AccessToken", $"Failed to fetch an access token for {tokenId}, store responded with status {response.StatusCode} and {response.ReasonPhrase}"));
+                return Result.Fail(LinkedInError.FromTokenResponse(
+                    $"Failed to fetch an access token for {tokenId}, store responded with status {response.StatusCode} and {response.ReasonPhrase}"
+                    ));
             }
         }
 
@@ -107,20 +110,20 @@ namespace LinkedInWorkerService.Common
         //    var content = await response.Content.ReadAsStringAsync();
         //}
 
-        public Task<Result<TokenFailure, string>> UpdateAccessTokenAsync(string tokenId, string accessToken, string expiresIn, string refreshToken, CancellationToken cancellationToken)
+        public Task<Result<LinkedInError, string>> UpdateAccessTokenAsync(string tokenId, string accessToken, string expiresIn, string refreshToken, CancellationToken cancellationToken)
         {
-            return Task.FromResult<Result<TokenFailure, string>>(Result.Fail(TokenFailure.Why("", "")));
+            return Task.FromResult<Result<LinkedInError, string>>(Result.Fail(LinkedInError.FromTokenResponse("")));
         }
 
-        public async Task<Result<TokenFailure, ValueTuple>> RefreshTokenAsync(string tokenId, CancellationToken cancellationToken)
+        public async Task<Result<LinkedInError, ValueTuple>> RefreshTokenAsync(string tokenId, CancellationToken cancellationToken)
         {
             //var FetchTokenFromStoreApi(tokenId, new Context())
             await Task.CompletedTask;
 
-            return Result.Fail(TokenFailure.Why("", ""));
+            return Result.Fail(LinkedInError.FromTokenResponse(""));
         }
 
-        public async Task<Result<TokenFailure, IStoredToken[]>> ListAsync(CancellationToken cancellationToken)
+        public async Task<Result<LinkedInError, IStoredToken[]>> ListAsync(CancellationToken cancellationToken)
         {
             var client = clientFactory.CreateClient(nameof(AccessTokenStore));
 
@@ -135,7 +138,8 @@ namespace LinkedInWorkerService.Common
             }
             else
             {
-                return Result.Fail(TokenFailure.Why("TokenStore", $"Failed to fetch an access tokens, store responded with status {response.StatusCode} and {response.ReasonPhrase}"));
+                return Result.Fail(LinkedInError.FromTokenResponse(
+                    $"Failed to fetch an access tokens, store responded with status {response.StatusCode} and {response.ReasonPhrase}"));
             }
         }
     }

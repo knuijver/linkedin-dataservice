@@ -8,22 +8,22 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using LinkedInApiClient;
-using LinkedInApiClient.Messages;
+using LinkedInApiClient.Extensions;
 using LinkedInApiClient.Types;
-using LinkedInApiClient.UseCases;
 using LinkedInApiClient.UseCases.AccessControl;
 using LinkedInApiClient.UseCases.CareerPageStatistics;
 using LinkedInApiClient.UseCases.Organizations;
 using LinkedInApiClient.UseCases.People;
 using LinkedInApiClient.UseCases.Shares;
 using LinkedInApiClient.UseCases.Social;
+using LinkedInApiClient.UseCases.Standardized;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LinkedInApiClientTests
 {
     [TestClass]
     [TestCategory("Integration Tests")]
-   //[Ignore("Only run in dev env. may require new AccessTokens")]
+    [Ignore("Only run in dev env. may require new AccessTokens")]
     public class LinkedInApi_IntegrationTests
     {
         [TestMethod]
@@ -35,16 +35,29 @@ namespace LinkedInApiClientTests
             }
         }
 
+        private async Task<(HttpClient, string)> Connection()
+        {
+            var tokenRegistry = DummyTokenRegistry.Create();
+            var client = new HttpClient()
+                .UseDefaultLinkedInBaseUrl();
+
+            var tokenResponse = await tokenRegistry.AccessTokenAsync(DummyTokenRegistry.ValidTokenId, default);
+            if (!tokenResponse.IsSuccess) Assert.Fail(tokenResponse.Error.ReasonText);
+
+            return (client, tokenResponse.Data);
+        }
+
         [TestMethod]
         public async Task RetrieveAllFunctions()
         {
-            var message = LinkedIn.Standardized.AllFunctions(
-                DummyTokenRegistry.ValidTokenId, 
-                Locale.From(new CultureInfo("nl-NL")));
+            var (client, accessToken) = await Connection();
 
-            var result = await SendRequest(message);
+            var result = await client.GetAllFunctionsAsync(
+                new GetAllFunctionsRequest(Locale.From(new CultureInfo("nl-NL")).ToString())
+                    .WithAccessToken(accessToken));
 
-            if (!result.IsSuccess) Assert.Fail(result.Error.Message);
+
+            if (!result.IsSuccess) Assert.Fail(result.Error.ReasonText);
 
             var function = result.Data.Elements[^5];
             string functionName = function.Name;
@@ -54,196 +67,196 @@ namespace LinkedInApiClientTests
         [TestMethod]
         public async Task RetrieveAllCountries()
         {
-            var message = LinkedIn.Standardized.GetAllCountries(DummyTokenRegistry.ValidTokenId, Locale.Default);
+            var (client, accessToken) = await Connection();
 
-            var result = await SendRequest(message);
+            var result = await client.GetAllCountriesAsync(new GetAllCountriesRequest(Locale.Default).WithAccessToken(accessToken));
 
-            if (!result.IsSuccess) Assert.Fail(result.Error.Message);
+            if (!result.IsSuccess) Assert.Fail(result.Error.ReasonText);
         }
 
         [TestMethod]
         public async Task RetrieveOrganizationBrandPageStatistics()
         {
-            var message = new RetrieveOrganizationBrandPageStatistics(
-                CommonURN.OrganizationBrand("72216557"),
-                default,
-                DummyTokenRegistry.ValidTokenId);
+            var (client, accessToken) = await Connection();
+            var result = await client.RetrieveOrganizationBrandPageStatisticsAsync(
+                new RetrieveOrganizationBrandPageStatisticsRequest(CommonURN.OrganizationBrand("72216557"), default)
+                    .WithAccessToken(accessToken));
 
-            var result = await SendRequest(message);
-
-            if (!result.IsSuccess) Assert.Fail(result.Error.Message);
+            if (result.IsError) Assert.Fail(result.Error);
         }
 
         [TestMethod]
         public async Task EmailAddress()
         {
-            var message = new GetEmail(DummyTokenRegistry.ValidTokenId);
+            var (client, accessToken) = await Connection();
 
-            var result = await SendRequest(message);
+            var result = await client.GetEmailAsync(new GetEmailRequest().WithAccessToken(accessToken));
 
-            if (!result.IsSuccess) Assert.Fail(result.Error.Message);
+            if (result.IsError) Assert.Fail(result.Error);
         }
 
         [TestMethod]
         public async Task Profile()
         {
-            var message = new GetMyProfile(DummyTokenRegistry.ValidTokenId);
+            var (client, accessToken) = await Connection();
 
-            var result = await SendRequest(message);
+            var result = await client.GetMyProfileAsync(new GetMyProfileRequest().WithAccessToken(accessToken));
 
-            if (!result.IsSuccess) Assert.Fail(result.Error.Message);
+            if (result.IsError) Assert.Fail(result.Error);
         }
 
         [TestMethod]
         public async Task FindOrganizationByEmailDomain()
         {
-            var message = new FindOrganizationByEmailDomain(
-                DummyTokenRegistry.ValidTokenId,
-                "tasper.nl");
+            var (client, accessToken) = await Connection();
 
-            var result = await SendRequest(message);
+            var result = await client.FindOrganizationByEmailDomainRequestAsync(
+                new FindOrganizationByEmailDomainRequest("tasper.nl")
+                    .WithAccessToken(accessToken));
 
-            if (!result.IsSuccess) Assert.Fail(result.Error.Message);
+            if (result.IsError) Assert.Fail(result.Error);
         }
 
         [TestMethod]
         public async Task FindOrganizationByVanityName()
         {
-            var message = new FindOrganizationByVanityName(
-                DummyTokenRegistry.ValidTokenId,
-                "Fantistics");
+            var (client, accessToken) = await Connection();
 
-            var result = await SendRequest(message);
+            var result = await client.FindOrganizationByVanityNameAsync(
+                new FindOrganizationByVanityNameRequest("Fantistics")
+                    .WithAccessToken(accessToken));
 
-            if (!result.IsSuccess) Assert.Fail(result.Error.Message);
+            if (result.IsError) Assert.Fail(result.Error);
         }
 
         [TestMethod]
         public async Task OrganizationShares()
         {
-            var message = new OrganizationShares(
-                DummyTokenRegistry.ValidTokenId,
-                CommonURN.OrganizationId("37246747"));
+            var (client, accessToken) = await Connection();
 
-            var result = await SendRequest(message);
+            var result = await client.OrganizationSharesAsync(
+                new OrganizationSharesRequest(CommonURN.OrganizationId("37246747"))
+                .WithAccessToken(accessToken));
 
-            if (!result.IsSuccess) Assert.Fail(result.Error.Message);
+            if (!result.IsSuccess) Assert.Fail(result.Error.ReasonText);
         }
 
         [TestMethod]
         public async Task RetrieveLikesOnShares()
         {
-            var message = new RetrieveLikesOnShares(
-                DummyTokenRegistry.ValidTokenId,
-                CommonURN.Share("6762019588700987393")
-                );
+            var (client, accessToken) = await Connection();
 
-            var result = await SendRequest(message);
+            var result = await client.RetrieveLikesOnSharesAsync(
+                new RetrieveLikesOnSharesRequest(CommonURN.Share("6762019588700987393"))
+                    .WithAccessToken(accessToken));
 
-            if (!result.IsSuccess) Assert.Fail(result.Error.Message);
+            if (!result.IsSuccess) Assert.Fail(result.Error.ReasonText);
         }
 
 
         [TestMethod]
         public async Task RetrieveAnAdministeredOrganization()
         {
-            var message = new RetrieveAnAdministeredOrganization(
-                DummyTokenRegistry.ValidTokenId,
-                CommonURN.OrganizationId("72216557"));
+            var (client, accessToken) = await Connection();
 
-            var result = await SendRequest(message);
+            var result = await client.RetrieveAnAdministeredOrganizationAsync(
+                new RetrieveAnAdministeredOrganizationRequest(CommonURN.OrganizationId("72216557"))
+                    .WithAccessToken(accessToken));
 
-            if (!result.IsSuccess) Assert.Fail(result.Error.Message);
+            Assert.AreEqual(HttpStatusCode.Forbidden, result.HttpStatusCode);
+            if (result.IsError) Assert.Fail(result.Error);
         }
 
         [TestMethod]
         public async Task RetrieveOrganizationFollowerCount()
         {
-            var message = new RetrieveOrganizationFollowerCount(
-                DummyTokenRegistry.ValidTokenId,
-                CommonURN.OrganizationId("37246747"));
+            var (client, accessToken) = await Connection();
 
-            var result = await SendRequest(message);
+            var result = await client.RetrieveOrganizationFollowerCountAsync(
+                new RetrieveOrganizationFollowerCountRequest(CommonURN.OrganizationId("37246747"))
+                    .WithAccessToken(accessToken));
 
-            if (!result.IsSuccess) Assert.Fail(result.Error.Message);
+            if (result.IsError) Assert.Fail(result.Error);
         }
 
         [TestMethod, Obsolete]
         public async Task ActivityFeedNetworkShares()
         {
-            var message = new ActivityFeedNetworkShares(
-                DummyTokenRegistry.ValidTokenId,
+            var (client, accessToken) = await Connection();
+
+            var result = await client.ExecuteRequest(new ActivityFeedNetworkSharesRequest(
                 LinkedInURN.None,
                 LinkedInURN.None,
                 null
-                );
+                ).WithAccessToken(accessToken));
 
-            var result = await SendRequest(message);
-
-            if (!result.IsSuccess) Assert.Fail(result.Error.Message);
+            Assert.AreEqual(HttpStatusCode.Unauthorized, result.HttpStatusCode);
+            //if (result.IsError) Assert.Fail(result.Error);
         }
 
         [TestMethod]
         public async Task LookUpShareById()
         {
-            var message = new LookUpShareById(
-                DummyTokenRegistry.ValidTokenId,
-                CommonURN.Share("123"));
+            var (client, accessToken) = await Connection();
 
-            var result = await SendRequest(message);
+            var result = await client.LookUpShareByIdAsync(
+                new LookUpShareByIdRequest(CommonURN.Share("123"))
+                    .WithAccessToken(accessToken));
 
-            if (!result.IsSuccess) Assert.Fail(result.Error.Message);
+
+            if (!result.IsError) Assert.Fail(result.Error);
         }
 
         [TestMethod]
         public async Task RetrieveLifetimeFollowerStatistics()
         {
-            var message = new RetrieveLifetimeFollowerStatistics(
-                DummyTokenRegistry.ValidTokenId,
-                CommonURN.OrganizationId("72216557"),
-                default);
+            var (client, accessToken) = await Connection();
 
-            var result = await SendRequest(message);
+            var result = await client.RetrieveLifetimeFollowerStatisticsAsync(
+                new RetrieveLifetimeFollowerStatisticsRequest(CommonURN.OrganizationId("72216557"), default)
+                    .WithAccessToken(accessToken));
 
-            if (!result.IsSuccess) Assert.Fail(result.Error.Message);
+            if (result.IsError) Assert.Fail(result.Error);
         }
 
         [TestMethod]
         public async Task RetrieveLifetimeOrganizationPageStatistics()
         {
-            var message = new RetrieveLifetimeOrganizationPageStatistics(
-                DummyTokenRegistry.ValidTokenId,
+            var (client, accessToken) = await Connection();
+
+            var result = await client.RetrieveLifetimeOrganizationPageStatisticsAsync(
+                new RetrieveLifetimeOrganizationPageStatisticsRequest(
                 //CommonURN.OrganizationId("72216557"),
                 CommonURN.OrganizationId("37246747"),
                 default
-                );
+                ).WithAccessToken(accessToken));
 
-            var result = await SendRequest(message);
 
-            if (!result.IsSuccess) Assert.Fail(result.Error.Message);
+            if (result.IsError) Assert.Fail(result.Error);
         }
 
         [TestMethod]
         public async Task FindAMembersOrganizationAccessControlInformation()
         {
-            var message = new FindAMembersOrganizationAccessControlInformationRequest(DummyTokenRegistry.ValidTokenId);
+            var (client, accessToken) = await Connection();
 
-            var result = await SendRequest(message);
+            var result = await client.FindAMembersOrganizationAccessControlInformationAsync(
+                new FindAMembersOrganizationAccessControlInformationRequest()
+                    .WithAccessToken(accessToken));
 
-            if (!result.IsSuccess) Assert.Fail(result.Error.Message);
+            if (!result.IsSuccess) Assert.Fail(result.Error.ReasonText);
         }
 
         [TestMethod]
         public async Task FindOrganizationAdministrators()
         {
-            var message = new FindOrganizationAdministrators(
-                DummyTokenRegistry.ValidTokenId,
+            var (client, accessToken) = await Connection();
+
+            var result = await client.FindOrganizationAdministratorsAsync(
+                new FindOrganizationAdministratorsRequest(
                 //CommonURN.OrganizationId("45271")
                 CommonURN.OrganizationId("37246747")
-                );
-
-
-            var result = await SendRequest(message);
+                ).WithAccessToken(accessToken));
 
             if (!result.IsSuccess)
             {
@@ -252,7 +265,7 @@ namespace LinkedInApiClientTests
                     LinkedInHttpError error when error.StatusCode == HttpStatusCode.Unauthorized => "Malformed requests. Typically, the Access Control fields are invalid.",
                     LinkedInHttpError error when error.StatusCode == HttpStatusCode.Forbidden => "A viewer is not present, or the user is not authorized to modify the Access Control.",
                     LinkedInHttpError error when error.StatusCode == HttpStatusCode.NotFound => "The Access Control does not exist.",
-                    _ => result.Error.Message
+                    _ => result.Error.ReasonText
                 };
 
                 Assert.Fail(failure);
@@ -263,13 +276,14 @@ namespace LinkedInApiClientTests
         [TestMethod]
         public async Task ResponseTypeChecking()
         {
+            var (client, accessToken) = await Connection();
             var req = new LinkedInRequest
             {
                 AccessToken = "HelloWorld",
                 Address = "test"
             };
 
-            await SendRequest(req);
+            await client.SendAsync(req);
 
         }
 
@@ -277,18 +291,6 @@ namespace LinkedInApiClientTests
         public async Task ClinetAuthRequest()
         {
             var req = await GetApiDataUsingHttpClientHandler();
-        }
-
-        public async Task<Result<LinkedInError, string>> SendRequest(LinkedInRequest request)
-        {
-            request.Validate();
-
-            var tokenRegistry = DummyTokenRegistry.Create();
-            var client = new LinkedInHttpClient();
-
-            return client.GetAsync(null, request, CancellationToken.None);
-            //var result = await request.HandleAsync(tokenRegistry, client, CancellationToken.None);
-            //return result;
         }
 
         private async Task<JsonDocument> GetApiDataUsingHttpClientHandler()

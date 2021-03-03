@@ -1,11 +1,13 @@
-﻿using System;
+﻿using LinkedInApiClient.Types;
+using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
-namespace LinkedInApiClient.Messages
+namespace LinkedInApiClient
 {
     /// <summary>
     /// A protocol response
@@ -13,6 +15,15 @@ namespace LinkedInApiClient.Messages
     public class LinkedInResponse
     {
         public string Raw { get; protected set; }
+
+        /// <summary>
+        /// Gets the protocol response as JSON (if present).
+        /// </summary>
+        /// <value>
+        /// The json.
+        /// </value>
+        public JsonElement Json { get; protected set; }
+
 
         public HttpResponseMessage HttpResponse { get; protected set; }
 
@@ -81,7 +92,19 @@ namespace LinkedInApiClient.Messages
                     return Exception.Message;
                 }
 
-                return TryGet(OidcConstants.TokenResponse.Error);
+                return string.Empty;
+            }
+        }
+
+        public T ToObject<T>()
+        {
+            if (!IsError)
+            {
+                return JsonSerializer.Deserialize<T>(Raw);
+            }
+            else
+            {
+                return default;
             }
         }
 
@@ -89,12 +112,11 @@ namespace LinkedInApiClient.Messages
         /// <summary>
         /// Initializes a protocol response from an HTTP response
         /// </summary>
-        /// <typeparam name="T">Specific protocol response type</typeparam>
         /// <param name="httpResponse">The HTTP response.</param>
         /// <returns></returns>
-        public static Task<T> FromHttpResponseAsync<T>(HttpResponseMessage httpResponse) where T : LinkedInResponse, new()
+        public static async Task<LinkedInResponse> FromHttpResponseAsync(HttpResponseMessage httpResponse, CancellationToken cancellationToken)
         {
-            T response = new T
+            var response = new LinkedInResponse
             {
                 HttpResponse = httpResponse
             };
@@ -102,17 +124,18 @@ namespace LinkedInApiClient.Messages
             string responseContent = default;
             try
             {
-                responseContent = await response.Content
+                responseContent = await httpResponse.Content
                     .ReadAsStringAsync(cancellationToken)
                     .ConfigureAwait(false);
 
                 response.Raw = responseContent;
             }
-            catch ()
+            catch
             {
             }
 
-            if (!httpResponse.IsSuccessStatusCode && httpResponse)
+            if (httpResponse.IsSuccessStatusCode == false && 
+                httpResponse.StatusCode != HttpStatusCode.BadRequest)
             {
                 response.ErrorType = ResponseErrorType.Http;
 
@@ -120,7 +143,7 @@ namespace LinkedInApiClient.Messages
                 {
                     try
                     {
-                        response.Json = JsonDocument.Parse(content).RootElement;
+                        response.Json = JsonDocument.Parse(responseContent).RootElement;
                     }
                     catch { }
                 }
@@ -138,7 +161,7 @@ namespace LinkedInApiClient.Messages
             {
                 if (!string.IsNullOrWhiteSpace(responseContent))
                 {
-                    response.Json = JsonDocument.Parse(content).RootElement;
+                    response.Json = JsonDocument.Parse(responseContent).RootElement;
                 }
             }
             catch (Exception ex)
@@ -153,13 +176,12 @@ namespace LinkedInApiClient.Messages
         /// <summary>
         /// Initializes a protocol response from an exception
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="ex">The ex.</param>
         /// <param name="errorMessage">The error message.</param>
         /// <returns></returns>
-        public static T FromException<T>(Exception ex, string errorMessage = null) where T : LinkedInResponse, new()
+        public static LinkedInResponse FromException(Exception ex, string errorMessage = null)
         {
-            var response = new T
+            var response = new LinkedInResponse
             {
                 Exception = ex,
                 ErrorType = ResponseErrorType.Exception,

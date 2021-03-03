@@ -26,14 +26,16 @@ namespace SAWebHost
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly IWebHostEnvironment env;
+
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
+            this.env = env;
             Configuration = configuration;
         }
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
@@ -43,7 +45,7 @@ namespace SAWebHost
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddDatabaseDeveloperPageExceptionFilter();
-            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
+            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = env.IsProduction())
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
@@ -65,7 +67,7 @@ namespace SAWebHost
             services.AddAuthentication()
                 .AddCookie()
                 .AddIdentityServerAuthentication("Bearer", options =>
-                {                    
+                {
                     options.Authority = Configuration["Identity:Authority"];
                     //options.RequireHttpsMetadata = Environment.is;
 

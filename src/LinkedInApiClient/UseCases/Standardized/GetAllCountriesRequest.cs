@@ -10,19 +10,14 @@ using System.Threading.Tasks;
 
 namespace LinkedInApiClient.UseCases.Standardized
 {
-    public class GetAllCountries : ILinkedInRequest<Paged<Country>>
+    public class GetAllCountriesRequest : LinkedInRequest //Paged<Country>
     {
-        public GetAllCountries(string tokenId, Locale locale)
+        public GetAllCountriesRequest(Locale locale)
         {
-            TokenId = tokenId;
-            Url = "countries";
+            Address = "countries";
             QueryParameters = Parameters.EmptyParameters
                 + locale.AsQueryParameters();
             QueryParameters.Add("projection", "(*,elements*(*,countryGroup~(*)))");
         }
-
-        public string TokenId { get; }
-        public string Url { get; }
-        public Parameters QueryParameters { get; }
     }
 }

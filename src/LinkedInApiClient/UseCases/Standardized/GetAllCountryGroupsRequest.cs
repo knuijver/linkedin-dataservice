@@ -10,18 +10,13 @@ namespace LinkedInApiClient.UseCases.Standardized
     /// <summary>
     /// https://docs.microsoft.com/nl-nl/linkedin/shared/references/v2/standardized-data/locations/country-groups#get-all
     /// </summary>
-    public class GetAllCountryGroups : ILinkedInRequest<Paged<CountryGroup>>
+    public class GetAllCountryGroupsRequest : LinkedInRequest //Paged<CountryGroup>
     {
-        public GetAllCountryGroups(string tokenId, Locale locale)
+        public GetAllCountryGroupsRequest(Locale locale)
         {
-            TokenId = tokenId;
-            Url = "countries";
+            Address = "countries";
             QueryParameters = Parameters.EmptyParameters
                 + locale.AsQueryParameters();
         }
-
-        public string TokenId { get; }
-        public string Url { get; }
-        public Parameters QueryParameters { get; }
     }
 }

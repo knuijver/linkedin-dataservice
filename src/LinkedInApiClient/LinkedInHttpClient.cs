@@ -38,9 +38,9 @@ namespace LinkedInApiClient
         /// <param name="token">optional Bearer token</param>
         /// <param name="content"><see cref="HttpContent"/></param>
         /// <returns></returns>
-        public static LinkedInRequest CreateRequest(HttpMethod method, Uri uri, string? token, HttpContent? content = null)
+        public static HttpRequestMessage CreateRequest(HttpMethod method, Uri uri, string? token, HttpContent? content = null)
         {
-            var message = new LinkedInRequest(method, uri)
+            var message = new HttpRequestMessage(method, uri)
             {
                 Content = content,
                 Version = new Version(2, 0),
@@ -62,19 +62,22 @@ namespace LinkedInApiClient
         /// <param name="request"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task<Result<LinkedInError, string>> ExecuteRequest(HttpRequestMessage request, CancellationToken cancellationToken)
+        public async Task<Result<LinkedInError, T?>> ExecuteRequest<T>(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             try
             {
-                var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
+                var response = await client
+                    .SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
                     .ConfigureAwait(false);
 
-                Console.WriteLine($"{request.Method} {request.RequestUri}");
+                var responseContent = await response.Content
+                    .ReadAsStringAsync(cancellationToken)
+                    .ConfigureAwait(false);
 
-                var responseContent = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
                 if (response.IsSuccessStatusCode)
                 {
-                    return Result.Success(responseContent);
+                    T? result = ConvertTo<T>(responseContent);
+                    return Result.Success(result);
                 }
                 else
                 {
@@ -92,85 +95,31 @@ namespace LinkedInApiClient
               ex is HttpRequestException ||
               ex is JsonException)
             {
-                return Result.Fail(LinkedInCaughtException.Create($"A {request.Method.Method} request on [{request.RequestUri?.AbsoluteUri ?? "<uri is null>"}] failed.", ex));
-            }
-        }
-
-        /// <summary>
-        /// Send the HttRequestMessage and read the Response as an object of type T when the request is successful,
-        /// otherwise the result will contain an HttpLinkedInError or incase of less unexpected exceptions it will be a LinkedInCaughtException
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="request"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        public async Task<Result<LinkedInError, T?>> ExecuteRequest<T>(HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            var response = await ExecuteRequest(request, cancellationToken);
-            if (response.IsSuccess)
-            {
-                T result = ConvertTo<T>(response.Data);
-                return Result.Success(result);
-            }
-            else
-            {
-                return Result.Fail(response.Error);
+                return Result.Fail(LinkedInError.FromException(ex, $"A {request.Method.Method} request on [{request.RequestUri?.AbsoluteUri ?? "<uri is null>"}] failed."));
             }
         }
 
         private T? ConvertTo<T>(string response)
         {
-            T result = default;
+            T? result = default;
             if (result is JsonElement)
             {
                 var document = JsonDocument.Parse(response);
-                result = (T)(object)document.RootElement;
+                return (T)(object)document.RootElement;
             }
             else if (result is JsonDocument)
             {
                 var document = JsonDocument.Parse(response);
-                result = (T)(object)document.RootElement;
+                return (T)(object)document.RootElement;
             }
             else if (typeof(T).IsClass)
             {
-                result = JsonSerializer.Deserialize<T>(response);
+                return JsonSerializer.Deserialize<T>(response);
             }
             else
             {
-                result = (T)Convert.ChangeType(response, typeof(T));
+                return (T)Convert.ChangeType(response, typeof(T));
             }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Send an HTTP Get request for the given query object, optionally authenticate using a Bearer token.
-        /// </summary>
-        /// <param name="token">Bearer token</param>
-        /// <param name="request">A LinkedIn Query object</param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        public Task<Result<LinkedInError, string>> GetAsync(string token, LinkedInRequest request, CancellationToken cancellationToken)
-        {
-            request.Method = HttpMethod.Get;
-            request.Prepare();
-
-            return ExecuteRequest(message, cancellationToken);
-        }
-
-        /// <summary>
-        /// Send an HTTP Get request for the given query object, optionally authenticate using a Bearer token.
-        /// </summary>
-        /// <param name="token">Bearer token</param>
-        /// <param name="request">A LinkedIn Query object</param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        public Task<Result<LinkedInError, TResponse?>> GetAsync<TResponse>(string token, LinkedInRequest request, CancellationToken cancellationToken)
-        {
-            request.Method = HttpMethod.Get;
-            request.Prepare();
-
-            return ExecuteRequest<TResponse>(message, cancellationToken);
         }
 
         public Task<Result<LinkedInError, RefreshAccessToken?>> RefreshAccessToken(

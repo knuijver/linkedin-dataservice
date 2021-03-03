@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using LinkedInApiClient;
+using LinkedInApiClient.Store;
 using LinkedInApiClient.Types;
 
 namespace LinkedInApiClientTests
@@ -30,26 +31,26 @@ namespace LinkedInApiClientTests
             TokenType = null
         };
 
-        public Task<Result<TokenFailure, string>> AccessTokenAsync(string tokenId, CancellationToken cancellationToken)
+        public Task<Result<LinkedInError, string>> AccessTokenAsync(string tokenId, CancellationToken cancellationToken)
         {
             if (ValidTokenId == tokenId)
-                return Task.FromResult<Result<TokenFailure, string>>(Result.Success(TokenEntry.AccessToken));
+                return Task.FromResult<Result<LinkedInError, string>>(Result.Success(TokenEntry.AccessToken));
             else
-                return Task.FromResult<Result<TokenFailure, string>>(Result.Fail(TokenFailure.Why("AccessToken", $"Invalid token id [{tokenId}]")));
+                return Task.FromResult<Result<LinkedInError, string>>(Result.Fail(LinkedInError.FromTokenResponse($"Invalid token id [{tokenId}]")));
         }
 
-        public Task<Result<TokenFailure, string>> UpdateAccessTokenAsync(string tokenId, string accessToken, string expiresIn, string refreshToken, CancellationToken cancellationToken)
+        public Task<Result<LinkedInError, string>> UpdateAccessTokenAsync(string tokenId, string accessToken, string expiresIn, string refreshToken, CancellationToken cancellationToken)
         {
-            return Task.FromResult<Result<TokenFailure, string>>(Result.Success(string.Empty));
+            return Task.FromResult<Result<LinkedInError, string>>(Result.Success(string.Empty));
         }
 
         public static IAccessTokenRegistry Create() => new DummyTokenRegistry();
 
-        public Task<Result<TokenFailure, ValueTuple>> RefreshTokenAsync(string tokenId, CancellationToken cancellationToken)
+        public Task<Result<LinkedInError, ValueTuple>> RefreshTokenAsync(string tokenId, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
-        public Task<Result<TokenFailure, IStoredToken[]>> ListAsync(CancellationToken cancellationToken)
+        public Task<Result<LinkedInError, IStoredToken[]>> ListAsync(CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

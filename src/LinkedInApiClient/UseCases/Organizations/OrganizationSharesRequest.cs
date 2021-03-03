@@ -9,15 +9,14 @@ using System.Threading.Tasks;
 
 namespace LinkedInApiClient.UseCases.Organizations
 {
-    public class OrganizationShares : ILinkedInRequest<Paged<OrganizationShare>>
+    public class OrganizationSharesRequest : LinkedInRequest
     {
-        public OrganizationShares(string tokenId, LinkedInURN organizationUrn)
+        public OrganizationSharesRequest(LinkedInURN organizationUrn)
         {
             if (organizationUrn.EntityType != "organization")
                 throw new ArgumentException($"{nameof(organizationUrn)} has an invalid URN Type", nameof(organizationUrn));
 
-            TokenId = tokenId;
-            Url = "shares";
+            Address = "shares";
             QueryParameters = new Parameters
             {
                 ["q"] = "owners",
@@ -26,9 +25,5 @@ namespace LinkedInApiClient.UseCases.Organizations
                 ["projection"] = "(*,elements*(*,created(*,actor~(localizedLastName,localizedFirstName,vanityName,localizedHeadline))))"
             };
         }
-
-        public string TokenId { get; }
-        public string Url { get; }
-        public Parameters QueryParameters { get; }
     }
 }

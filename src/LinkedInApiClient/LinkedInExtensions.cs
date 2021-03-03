@@ -3,7 +3,8 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using LinkedInApiClient.Messages;
+using LinkedInApiClient.Store;
+using System.Net.Http;
 
 #nullable enable
 
@@ -15,48 +16,31 @@ namespace LinkedInApiClient
 
         public static Uri HttpRequestUrl(this LinkedInRequest request)
         {
-            return new Uri(request.QueryParameters.ToUrlQueryString(request.Url), UriKind.Relative);
+            return new Uri(request.QueryParameters.ToUrlQueryString(request.Address), UriKind.Relative);
         }
 
-        public static Uri HttpRequestUrl(this IBaseApiRequest request)
+        public static TRequest WithAccessToken<TRequest>(this TRequest request, string accessToken) where TRequest : LinkedInRequest
         {
-            return new Uri(request.QueryParameters.ToUrlQueryString(request.Url), UriKind.Relative);
+            request.AccessToken = accessToken;
+            return request;
         }
 
-        public static void Validate<T>(this ILinkedInRequest<T> request)
+        public static async Task<Result<LinkedInError, T>> Send<T>(
+            this LinkedInRequest request,
+            IAccessTokenRegistry tokenRegistry,
+            string tokenId,
+            HttpMessageInvoker client,
+            CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(request.TokenId))
-            {
-                throw new ArgumentException($"'{nameof(request.TokenId)}' cannot be null or empty", nameof(request.TokenId));
-            }
-
-            Validate((IBaseApiRequest)request);
-        }
-
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public static void Validate(this IBaseApiRequest request)
-        {
-            if (request.QueryParameters == null)
-            {
-                throw new ArgumentNullException(nameof(request.QueryParameters));
-            }
-
-            if (request.Url == null || request.Url.Length == 0)
-            {
-                throw new ArgumentException(nameof(request.Url));
-            }
-        }
-
-        public static async Task<Result<LinkedInError, T?>> HandleAsync<T>(this ILinkedInRequest<T> request, IAccessTokenRegistry tokenRegistry, LinkedInHttpClient client, CancellationToken cancellationToken)
-        {
-            var token = await tokenRegistry.AccessTokenAsync(request.TokenId, cancellationToken);
+            var token = await tokenRegistry.AccessTokenAsync(tokenId, cancellationToken);
             if (token.IsSuccess)
             {
-                return await client.GetAsync<T>(token.Data, request, cancellationToken).ConfigureAwait(false);
+                request.AccessToken = token.Data;
+                return await client.GetAsync<T>(request, cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                return Result.Fail(LinkedInAccessTokenError.Create(token.Error));
+                return Result.Fail(token.Error);
             }
         }
 

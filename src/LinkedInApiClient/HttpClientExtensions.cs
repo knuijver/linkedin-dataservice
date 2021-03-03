@@ -3,7 +3,6 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using LinkedInApiClient.Messages;
 using LinkedInApiClient.Types;
 
 #nullable enable
@@ -24,40 +23,20 @@ namespace LinkedInApiClient
         /// <param name="request"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public static async Task<Result<LinkedInError, string>> ExecuteRequest(HttpMessageInvoker client, LinkedInRequest request, CancellationToken cancellationToken)
+        public static async Task<LinkedInResponse> ExecuteRequest(this HttpMessageInvoker client, LinkedInRequest request, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
-                    .ConfigureAwait(false);
+            var httpResponse = await client.SendAsync(request, cancellationToken)
+                .ConfigureAwait(false);
 
-                
-
-                var responseContent = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-                if (response.IsSuccessStatusCode)
-                {
-                    return Result.Success(responseContent);
-                }
-                else
-                {
-                    var error = string.IsNullOrEmpty(responseContent)
-                        ? default
-                        : JsonSerializer.Deserialize<ErrorResponse>(responseContent);
-
-                    return LinkedInHttpError
-                        .From(error)
-                        .ToResult();
-                }
-            }
-            catch (Exception ex) when (ex is ArgumentNullException ||
-              ex is InvalidOperationException ||
-              ex is HttpRequestException ||
-              ex is JsonException)
-            {
-                return Result.Fail(LinkedInCaughtException.Create($"A {request.Method.Method} request on [{request.RequestUri?.AbsoluteUri ?? "<uri is null>"}] failed.", ex));
-            }
+            var response = await LinkedInResponse.FromHttpResponseAsync(httpResponse, cancellationToken);
+            return response;
         }
 
+        /// <summary>
+        /// Convert a string result to Json
+        /// </summary>
+        /// <param name="result"></param>
+        /// <returns></returns>
         public static Result<LinkedInError, JsonElement> ToJsonElement(this Result<LinkedInError, string> result)
         {
             if (result.Try(out string json))
@@ -70,22 +49,14 @@ namespace LinkedInApiClient
             }
         }
 
+        /// <summary>
+        /// Convert a string result to Json
+        /// </summary>
+        /// <param name="result"></param>
+        /// <returns></returns>
         public static Task<Result<LinkedInError, JsonElement>> ToJsonElementAsync(this Task<Result<LinkedInError, string>> result)
         {
-            return result.ContinueWith(task =>
-            {
-                if (task.IsCompletedSuccessfully)
-                {
-                    if(task.Result.Try(out string json))
-                    {
-                        return Result.Success(JsonDocument.Parse(json).RootElement);
-                    }
-                    else
-                    {
-                        return Result.Fail(result.Result.Error);
-                    }
-                }
-            });
+            return result.ContinueWith(task => ToJsonElement(task.Result));
         }
 
         /// <summary>
@@ -95,12 +66,42 @@ namespace LinkedInApiClient
         /// <param name="request">A LinkedIn Query object</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public Task<Result<LinkedInError, string>> GetAsync(HttpMessageInvoker client, LinkedInRequest request, CancellationToken cancellationToken)
+        public static Task<LinkedInResponse> GetAsync(this HttpMessageInvoker client, LinkedInRequest request, CancellationToken cancellationToken = default)
         {
             request.Method = HttpMethod.Get;
             request.Prepare();
 
-            return clietn.ExecuteRequest(request, cancellationToken);
+            return ExecuteRequest(client, request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Send an HTTP Get request for the given query object, optionally authenticate using a Bearer token.
+        /// </summary>
+        /// <param name="token">Bearer token</param>
+        /// <param name="request">A LinkedIn Query object</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public static async Task<Result<LinkedInError, T>> GetAsync<T>(this HttpMessageInvoker client, LinkedInRequest request, CancellationToken cancellationToken = default)
+        {
+            request.Method = HttpMethod.Get;
+            request.Prepare();
+
+            try
+            {
+                var response = await client.ExecuteRequest(request, cancellationToken);
+                if (response.IsError)
+                {
+                    return Result.Fail(LinkedInError.FromResponseError(response));
+                }
+                else
+                {
+                    return Result.Success(response.ToObject<T>());
+                }
+            }
+            catch (Exception ex)
+            {
+                return Result.Fail(LinkedInError.FromException(ex));
+            }
         }
 
     }

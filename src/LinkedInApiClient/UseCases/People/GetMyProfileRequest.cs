@@ -1,14 +1,12 @@
 ﻿using System;
-using LinkedInApiClient.Messages;
 using LinkedInApiClient.Types;
 
 namespace LinkedInApiClient.UseCases.People
 {
-    public class GetMyProfile : LinkedInRequest
+    public class GetMyProfileRequest : LinkedInRequest
     {
-        public GetMyProfile(string accessToken)
+        public GetMyProfileRequest()
         {
-            AccessToken = accessToken;
             Address = "me";
             QueryParameters = new Parameters
             {

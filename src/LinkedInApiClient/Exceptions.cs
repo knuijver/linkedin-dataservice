@@ -1,77 +1,65 @@
 ﻿using System;
 using System.Net;
 using System.Text.Json.Serialization;
+using LinkedInApiClient.UseCases.Models;
 
 namespace LinkedInApiClient
 {
-    public abstract class LinkedInError
+    public enum LinkedInErrorType
+    {
+        None,
+        Protocol,
+        Http,
+        Exception,
+        AccessToken
+    }
+
+    public class LinkedInError
     {
         public LinkedInError(string message)
         {
-            this.Message = message;
+            this.ReasonText = message;
         }
 
-        public string Message { get; private set; }
-    }
+        public string ReasonText { get; private set; }
 
-    public class LinkedInAccessTokenError : LinkedInError
-    {
-        public LinkedInAccessTokenError(TokenFailure failure)
-            : base(failure.Message)
+        public HttpStatusCode StatusCode { get; private set; }
+
+        public int ServiceErrorCode { get; private set; }
+
+        public Exception Exception { get; private set; }
+
+        public LinkedInErrorType ErrorType { get; private set; } = LinkedInErrorType.None;
+
+        public static LinkedInError FromException(Exception ex, string errorMessage = default)
         {
-            this.FailureType = failure.FailureType;
+            return new LinkedInError(errorMessage ?? ex.Message)
+            {
+                Exception = ex,
+                ErrorType = LinkedInErrorType.Exception
+            };
+        }
+        public static LinkedInError FromResponseError(LinkedInResponse response)
+        {
+            return new LinkedInError(response.Error);
         }
 
-        public string FailureType { get; }
-
-        public static LinkedInError Create(TokenFailure error)
+        public static LinkedInError FromTokenResponse(string message)
         {
-            return new LinkedInAccessTokenError(error);
+            return new LinkedInError(message)
+            {
+                ErrorType = LinkedInErrorType.AccessToken
+            };
         }
     }
 
     public static class LinkedInErrorExtensions
     {
-        public static bool TryErrorType<T>(this LinkedInError error, out T actualError)
-            where T : LinkedInError
+        public static Result<LinkedInError, T> IfError<T>(this Result<LinkedInError, T> error, Action<LinkedInError> handle)
         {
-            if (error is T tmp)
+            if (!error.IsSuccess)
             {
-                actualError = tmp;
-                return true;
-            }
-            else
-            {
-                actualError = default;
-                return false;
-            }
-        }
-
-        public static Result<LinkedInError, T> IfHttpError<T>(this Result<LinkedInError, T> error, Action<LinkedInHttpError> handle)
-        {
-            if (!error.IsSuccess && TryErrorType<LinkedInHttpError>(error.Error, out var httpError))
-            {
-                handle(httpError);
-                return default;
-            }
-
-            return error;
-        }
-        public static Result<LinkedInError, T> IfException<T>(this Result<LinkedInError, T> error, Action<LinkedInCaughtException> handle)
-        {
-            if (!error.IsSuccess && TryErrorType<LinkedInCaughtException>(error.Error, out var httpError))
-            {
-                handle(httpError);
-                return default;
-            }
-
-            return error;
-        }
-        public static Result<LinkedInError, T> IfTokenFailure<T>(this Result<LinkedInError, T> error, Action<LinkedInAccessTokenError> handle)
-        {
-            if (!error.IsSuccess && TryErrorType<LinkedInAccessTokenError>(error.Error, out var httpError))
-            {
-                handle(httpError);
+                handle(error.Error);
                 return default;
             }
 

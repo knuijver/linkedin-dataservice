@@ -14,7 +14,7 @@ namespace LinkedInApiClient.UseCases.Models
 
     public static class PaginationExtensions
     {
-        public static ILinkedInRequest<TElement> NextPageRequest<TElement>(this Paged<TElement> model, ILinkedInRequest<TElement> request)
+        public static LinkedInRequest NextPageRequest<TElement>(this Paged<TElement> model, LinkedInRequest request)
         {
             var next = model.Paging.Start + model.Paging.Count;
             request.QueryParameters["start"] = next.ToString();

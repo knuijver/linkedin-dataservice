@@ -1,4 +1,3 @@
-using LinkedInApiClient;
 using LinkedInWorkerService.Common;
 using LinkedInWorkerService.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
+using LinkedInApiClient.Store;
 
 namespace LinkedInWorkerService
 {

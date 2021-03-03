@@ -2,16 +2,16 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace LinkedInApiClient
+namespace LinkedInApiClient.Store
 {
     public interface IAccessTokenRegistry
     {
-        Task<Result<TokenFailure, string>> AccessTokenAsync(string tokenId, CancellationToken cancellationToken);
+        Task<Result<LinkedInError, string>> AccessTokenAsync(string tokenId, CancellationToken cancellationToken);
 
-        Task<Result<TokenFailure, string>> UpdateAccessTokenAsync(string tokenId, string accessToken, string expiresIn, string refreshToken, CancellationToken cancellationToken);
+        Task<Result<LinkedInError, string>> UpdateAccessTokenAsync(string tokenId, string accessToken, string expiresIn, string refreshToken, CancellationToken cancellationToken);
 
-        Task<Result<TokenFailure, ValueTuple>> RefreshTokenAsync(string tokenId, CancellationToken cancellationToken);
+        Task<Result<LinkedInError, ValueTuple>> RefreshTokenAsync(string tokenId, CancellationToken cancellationToken);
 
-        Task<Result<TokenFailure, IStoredToken[]>> ListAsync(CancellationToken cancellationToken);
+        Task<Result<LinkedInError, IStoredToken[]>> ListAsync(CancellationToken cancellationToken);
     }
 }

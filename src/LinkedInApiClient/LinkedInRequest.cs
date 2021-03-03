@@ -9,7 +9,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace LinkedInApiClient.Messages
+namespace LinkedInApiClient
 {
     /// <summary>
     /// An HttpRequestMessage with HTTP2 set as default and optionally add a Bearer token
@@ -35,6 +35,16 @@ namespace LinkedInApiClient.Messages
 
         public void Prepare()
         {
+            if (QueryParameters == null)
+            {
+                throw new ArgumentNullException(nameof(QueryParameters));
+            }
+
+            if (Address == null || Address.Length == 0)
+            {
+                throw new ArgumentException(nameof(Address));
+            }
+
             base.RequestUri = new Uri(QueryParameters.ToUrlQueryString(Address), UriKind.Relative);
 
             if (AccessToken != null) this.SetBearerToken(AccessToken);

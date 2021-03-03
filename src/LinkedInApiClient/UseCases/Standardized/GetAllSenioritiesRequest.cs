@@ -9,18 +9,13 @@ namespace LinkedInApiClient.UseCases.Standardized
     /// <summary>
     /// https://docs.microsoft.com/nl-nl/linkedin/shared/references/v2/standardized-data/seniorities#get_all
     /// </summary>
-    public class GetAllSeniorities : ILinkedInRequest
+    public class GetAllSenioritiesRequest : LinkedInRequest
     {
-        public GetAllSeniorities(string tokenId, Locale locale)
+        public GetAllSenioritiesRequest(Locale locale)
         {
-            TokenId = tokenId;
-            Url = "seniorities";
+            Address = "seniorities";
             QueryParameters = Parameters.EmptyParameters +
                 locale.AsQueryParameters();
         }
-
-        public string TokenId { get; }
-        public string Url { get; }
-        public Parameters QueryParameters { get; }
     }
 }

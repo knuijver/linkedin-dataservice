@@ -5,26 +5,19 @@ using LinkedInApiClient.Types;
 
 namespace LinkedInApiClient.UseCases.CareerPageStatistics
 {
-    public class RetrieveOrganizationBrandPageStatistics : ILinkedInRequest
+    public class RetrieveOrganizationBrandPageStatisticsRequest : LinkedInRequest
     {
-        public RetrieveOrganizationBrandPageStatistics(LinkedInURN organizationBrand, TimeInterval timeInterval, string tokenId)
+        public RetrieveOrganizationBrandPageStatisticsRequest(LinkedInURN organizationBrand, TimeInterval timeInterval)
         {
-            if (organizationBrand.EntityType != "organizationBrand") 
+            if (organizationBrand.EntityType != "organizationBrand")
                 throw new ArgumentException($"{nameof(organizationBrand)} has an invalid URN Type", nameof(organizationBrand));
 
-            TokenId = tokenId;
-            Url = "brandPageStatistics";
+            Address = "brandPageStatistics";
             QueryParameters = new Parameters
             {
                 ["q"] = "brand",
                 ["brand"] = organizationBrand
             } + timeInterval.AsQueryParameters();
         }
-
-        public string Url { get; }
-
-        public Parameters QueryParameters { get; }
-
-        public string TokenId { get; }
     }
 }

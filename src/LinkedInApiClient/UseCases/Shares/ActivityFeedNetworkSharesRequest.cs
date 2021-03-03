@@ -8,12 +8,11 @@ using System.Threading.Tasks;
 namespace LinkedInApiClient.UseCases.Shares
 {
     [Obsolete("This API is deprecated. Access is no longer being granted.")]
-    public class ActivityFeedNetworkShares : ILinkedInRequest
+    public class ActivityFeedNetworkSharesRequest : LinkedInRequest
     {
-        public ActivityFeedNetworkShares(string tokenId, LinkedInURN before, LinkedInURN after, int? count)
+        public ActivityFeedNetworkSharesRequest(LinkedInURN before, LinkedInURN after, int? count)
         {
-            TokenId = tokenId;
-            Url = "activityFeeds";
+            Address = "activityFeeds";
             QueryParameters = new Parameters
             {
                 ["q"] = "networkShares"
@@ -23,9 +22,5 @@ namespace LinkedInApiClient.UseCases.Shares
             if (after.HasValue) QueryParameters.Add("after", after);
             if (count.HasValue) QueryParameters.Add("count", count.ToString());
         }
-
-        public string TokenId { get; }
-        public string Url { get; }
-        public Parameters QueryParameters { get; }
     }
 }
