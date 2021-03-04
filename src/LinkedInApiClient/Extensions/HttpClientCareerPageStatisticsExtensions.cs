@@ -12,12 +12,15 @@ namespace LinkedInApiClient.Extensions
         public static Task<LinkedInResponse> RetrieveOrganizationBrandPageStatisticsAsync(
             this HttpMessageInvoker client,
             RetrieveOrganizationBrandPageStatisticsRequest request,
+            string accessToken,
             CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(request.AccessToken)) throw new ArgumentNullException(nameof(request.AccessToken));
 
             request.Method = HttpMethod.Get;
-            request.Prepare();
+            request
+                .WithAccessToken(accessToken)
+                .Prepare();
 
             return client.ExecuteRequest(request, cancellationToken);
         }

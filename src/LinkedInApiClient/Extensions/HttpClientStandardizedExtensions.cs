@@ -14,39 +14,45 @@ namespace LinkedInApiClient.Extensions
         public static Task<Result<LinkedInError, Paged<Country>>> GetAllCountriesAsync(
             this HttpMessageInvoker client,
             GetAllCountriesRequest request,
+            string accessToken,
             CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(request.AccessToken)) throw new ArgumentNullException(nameof(request.AccessToken));
-            return client.GetAsync<Paged<Country>>(request, cancellationToken);
+            return client.GetAsync<Paged<Country>>(request.WithAccessToken(accessToken), cancellationToken);
         }
 
         public static Task<Result<LinkedInError, Paged<CountryGroup>>> GetAllCountryGroupsAsync(
             this HttpMessageInvoker client,
             GetAllCountryGroupsRequest request,
+            string accessToken,
             CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(request.AccessToken)) throw new ArgumentNullException(nameof(request.AccessToken));
-            return client.GetAsync<Paged<CountryGroup>>(request, cancellationToken);
+            return client.GetAsync<Paged<CountryGroup>>(request.WithAccessToken(accessToken), cancellationToken);
         }
 
         public static Task<Result<LinkedInError, Paged<JobsFunction>>> GetAllFunctionsAsync(
             this HttpMessageInvoker client,
             GetAllFunctionsRequest request,
+            string accessToken,
             CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(request.AccessToken)) throw new ArgumentNullException(nameof(request.AccessToken));
-            return client.GetAsync<Paged<JobsFunction>>(request, cancellationToken);
+            return client.GetAsync<Paged<JobsFunction>>(request.WithAccessToken(accessToken), cancellationToken);
         }
 
         public static Task<LinkedInResponse> GetAllSenioritiesAsync(
             this HttpMessageInvoker client,
             GetAllSenioritiesRequest request,
+            string accessToken,
             CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(request.AccessToken)) throw new ArgumentNullException(nameof(request.AccessToken));
 
             request.Method = HttpMethod.Get;
-            request.Prepare();
+            request
+                .WithAccessToken(accessToken)
+                .Prepare();
 
             return client.ExecuteRequest(request, cancellationToken);
         }

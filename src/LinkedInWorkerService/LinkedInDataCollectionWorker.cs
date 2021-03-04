@@ -13,6 +13,9 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using LinkedInApiClient.UseCases.AccessControl;
+using LinkedInApiClient.UseCases.Organizations;
+using LinkedInApiClient.UseCases.People;
+using LinkedInApiClient.Messages;
 
 namespace LinkedInWorkerService
 {
@@ -25,13 +28,13 @@ namespace LinkedInWorkerService
     }
     public class LinkedInDataCollectionWorker : BackgroundService
     {
-        private readonly ILogger<LinkedInDataCollectionWorker> _logger;
+        private readonly ILogger<LinkedInDataCollectionWorker> logger;
         private readonly IAccessTokenRegistry tokenRegistry;
 
         public LinkedInDataCollectionWorker(ILogger<LinkedInDataCollectionWorker> logger, IAccessTokenRegistry tokenRegistry)
         {
             this.tokenRegistry = tokenRegistry;
-            _logger = logger;
+            this.logger = logger;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -40,53 +43,55 @@ namespace LinkedInWorkerService
                 .UseDefaultLinkedInBaseUrl();
 
             var accessTokens = await tokenRegistry.ListAsync(CancellationToken.None);
-            // all Me
-            // or find organizations
-            //LinkedIn.
-            // administrated organizations
-
-            //var (error, element) = (await GenericApiQuery.Create(URN.TokenStoreUrn("token", "c6379d94"), "", QueryParameterCollection.EmptyParameters)
-            //    .Handle(tokenRegistry, client, stoppingToken));
-
             if (accessTokens.Try(out var tokens))
             {
                 foreach (var token in tokens)
                 {
-                    var me = await client.GetMyProfileAsync(new LinkedInApiClient.UseCases.People.GetMyProfileRequest(), stoppingToken);
+                    var accessToken = token.AccessToken;
+
+                    var me = await client.GetMyProfileAsync(new GetMyProfileRequest(), accessToken, stoppingToken);
                     if (!me.IsError)
                     {
-
+                        logger.LogInformation("Collecting for {Person}", me.Raw);
                     }
-                }
-            }
 
-            var accessTokenResult = await tokenRegistry.AccessTokenAsync(URN.TokenStoreUrn("token", "c6379d94"), stoppingToken);
-            if (accessTokenResult.Try(out string accesToken))
-            {
-                await client.FindOrganizationAdministratorsAsync(
-                    new FindOrganizationAdministratorsRequest(CommonURN.OrganizationId(""))
-                        .WithAccessToken(accesToken));
+                    var organizations = await client.FindAMembersOrganizationAccessControlInformationAsync(
+                        new FindAMembersOrganizationAccessControlInformationRequest(), accessToken, stoppingToken);
 
-                var res = await client.FindAMembersOrganizationAccessControlInformationAsync(
-                    new FindAMembersOrganizationAccessControlInformationRequest()
-                        .WithAccessToken(accesToken));
-
-                if (res.IsSuccess)
-                {
-                    foreach (var item in res.Data.Elements)
+                    if (organizations.Try(out var paged))
                     {
-                        _logger.LogInformation(JsonSerializer.Serialize(item));
+                        foreach (var org in paged.Elements)
+                        {
+                            logger.LogInformation("{OrganizationName} - {Urn} with {Role}",
+                                org.Organization.Name,
+                                org.OrganizationUrn,
+                                org.Role);
+
+                            var orginizationUrn = org.OrganizationUrn;
+
+                            var followerStatistics = await client.RetrieveLifetimeFollowerStatisticsAsync(
+                                new RetrieveLifetimeFollowerStatisticsRequest(orginizationUrn, default), accessToken, stoppingToken);
+
+                            var pageStatistics = await client.RetrieveLifetimeOrganizationPageStatisticsAsync(
+                                new RetrieveLifetimeOrganizationPageStatisticsRequest(orginizationUrn, default), accessToken, stoppingToken);
+
+                            var posts = await client.FindUGCPostsByAuthorsAsync(
+                                new FindUGCPostsByAuthorsRequest(orginizationUrn), accessToken, stoppingToken);
+
+                            var socialActions = await client.BatchGetASummaryOfSocialActionsAsync(
+                                new BatchGetASummaryOfSocialActionsRequest(), accessToken, stoppingToken);
+                        }
                     }
-                }
-                else
-                {
-                    _logger.LogWarning("LINKEDIN FAIL: {Message}", res.Error.ReasonText);
+                    else
+                    {
+                        logger.LogWarning("LINKEDIN FAIL: {Message}", organizations.Error.ReasonText);
+                    }
                 }
             }
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+                logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 await Task.Delay(1000, stoppingToken);
             }
         }
