@@ -14,19 +14,21 @@ namespace LinkedInApiClient.Extensions
         public static Task<Result<LinkedInError, SummaryOfSocialAction>> RetrieveASummaryOfSocialActionsAsync(
             this HttpMessageInvoker client,
             RetrieveASummaryOfSocialActionsRequest request,
+            string accessToken,
             CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(request.AccessToken)) throw new ArgumentNullException(nameof(request.AccessToken));
-            return client.GetAsync<SummaryOfSocialAction>(request, cancellationToken);
+            return client.GetAsync<SummaryOfSocialAction>(request.WithAccessToken(accessToken), cancellationToken);
         }
 
         public static Task<Result<LinkedInError, Paged<LikesOnShares>>> RetrieveLikesOnSharesAsync(
             this HttpMessageInvoker client,
             RetrieveLikesOnSharesRequest request,
+            string accessToken,
             CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(request.AccessToken)) throw new ArgumentNullException(nameof(request.AccessToken));
-            return client.GetAsync<Paged<LikesOnShares>>(request, cancellationToken);
+            return client.GetAsync<Paged<LikesOnShares>>(request.WithAccessToken(accessToken), cancellationToken);
         }
     }
 }

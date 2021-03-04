@@ -6,11 +6,6 @@ using System.Threading.Tasks;
 using LinkedInApiClient.UseCases.Models;
 using LinkedInApiClient.UseCases.Organizations;
 using LinkedInApiClient.UseCases.Organizations.Models;
-using LinkedInApiClient.UseCases.Shares;
-using LinkedInApiClient.UseCases.Social;
-using LinkedInApiClient.UseCases.Social.Models;
-using LinkedInApiClient.UseCases.Standardized;
-using LinkedInApiClient.UseCases.Standardized.Models;
 
 namespace LinkedInApiClient.Extensions
 {
@@ -19,12 +14,15 @@ namespace LinkedInApiClient.Extensions
         public static Task<LinkedInResponse> FindOrganizationByEmailDomainRequestAsync(
             this HttpMessageInvoker client,
             FindOrganizationByEmailDomainRequest request,
+            string accessToken,
             CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(request.AccessToken)) throw new ArgumentNullException(nameof(request.AccessToken));
             
             request.Method = HttpMethod.Get;
-            request.Prepare();
+            request
+                .WithAccessToken(accessToken)
+                .Prepare();
 
             return client.ExecuteRequest(request, cancellationToken);
         }
@@ -32,12 +30,15 @@ namespace LinkedInApiClient.Extensions
         public static Task<LinkedInResponse> FindOrganizationByVanityNameAsync(
             this HttpMessageInvoker client,
             FindOrganizationByVanityNameRequest request,
+            string accessToken,
             CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(request.AccessToken)) throw new ArgumentNullException(nameof(request.AccessToken));
 
             request.Method = HttpMethod.Get;
-            request.Prepare();
+            request
+                .WithAccessToken(accessToken)
+                .Prepare();
 
             return client.ExecuteRequest(request, cancellationToken);
         }
@@ -45,21 +46,25 @@ namespace LinkedInApiClient.Extensions
         public static Task<Result<LinkedInError, Paged<OrganizationShare>>> OrganizationSharesAsync(
             this HttpMessageInvoker client,
             OrganizationSharesRequest request,
+            string accessToken,
             CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(request.AccessToken)) throw new ArgumentNullException(nameof(request.AccessToken));
-            return client.GetAsync<Paged<OrganizationShare>>(request, cancellationToken);
+            return client.GetAsync<Paged<OrganizationShare>>(request.WithAccessToken(accessToken), cancellationToken);
         }
 
         public static Task<LinkedInResponse> RetrieveAnAdministeredOrganizationAsync(
             this HttpMessageInvoker client,
             RetrieveAnAdministeredOrganizationRequest request,
+            string accessToken,
             CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(request.AccessToken)) throw new ArgumentNullException(nameof(request.AccessToken));
 
             request.Method = HttpMethod.Get;
-            request.Prepare();
+            request
+                .WithAccessToken(accessToken)
+                .Prepare();
 
             return client.ExecuteRequest(request, cancellationToken);
         }
@@ -67,12 +72,15 @@ namespace LinkedInApiClient.Extensions
         public static Task<LinkedInResponse> RetrieveLifetimeFollowerStatisticsAsync(
             this HttpMessageInvoker client,
             RetrieveLifetimeFollowerStatisticsRequest request,
+            string accessToken,
             CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(request.AccessToken)) throw new ArgumentNullException(nameof(request.AccessToken));
 
             request.Method = HttpMethod.Get;
-            request.Prepare();
+            request
+                .WithAccessToken(accessToken)
+                .Prepare();
 
             return client.ExecuteRequest(request, cancellationToken);
         }
@@ -80,12 +88,15 @@ namespace LinkedInApiClient.Extensions
         public static Task<LinkedInResponse> RetrieveLifetimeOrganizationPageStatisticsAsync(
             this HttpMessageInvoker client,
             RetrieveLifetimeOrganizationPageStatisticsRequest request,
+            string accessToken,
             CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(request.AccessToken)) throw new ArgumentNullException(nameof(request.AccessToken));
 
             request.Method = HttpMethod.Get;
-            request.Prepare();
+            request
+                .WithAccessToken(accessToken)
+                .Prepare();
 
             return client.ExecuteRequest(request, cancellationToken);
         }
@@ -93,12 +104,15 @@ namespace LinkedInApiClient.Extensions
         public static Task<LinkedInResponse> RetrieveOrganizationFollowerCountAsync(
             this HttpMessageInvoker client,
             RetrieveOrganizationFollowerCountRequest request,
+            string accessToken,
             CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(request.AccessToken)) throw new ArgumentNullException(nameof(request.AccessToken));
 
             request.Method = HttpMethod.Get;
-            request.Prepare();
+            request
+                .WithAccessToken(accessToken)
+                .Prepare();
 
             return client.ExecuteRequest(request, cancellationToken);
         }

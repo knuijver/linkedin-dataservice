@@ -23,7 +23,7 @@ namespace LinkedInApiClientTests
 {
     [TestClass]
     [TestCategory("Integration Tests")]
-    [Ignore("Only run in dev env. may require new AccessTokens")]
+    //[Ignore("Only run in dev env. may require new AccessTokens")]
     public class LinkedInApi_IntegrationTests
     {
         [TestMethod]
@@ -54,7 +54,7 @@ namespace LinkedInApiClientTests
 
             var result = await client.GetAllFunctionsAsync(
                 new GetAllFunctionsRequest(Locale.From(new CultureInfo("nl-NL")).ToString())
-                    .WithAccessToken(accessToken));
+                    , accessToken);
 
 
             if (!result.IsSuccess) Assert.Fail(result.Error.ReasonText);
@@ -69,7 +69,7 @@ namespace LinkedInApiClientTests
         {
             var (client, accessToken) = await Connection();
 
-            var result = await client.GetAllCountriesAsync(new GetAllCountriesRequest(Locale.Default).WithAccessToken(accessToken));
+            var result = await client.GetAllCountriesAsync(new GetAllCountriesRequest(Locale.Default), accessToken);
 
             if (!result.IsSuccess) Assert.Fail(result.Error.ReasonText);
         }
@@ -80,7 +80,7 @@ namespace LinkedInApiClientTests
             var (client, accessToken) = await Connection();
             var result = await client.RetrieveOrganizationBrandPageStatisticsAsync(
                 new RetrieveOrganizationBrandPageStatisticsRequest(CommonURN.OrganizationBrand("72216557"), default)
-                    .WithAccessToken(accessToken));
+                    , accessToken);
 
             if (result.IsError) Assert.Fail(result.Error);
         }
@@ -90,7 +90,7 @@ namespace LinkedInApiClientTests
         {
             var (client, accessToken) = await Connection();
 
-            var result = await client.GetEmailAsync(new GetEmailRequest().WithAccessToken(accessToken));
+            var result = await client.GetEmailAsync(new GetEmailRequest(), accessToken);
 
             if (result.IsError) Assert.Fail(result.Error);
         }
@@ -100,7 +100,7 @@ namespace LinkedInApiClientTests
         {
             var (client, accessToken) = await Connection();
 
-            var result = await client.GetMyProfileAsync(new GetMyProfileRequest().WithAccessToken(accessToken));
+            var result = await client.GetMyProfileAsync(new GetMyProfileRequest(), accessToken);
 
             if (result.IsError) Assert.Fail(result.Error);
         }
@@ -112,7 +112,7 @@ namespace LinkedInApiClientTests
 
             var result = await client.FindOrganizationByEmailDomainRequestAsync(
                 new FindOrganizationByEmailDomainRequest("tasper.nl")
-                    .WithAccessToken(accessToken));
+                    , accessToken);
 
             if (result.IsError) Assert.Fail(result.Error);
         }
@@ -124,7 +124,7 @@ namespace LinkedInApiClientTests
 
             var result = await client.FindOrganizationByVanityNameAsync(
                 new FindOrganizationByVanityNameRequest("Fantistics")
-                    .WithAccessToken(accessToken));
+                    , accessToken);
 
             if (result.IsError) Assert.Fail(result.Error);
         }
@@ -136,7 +136,7 @@ namespace LinkedInApiClientTests
 
             var result = await client.OrganizationSharesAsync(
                 new OrganizationSharesRequest(CommonURN.OrganizationId("37246747"))
-                .WithAccessToken(accessToken));
+                , accessToken);
 
             if (!result.IsSuccess) Assert.Fail(result.Error.ReasonText);
         }
@@ -148,7 +148,7 @@ namespace LinkedInApiClientTests
 
             var result = await client.RetrieveLikesOnSharesAsync(
                 new RetrieveLikesOnSharesRequest(CommonURN.Share("6762019588700987393"))
-                    .WithAccessToken(accessToken));
+                    , accessToken);
 
             if (!result.IsSuccess) Assert.Fail(result.Error.ReasonText);
         }
@@ -161,7 +161,7 @@ namespace LinkedInApiClientTests
 
             var result = await client.RetrieveAnAdministeredOrganizationAsync(
                 new RetrieveAnAdministeredOrganizationRequest(CommonURN.OrganizationId("72216557"))
-                    .WithAccessToken(accessToken));
+                    , accessToken);
 
             Assert.AreEqual(HttpStatusCode.Forbidden, result.HttpStatusCode);
             if (result.IsError) Assert.Fail(result.Error);
@@ -174,7 +174,7 @@ namespace LinkedInApiClientTests
 
             var result = await client.RetrieveOrganizationFollowerCountAsync(
                 new RetrieveOrganizationFollowerCountRequest(CommonURN.OrganizationId("37246747"))
-                    .WithAccessToken(accessToken));
+                    , accessToken);
 
             if (result.IsError) Assert.Fail(result.Error);
         }
@@ -201,7 +201,7 @@ namespace LinkedInApiClientTests
 
             var result = await client.LookUpShareByIdAsync(
                 new LookUpShareByIdRequest(CommonURN.Share("123"))
-                    .WithAccessToken(accessToken));
+                    , accessToken);
 
 
             if (!result.IsError) Assert.Fail(result.Error);
@@ -214,7 +214,7 @@ namespace LinkedInApiClientTests
 
             var result = await client.RetrieveLifetimeFollowerStatisticsAsync(
                 new RetrieveLifetimeFollowerStatisticsRequest(CommonURN.OrganizationId("72216557"), default)
-                    .WithAccessToken(accessToken));
+                    , accessToken);
 
             if (result.IsError) Assert.Fail(result.Error);
         }
@@ -229,7 +229,7 @@ namespace LinkedInApiClientTests
                 //CommonURN.OrganizationId("72216557"),
                 CommonURN.OrganizationId("37246747"),
                 default
-                ).WithAccessToken(accessToken));
+                ), accessToken);
 
 
             if (result.IsError) Assert.Fail(result.Error);
@@ -241,8 +241,7 @@ namespace LinkedInApiClientTests
             var (client, accessToken) = await Connection();
 
             var result = await client.FindAMembersOrganizationAccessControlInformationAsync(
-                new FindAMembersOrganizationAccessControlInformationRequest()
-                    .WithAccessToken(accessToken));
+                new FindAMembersOrganizationAccessControlInformationRequest(), accessToken);
 
             if (!result.IsSuccess) Assert.Fail(result.Error.ReasonText);
         }
@@ -256,7 +255,7 @@ namespace LinkedInApiClientTests
                 new FindOrganizationAdministratorsRequest(
                 //CommonURN.OrganizationId("45271")
                 CommonURN.OrganizationId("37246747")
-                ).WithAccessToken(accessToken));
+                ), accessToken);
 
             if (!result.IsSuccess)
             {

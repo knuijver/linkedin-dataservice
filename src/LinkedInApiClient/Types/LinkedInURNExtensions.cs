@@ -24,5 +24,8 @@ namespace LinkedInApiClient.Types
             return str.Split(",")
                     .Select(LinkedInURN.Parse);
         }
+
+        public static bool IsEntityTypeOf(this LinkedInURN urn, params string[] entityType)
+            => !entityType.Contains(urn.EntityType);
     }
 }

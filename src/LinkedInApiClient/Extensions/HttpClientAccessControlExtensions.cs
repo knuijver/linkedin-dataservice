@@ -21,21 +21,23 @@ namespace LinkedInApiClient.Extensions
         public static Task<Result<LinkedInError, Paged<OrganizationRoleEntry>>> FindAMembersOrganizationAccessControlInformationAsync(
             this HttpMessageInvoker client,
             FindAMembersOrganizationAccessControlInformationRequest request,
+            string accessToken,
             CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(request.AccessToken)) throw new ArgumentNullException(nameof(request.AccessToken));
 
-            return client.GetAsync<Paged<OrganizationRoleEntry>>(request, cancellationToken);
+            return client.GetAsync<Paged<OrganizationRoleEntry>>(request.WithAccessToken(accessToken), cancellationToken);
         }
 
         public static Task<Result<LinkedInError, Paged<OrganizationRoleEntry>>> FindOrganizationAdministratorsAsync(
             this HttpMessageInvoker client,
             FindOrganizationAdministratorsRequest request,
+            string accessToken,
             CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(request.AccessToken)) throw new ArgumentNullException(nameof(request.AccessToken));
 
-            return client.GetAsync<Paged<OrganizationRoleEntry>>(request, cancellationToken);
+            return client.GetAsync<Paged<OrganizationRoleEntry>>(request.WithAccessToken(accessToken), cancellationToken);
         }
     }
 }
