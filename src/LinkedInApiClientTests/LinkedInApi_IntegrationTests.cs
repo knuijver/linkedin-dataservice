@@ -23,7 +23,7 @@ namespace LinkedInApiClientTests
 {
     [TestClass]
     [TestCategory("Integration Tests")]
-    [Ignore("Only run in dev env. may require new AccessTokens")]
+    //[Ignore("Only run in dev env. may require new AccessTokens")]
     public class LinkedInApi_IntegrationTests
     {
         [TestMethod]
