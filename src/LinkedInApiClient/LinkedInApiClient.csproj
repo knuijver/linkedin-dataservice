@@ -5,8 +5,9 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Tasper and contributors</Authors>
     <Company>Tasper Reward B.V.</Company>
-    <PackageTags>LinkedIn, v2, Rest.Li</PackageTags>
-    <Description>LinkedIn API v2</Description>
+    <PackageTags>LinkedIn v2 Rest.Li RestLi</PackageTags>
+    <Description>LinkedIn.NET (API v2) is a .NET library that simplifies working with LinkedIn from .NET applications.
+It supports RestLi protocol V2 request and helps with the encoding as writen in the LinkedIn API documentation. It only extends the HttpClient and is a fully extensable library.</Description>
     <PackageIcon>LI-In-Bug.png</PackageIcon>
     <PackageLicenseExpression>BSD-3-Clause</PackageLicenseExpression>
     <Version>2.0.0</Version>
