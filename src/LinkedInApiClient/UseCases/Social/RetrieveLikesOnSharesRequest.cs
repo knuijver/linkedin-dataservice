@@ -2,8 +2,6 @@
 using System.Linq;
 using System.Text.Json.Serialization;
 using LinkedInApiClient.Types;
-using LinkedInApiClient.UseCases.Models;
-using LinkedInApiClient.UseCases.Social.Models;
 
 namespace LinkedInApiClient.UseCases.Social
 {

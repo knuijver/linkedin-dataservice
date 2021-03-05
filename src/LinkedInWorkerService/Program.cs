@@ -38,7 +38,7 @@ namespace LinkedInWorkerService
                     services.AddTransient<IAccessTokenRegistry, AccessTokenStore>();
 
                     services.AddHostedService<InboundMessageWorker>();
-                    services.AddHostedService<LinkedInDataCollectionWorker>();
+                    services.AddHostedService<SchedulingWorker>();
                     services.AddHostedService<LinkedInDataCollectionWorker>();
                 });
     }

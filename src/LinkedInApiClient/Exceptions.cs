@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net;
 using System.Text.Json.Serialization;
-using LinkedInApiClient.UseCases.Models;
 
 namespace LinkedInApiClient
 {
@@ -31,6 +30,8 @@ namespace LinkedInApiClient
 
         public LinkedInErrorType ErrorType { get; private set; } = LinkedInErrorType.None;
 
+        public LinkedInResponse ApiResponse { get; private set; }
+
         public static LinkedInError FromException(Exception ex, string errorMessage = default)
         {
             return new LinkedInError(errorMessage ?? ex.Message)
@@ -41,7 +42,11 @@ namespace LinkedInApiClient
         }
         public static LinkedInError FromResponseError(LinkedInResponse response)
         {
-            return new LinkedInError(response.Error);
+            return new LinkedInError(response.Error)
+            {
+                ErrorType = LinkedInErrorType.Http,
+                ApiResponse = response
+            };
         }
 
         public static LinkedInError FromTokenResponse(string message)

@@ -15,7 +15,7 @@ namespace LinkedInApiClient.Extensions
             string accessToken,
             CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrWhiteSpace(request.AccessToken)) throw new ArgumentNullException(nameof(request.AccessToken));
+            if (string.IsNullOrWhiteSpace(accessToken)) throw new ArgumentNullException(nameof(accessToken));
 
             request.Method = HttpMethod.Get;
             request
@@ -31,7 +31,7 @@ namespace LinkedInApiClient.Extensions
             string accessToken,
             CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrWhiteSpace(request.AccessToken)) throw new ArgumentNullException(nameof(request.AccessToken));
+            if (string.IsNullOrWhiteSpace(accessToken)) throw new ArgumentNullException(nameof(accessToken));
 
             request.Method = HttpMethod.Get;
             request

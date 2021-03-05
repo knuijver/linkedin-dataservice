@@ -17,7 +17,7 @@ namespace LinkedInApiClient.Extensions
             string accessToken,
             CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrWhiteSpace(request.AccessToken)) throw new ArgumentNullException(nameof(request.AccessToken));
+            if (string.IsNullOrWhiteSpace(accessToken)) throw new ArgumentNullException(nameof(accessToken));
             return client.GetAsync<Paged<Country>>(request.WithAccessToken(accessToken), cancellationToken);
         }
 
@@ -27,7 +27,7 @@ namespace LinkedInApiClient.Extensions
             string accessToken,
             CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrWhiteSpace(request.AccessToken)) throw new ArgumentNullException(nameof(request.AccessToken));
+            if (string.IsNullOrWhiteSpace(accessToken)) throw new ArgumentNullException(nameof(accessToken));
             return client.GetAsync<Paged<CountryGroup>>(request.WithAccessToken(accessToken), cancellationToken);
         }
 
@@ -37,7 +37,7 @@ namespace LinkedInApiClient.Extensions
             string accessToken,
             CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrWhiteSpace(request.AccessToken)) throw new ArgumentNullException(nameof(request.AccessToken));
+            if (string.IsNullOrWhiteSpace(accessToken)) throw new ArgumentNullException(nameof(accessToken));
             return client.GetAsync<Paged<JobsFunction>>(request.WithAccessToken(accessToken), cancellationToken);
         }
 
@@ -47,7 +47,7 @@ namespace LinkedInApiClient.Extensions
             string accessToken,
             CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrWhiteSpace(request.AccessToken)) throw new ArgumentNullException(nameof(request.AccessToken));
+            if (string.IsNullOrWhiteSpace(accessToken)) throw new ArgumentNullException(nameof(accessToken));
 
             request.Method = HttpMethod.Get;
             request

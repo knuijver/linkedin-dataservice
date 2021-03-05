@@ -40,16 +40,23 @@ namespace LinkedInApiClient
                 throw new ArgumentNullException(nameof(QueryParameters));
             }
 
-            if (Address == null || Address.Length == 0)
+            if (Address.IsMissing())
             {
                 throw new ArgumentException(nameof(Address));
             }
 
+            var queryStringInBytes = Encoding.UTF8.GetByteCount(QueryParameters.ToUrlQueryString(string.Empty));
+            if (queryStringInBytes >= 4.KiloBytes())
+            {
+                throw new ArgumentOutOfRangeException(nameof(QueryParameters), "Query string must be less the 4Kb.");
+            }
+
             base.RequestUri = new Uri(QueryParameters.ToUrlQueryString(Address), UriKind.Relative);
 
-            if (AccessToken != null) this.SetBearerToken(AccessToken);
+            if (AccessToken.IsPresent()) this.SetBearerToken(AccessToken);
 
             if (ProtocolVersion == RestLiProtocolVersion.V2) Headers.Add("X-Restli-Protocol-Version", "2.0.0");
         }
+
     }
 }

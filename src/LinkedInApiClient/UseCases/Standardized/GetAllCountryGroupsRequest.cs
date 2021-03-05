@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using LinkedInApiClient.Types;
-using LinkedInApiClient.UseCases.Models;
 using LinkedInApiClient.UseCases.Standardized.Models;
 
 namespace LinkedInApiClient.UseCases.Standardized

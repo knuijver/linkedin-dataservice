@@ -1,31 +1,20 @@
 using LinkedInApiClient;
 using LinkedInApiClient.Store;
-using LinkedInApiClient.Types;
 using LinkedInApiClient.Extensions;
-using LinkedInWorkerService.Common.Types;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using LinkedInApiClient.UseCases.AccessControl;
 using LinkedInApiClient.UseCases.Organizations;
 using LinkedInApiClient.UseCases.People;
-using LinkedInApiClient.Messages;
+using LinkedInApiClient.UseCases;
 
 namespace LinkedInWorkerService
 {
-    public class InboundMessageWorker : BackgroundService
-    {
-        protected override Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            return Task.CompletedTask;
-        }
-    }
     public class LinkedInDataCollectionWorker : BackgroundService
     {
         private readonly ILogger<LinkedInDataCollectionWorker> logger;
@@ -68,18 +57,44 @@ namespace LinkedInWorkerService
                                 org.Role);
 
                             var orginizationUrn = org.OrganizationUrn;
+                            try
+                            {
+                                var followerStatistics = await client.RetrieveLifetimeFollowerStatisticsAsync(
+                                    new RetrieveLifetimeFollowerStatisticsRequest(orginizationUrn, default), accessToken, stoppingToken);
 
-                            var followerStatistics = await client.RetrieveLifetimeFollowerStatisticsAsync(
-                                new RetrieveLifetimeFollowerStatisticsRequest(orginizationUrn, default), accessToken, stoppingToken);
+                                logger.LogInformation("{FollowerStatistcs}", followerStatistics.Raw);
 
-                            var pageStatistics = await client.RetrieveLifetimeOrganizationPageStatisticsAsync(
-                                new RetrieveLifetimeOrganizationPageStatisticsRequest(orginizationUrn, default), accessToken, stoppingToken);
+                                var pageStatistics = await client.RetrieveLifetimeOrganizationPageStatisticsAsync(
+                                    new RetrieveLifetimeOrganizationPageStatisticsRequest(orginizationUrn, default), accessToken, stoppingToken);
 
-                            var posts = await client.FindUGCPostsByAuthorsAsync(
-                                new FindUGCPostsByAuthorsRequest(orginizationUrn), accessToken, stoppingToken);
+                                logger.LogInformation("{PageStatistics}", pageStatistics.Raw);
 
-                            var socialActions = await client.BatchGetASummaryOfSocialActionsAsync(
-                                new BatchGetASummaryOfSocialActionsRequest(), accessToken, stoppingToken);
+                                var posts = await client.FindUGCPostsByAuthorsAsync(
+                                    new FindUGCPostsByAuthorsRequest(orginizationUrn), accessToken, stoppingToken);
+
+                                logger.LogInformation("{@UGCPosts}", posts.Data);
+
+                                if (posts.Try(out var postPages))
+                                {
+                                    var urns = postPages.Elements
+                                        .Select(s => s.Id)
+                                        .Take(10)
+                                        .ToArray();
+
+                                    if (urns.Length > 0)
+                                    {
+
+                                        var socialActions = await client.BatchGetASummaryOfSocialActionsAsync(
+                                            new BatchGetASummaryOfSocialActionsRequest(urns), accessToken, stoppingToken);
+
+                                        logger.LogInformation("{SocialActions}", socialActions.Raw);
+                                    }
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                logger.LogWarning(ex, "failed pulling organization data.");
+                            }
                         }
                     }
                     else

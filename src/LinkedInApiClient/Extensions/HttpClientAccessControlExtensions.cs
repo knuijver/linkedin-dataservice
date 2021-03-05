@@ -1,10 +1,7 @@
-﻿using LinkedInApiClient.Types;
-using LinkedInApiClient.UseCases.AccessControl;
-using LinkedInApiClient.UseCases.AccessControl.Models;
+﻿using LinkedInApiClient.UseCases.AccessControl;
 using LinkedInApiClient.UseCases.CareerPageStatistics;
 using LinkedInApiClient.UseCases.Models;
 using LinkedInApiClient.UseCases.Organizations;
-using LinkedInApiClient.UseCases.Organizations.Models;
 using LinkedInApiClient.UseCases.People;
 using System;
 using System.Collections.Generic;
@@ -24,7 +21,7 @@ namespace LinkedInApiClient.Extensions
             string accessToken,
             CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrWhiteSpace(request.AccessToken)) throw new ArgumentNullException(nameof(request.AccessToken));
+            if (string.IsNullOrWhiteSpace(accessToken)) throw new ArgumentNullException(nameof(accessToken));
 
             return client.GetAsync<Paged<OrganizationRoleEntry>>(request.WithAccessToken(accessToken), cancellationToken);
         }
@@ -35,7 +32,7 @@ namespace LinkedInApiClient.Extensions
             string accessToken,
             CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrWhiteSpace(request.AccessToken)) throw new ArgumentNullException(nameof(request.AccessToken));
+            if (string.IsNullOrWhiteSpace(accessToken)) throw new ArgumentNullException(nameof(accessToken));
 
             return client.GetAsync<Paged<OrganizationRoleEntry>>(request.WithAccessToken(accessToken), cancellationToken);
         }

@@ -13,7 +13,7 @@ namespace LinkedInApiClient
         /// <param name="url"></param>
         /// <param name="query"></param>
         /// <returns></returns>
-        public static string AppendQueryToUrl(string url, IEnumerable<KeyValuePair<string, string>> query)
+        public static string AppendQueryToUrl(string url, IEnumerable<KeyValuePair<string, string>> query, bool encodeValues = true)
         {
             //var f = query.Where(w => !string.IsNullOrWhiteSpace(w.Value));
             if (!query.Any())
@@ -24,7 +24,7 @@ namespace LinkedInApiClient
             {
                 return url
                     + (url.Contains("?") ? "&" : "?")
-                    + string.Join("&", query.Select(x => Uri.EscapeDataString(x.Key) + "=" + (x.Value == null ? "" : Uri.EscapeDataString(x.Value))));
+                    + string.Join("&", query.Select(x => Uri.EscapeDataString(x.Key) + "=" + (x.Value == null ? "" : encodeValues ? Uri.EscapeDataString(x.Value) : x.Value)));
             }
         }
 

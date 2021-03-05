@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using LinkedInApiClient.UseCases.Models;
 using LinkedInApiClient.UseCases.Social;
-using LinkedInApiClient.UseCases.Social.Models;
 
 namespace LinkedInApiClient.Extensions
 {
@@ -17,7 +16,7 @@ namespace LinkedInApiClient.Extensions
             string accessToken,
             CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrWhiteSpace(request.AccessToken)) throw new ArgumentNullException(nameof(request.AccessToken));
+            if (string.IsNullOrWhiteSpace(accessToken)) throw new ArgumentNullException(nameof(accessToken));
             return client.GetAsync<SummaryOfSocialAction>(request.WithAccessToken(accessToken), cancellationToken);
         }
 
@@ -27,7 +26,7 @@ namespace LinkedInApiClient.Extensions
             string accessToken,
             CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrWhiteSpace(request.AccessToken)) throw new ArgumentNullException(nameof(request.AccessToken));
+            if (string.IsNullOrWhiteSpace(accessToken)) throw new ArgumentNullException(nameof(accessToken));
             return client.GetAsync<Paged<LikesOnShares>>(request.WithAccessToken(accessToken), cancellationToken);
         }
     }

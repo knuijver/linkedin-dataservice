@@ -1,5 +1,4 @@
 ﻿using LinkedInApiClient.Types;
-using LinkedInApiClient.UseCases.AccessControl.Models;
 using LinkedInApiClient.UseCases.Models;
 using System;
 using System.Collections.Generic;

@@ -128,9 +128,9 @@ namespace LinkedInWorkerService.Common
             var client = clientFactory.CreateClient(nameof(AccessTokenStore));
 
             var request = new HttpRequestMessage(HttpMethod.Get, "api/tokens");
-            var response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
+            var response = await client.SendAsync(request, cancellationToken);
 
-            var content = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+            var content = await response.Content.ReadAsStringAsync(cancellationToken);
             if (response.IsSuccessStatusCode)
             {
                 IStoredToken[] entry = JsonSerializer.Deserialize<StoreTokenEntry[]>(content);

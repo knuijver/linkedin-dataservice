@@ -1,5 +1,4 @@
 using LinkedInApiClient;
-using LinkedInApiClient.Messages;
 using LinkedInApiClient.Types;
 using LinkedInApiClient.UseCases.People;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

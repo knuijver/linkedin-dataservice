@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Linq;
 using LinkedInApiClient.Types;
-using LinkedInApiClient.UseCases.AccessControl.Models;
-using LinkedInApiClient.UseCases.Models;
 
 namespace LinkedInApiClient.UseCases.AccessControl
 {

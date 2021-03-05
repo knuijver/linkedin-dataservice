@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Net;
-using LinkedInApiClient.Messages;
+using LinkedInApiClient.Types;
 
 namespace LinkedInApiClient
 {

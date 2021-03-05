@@ -14,26 +14,28 @@ namespace LinkedInApiClient.Types
     /// </summary>
     public class Parameters : IEnumerable<KeyValuePair<string, string?>>
     {
-        private IDictionary<string, string> parameters;
+        private IDictionary<string, string?> parameters;
 
         public static readonly Parameters EmptyParameters = new Parameters();
 
         public Parameters()
         {
-            this.parameters = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            this.parameters = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
         }
-        public Parameters(IEnumerable<KeyValuePair<string, string>> queryParameters)
+        public Parameters(IEnumerable<KeyValuePair<string, string?>> queryParameters)
         {
-            this.parameters = new Dictionary<string, string>(queryParameters, StringComparer.OrdinalIgnoreCase);
+            this.parameters = new Dictionary<string, string?>(queryParameters, StringComparer.OrdinalIgnoreCase);
         }
+
+        public bool DisableValueEcoding { get; set; }
 
         /// <summary>
         /// Get parameter value based on name
         /// </summary>
         /// <param name="index"></param>
-        public string this[string index]
+        public string? this[string index]
         {
-            get => parameters[index];            
+            get => parameters[index];
             set => parameters[index] = value;
         }
 
@@ -53,23 +55,23 @@ namespace LinkedInApiClient.Types
             return this;
         }
 
-        public Parameters Add(KeyValuePair<string, string> par)
+        public Parameters Add(KeyValuePair<string, string?> par)
         {
             parameters.Add(par);
             return this;
         }
 
-        public Parameters AddRange(IEnumerable<KeyValuePair<string, string>> par)
+        public Parameters AddRange(IEnumerable<KeyValuePair<string, string?>> par)
         {
-            parameters = new Dictionary<string, string>(parameters.Concat(par), StringComparer.OrdinalIgnoreCase);
+            parameters = new Dictionary<string, string?>(parameters.Concat(par), StringComparer.OrdinalIgnoreCase);
             return this;
         }
 
-        public static Parameters operator +(Parameters collection, IEnumerable<KeyValuePair<string, string>> par)
+        public static Parameters operator +(Parameters collection, IEnumerable<KeyValuePair<string, string?>> par)
         {
             return collection.AddRange(par);
         }
-        public static Parameters operator +(Parameters collection, KeyValuePair<string, string> par)
+        public static Parameters operator +(Parameters collection, KeyValuePair<string, string?> par)
         {
             collection[par.Key] = par.Value;
             return collection;
@@ -82,9 +84,9 @@ namespace LinkedInApiClient.Types
         /// <param name="url"></param>
         /// <returns></returns>
         public string ToUrlQueryString(string url) =>
-            UrlHelper.AppendQueryToUrl(url, this.parameters);
+            UrlHelper.AppendQueryToUrl(url, this.parameters, !DisableValueEcoding);
 
-        public IEnumerator<KeyValuePair<string, string>> GetEnumerator() => parameters.GetEnumerator();
+        public IEnumerator<KeyValuePair<string, string?>> GetEnumerator() => parameters.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => parameters.GetEnumerator();
 
@@ -100,12 +102,12 @@ namespace LinkedInApiClient.Types
                 return EmptyParameters;
             }
 
-            if (values is Dictionary<string, string> dictionary)
+            if (values is Dictionary<string, string?> dictionary)
             {
                 return new Parameters(dictionary);
             }
 
-            dictionary = new Dictionary<string, string>();
+            dictionary = new Dictionary<string, string?>();
 
             foreach (var prop in values.GetType().GetRuntimeProperties())
             {
@@ -130,7 +132,7 @@ namespace LinkedInApiClient.Types
             {
                 var merged =
                     this.Concat(additionalValues.Where(add => !this.ContainsKey(add.Key)))
-                        .Select(s => new KeyValuePair<string, string>(s.Key, s.Value));
+                        .Select(s => new KeyValuePair<string, string?>(s.Key, s.Value));
 
                 return new Parameters(merged);
             }
