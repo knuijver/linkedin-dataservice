@@ -1,8 +1,10 @@
 ﻿using LinkedInApiClient.Types;
+using System.Diagnostics;
 using System.Text.Json;
 
 namespace LinkedInApiClient
 {
+    [DebuggerStepThrough]
     public static class ResultExtensions
     {
         public static Result<LinkedInError, T> ConvertFromJson<T>(this Result<LinkedInError, string> result)

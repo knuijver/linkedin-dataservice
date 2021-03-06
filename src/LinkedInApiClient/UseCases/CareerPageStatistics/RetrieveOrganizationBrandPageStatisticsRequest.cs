@@ -17,7 +17,7 @@ namespace LinkedInApiClient.UseCases.CareerPageStatistics
             {
                 ["q"] = "brand",
                 ["brand"] = organizationBrand
-            } + timeInterval.AsQueryParameters();
+            } + timeInterval.AsRestLiParametersV1();
         }
     }
 }

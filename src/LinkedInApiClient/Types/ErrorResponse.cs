@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Text.Json.Serialization;
 
 namespace LinkedInApiClient.Types
@@ -12,6 +13,7 @@ namespace LinkedInApiClient.Types
         public string Message { get; set; }
 
         [JsonPropertyName("status")]
-        public int Status { get; set; }
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public HttpStatusCode Status { get; set; }
     }
 }

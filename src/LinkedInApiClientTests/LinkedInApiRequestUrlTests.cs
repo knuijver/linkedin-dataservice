@@ -82,7 +82,7 @@ namespace LinkedInApiClientTests
         [TestMethod]
         public async Task RequestAccessToken_HandlingInvalidTokens_401_Unauthorized()
         {
-            Mock<HttpMessageHandler> handlerMock = Fakes.HttpMessageHandler(HttpStatusCode.Unauthorized, new ErrorResponse { Status = (int)HttpStatusCode.Unauthorized });
+            Mock<HttpMessageHandler> handlerMock = Fakes.HttpMessageHandler(HttpStatusCode.Unauthorized, new ErrorResponse { Status = HttpStatusCode.Unauthorized });
             var linkedIn = new LinkedInHttpClient(handlerMock.Object);
             var clientId = Guid.NewGuid().ToString("n");
             var secret = Convert.ToBase64String(Encoding.UTF8.GetBytes("Keep the Secret"));
@@ -91,8 +91,8 @@ namespace LinkedInApiClientTests
             var result = await linkedIn.RequestAccessToken(uri, clientId, secret, CancellationToken.None);
 
             Assert.IsFalse(result.IsSuccess);
-            Assert.IsInstanceOfType(result.Error, typeof(LinkedInHttpError));
-            Assert.AreEqual(HttpStatusCode.Unauthorized, ((LinkedInHttpError)result.Error).StatusCode);
+            Assert.IsInstanceOfType(result.Error, typeof(LinkedInError));
+            Assert.AreEqual(HttpStatusCode.Unauthorized, result.Error.StatusCode);
             Assert.IsNull(result.Data);
 
             Fakes.VerifyRequest(
@@ -152,7 +152,7 @@ namespace LinkedInApiClientTests
             {
                 Message = "Failed",
                 ServiceErrorCode = 7632,
-                Status = 401
+                Status = (HttpStatusCode)401
             });
 
             var message = new GetEmailRequest();

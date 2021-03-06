@@ -12,6 +12,7 @@ using LinkedInApiClient.UseCases.AccessControl;
 using LinkedInApiClient.UseCases.Organizations;
 using LinkedInApiClient.UseCases.People;
 using LinkedInApiClient.UseCases;
+using LinkedInApiClient.Types;
 
 namespace LinkedInWorkerService
 {
@@ -31,7 +32,7 @@ namespace LinkedInWorkerService
             var client = new HttpClient()
                 .UseDefaultLinkedInBaseUrl();
 
-            var accessTokens = await tokenRegistry.ListAsync(CancellationToken.None);
+            var accessTokens = await tokenRegistry.ListAsync(stoppingToken);
             if (accessTokens.Try(out var tokens))
             {
                 foreach (var token in tokens)
@@ -59,13 +60,26 @@ namespace LinkedInWorkerService
                             var orginizationUrn = org.OrganizationUrn;
                             try
                             {
+                                var today = DateTime.Today;
+                                var offset = TimeSpan.FromHours(0); // UTC
+
+                                var timeInterval = new TimeInterval
+                                {
+                                    TimeGranularityType = TimeGranularityType.Day,
+                                    TimeRange = new TimeRange
+                                    {
+                                        Start = new DateTimeOffset(today.AddDays(-(today.Day - 1)), offset),
+                                        End = new DateTimeOffset(today.AddDays(1), offset)
+                                    }
+                                };
+
                                 var followerStatistics = await client.RetrieveLifetimeFollowerStatisticsAsync(
-                                    new RetrieveLifetimeFollowerStatisticsRequest(orginizationUrn, default), accessToken, stoppingToken);
+                                    new RetrieveLifetimeFollowerStatisticsRequest(orginizationUrn, timeInterval), accessToken, stoppingToken);
 
                                 logger.LogInformation("{FollowerStatistcs}", followerStatistics.Raw);
 
                                 var pageStatistics = await client.RetrieveLifetimeOrganizationPageStatisticsAsync(
-                                    new RetrieveLifetimeOrganizationPageStatisticsRequest(orginizationUrn, default), accessToken, stoppingToken);
+                                    new RetrieveLifetimeOrganizationPageStatisticsRequest(orginizationUrn, timeInterval), accessToken, stoppingToken);
 
                                 logger.LogInformation("{PageStatistics}", pageStatistics.Raw);
 

@@ -4,10 +4,10 @@ using LinkedInApiClient.Types;
 namespace LinkedInApiClient.UseCases.Organizations
 {
     /// <summary>
-    /// https://docs.microsoft.com/en-us/linkedin/marketing/integrations/community-management/organizations/page-statistics
+    /// <see cref="https://docs.microsoft.com/en-us/linkedin/marketing/integrations/community-management/organizations/page-statistics"/>
     /// There is a difference in response when using Time Intervals.
-    /// Without: https://docs.microsoft.com/en-us/linkedin/marketing/integrations/community-management/organizations/page-statistics#sample-response
-    /// TimeBound: https://docs.microsoft.com/en-us/linkedin/marketing/integrations/community-management/organizations/page-statistics#retrieve-time-bound-organization-page-statistics
+    /// Without: <see cref="https://docs.microsoft.com/en-us/linkedin/marketing/integrations/community-management/organizations/page-statistics#sample-response"/>
+    /// TimeBound: <see cref="https://docs.microsoft.com/en-us/linkedin/marketing/integrations/community-management/organizations/page-statistics#retrieve-time-bound-organization-page-statistics"/>
     /// </summary>
     public class RetrieveLifetimeOrganizationPageStatisticsRequest : LinkedInRequest
     {
@@ -19,11 +19,25 @@ namespace LinkedInApiClient.UseCases.Organizations
             }
 
             Address = "organizationPageStatistics";
-            QueryParameters = new Parameters
+            if (timeInterval == default)
             {
-                ["q"] = "organization",
-                ["organization"] = organizationId
-            } + timeInterval.AsQueryParameters();
+                QueryParameters = new Parameters
+                {
+                    ["q"] = "organization",
+                    ["organization"] = organizationId
+                };
+            }
+            else
+            {
+                ProtocolVersion = RestLiProtocolVersion.V2;
+                QueryParameters = new Parameters
+                {
+                    DisableValueEcoding = true,
+                    ["q"] = "organization",
+                    ["organization"] = organizationId.UrlEncode()
+                };
+                QueryParameters.AddRange(timeInterval.AsRestLiParametersV2());
+            }
         }
     }
 }

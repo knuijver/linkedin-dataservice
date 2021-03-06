@@ -84,8 +84,8 @@ namespace LinkedInApiClient
                         ? default
                         : JsonSerializer.Deserialize<ErrorResponse>(responseContent);
 
-                    return LinkedInHttpError
-                        .From(error)
+                    return LinkedInError
+                        .FromErrorResponse(error)
                         .ToResult();
                 }
             }
@@ -206,76 +206,4 @@ namespace LinkedInApiClient
             Dispose(false);
         }
     }
-    /*
-    class RetryFailedRequest : DelegatingHandler
-    {
-        private string tokenEndpointUrl = LinkedInConstants.DefaultTokenEndpoint;
-
-        public RetryFailedRequest()
-        {
-        }
-
-        public RetryFailedRequest(HttpMessageHandler innerHandler)
-            : base(innerHandler)
-        {
-        }
-
-        private HttpClient GetHttpClient()
-        {
-            return new HttpClient()
-            {
-                BaseAddress = new Uri(tokenEndpointUrl)
-            };
-        }
-
-        private async Task<string> RefreshToken(HttpClient client)
-        {
-            string clientId = string.Empty;
-            string secret = string.Empty;
-            string refreshToken = string.Empty;
-
-            var message = new HttpRequestMessage(HttpMethod.Post, LinkedInConstants.DefaultTokenEndpoint)
-            {
-                Content = ContentHelpers.FormData(new Dictionary<string, string?>
-                {
-                    ["grant_type"] = "refresh_token",
-                    ["client_id"] = clientId,
-                    ["client_secret"] = secret,
-                    ["refresh_token"] = refreshToken
-                }),
-                Version = new Version(2, 0),
-                VersionPolicy = HttpVersionPolicy.RequestVersionOrLower
-            };
-
-            var response = await client.SendAsync(message);
-
-            response.EnsureSuccessStatusCode();
-
-            return await response.Content.ReadAsStringAsync();
-        }
-
-        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            var response = await base.SendAsync(request, cancellationToken);
-            if (response.IsSuccessStatusCode)
-            {
-                return response;
-            }
-            else if (response.StatusCode == HttpStatusCode.Unauthorized)
-            {
-                var tokenResponse = await RefreshToken(GetHttpClient());
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenResponse);
-            }
-            else
-            {
-                return new HttpResponseMessage(HttpStatusCode.ServiceUnavailable)
-                {
-                    Content = new StringContent("Try again later.")
-                };
-            }
-
-            return default;
-        }
-    }
-    */
 }

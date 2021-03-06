@@ -261,9 +261,9 @@ namespace LinkedInApiClientTests
             {
                 var failure = (result.Error) switch
                 {
-                    LinkedInHttpError error when error.StatusCode == HttpStatusCode.Unauthorized => "Malformed requests. Typically, the Access Control fields are invalid.",
-                    LinkedInHttpError error when error.StatusCode == HttpStatusCode.Forbidden => "A viewer is not present, or the user is not authorized to modify the Access Control.",
-                    LinkedInHttpError error when error.StatusCode == HttpStatusCode.NotFound => "The Access Control does not exist.",
+                    LinkedInError error when error.StatusCode == HttpStatusCode.Unauthorized => "Malformed requests. Typically, the Access Control fields are invalid.",
+                    LinkedInError error when error.StatusCode == HttpStatusCode.Forbidden => "A viewer is not present, or the user is not authorized to modify the Access Control.",
+                    LinkedInError error when error.StatusCode == HttpStatusCode.NotFound => "The Access Control does not exist.",
                     _ => result.Error.ReasonText
                 };
 

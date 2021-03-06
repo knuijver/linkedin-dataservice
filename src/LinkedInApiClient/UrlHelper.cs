@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace LinkedInApiClient
@@ -28,6 +29,7 @@ namespace LinkedInApiClient
             }
         }
 
+        [DebuggerStepThrough]
         public static string Combine(string baseUri, string path)
             => Combine(new Uri(baseUri), path).ToString();
 
@@ -42,6 +44,7 @@ namespace LinkedInApiClient
             return builder.Uri;
         }
 
+        [DebuggerStepThrough]
         public static Uri CreateUri(string url, IEnumerable<KeyValuePair<string, string>> query) =>
              new Uri(AppendQueryToUrl(url, query));
 

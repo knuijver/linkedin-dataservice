@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Text.Json.Serialization;
+using LinkedInApiClient.Types;
 
 namespace LinkedInApiClient
 {
@@ -54,6 +55,15 @@ namespace LinkedInApiClient
             return new LinkedInError(message)
             {
                 ErrorType = LinkedInErrorType.AccessToken
+            };
+        }
+        public static LinkedInError FromErrorResponse(ErrorResponse error)
+        {
+            return new LinkedInError(error.Message)
+            {
+                ErrorType = LinkedInErrorType.Protocol,
+                ServiceErrorCode = error.ServiceErrorCode,
+                StatusCode = error.Status
             };
         }
     }
