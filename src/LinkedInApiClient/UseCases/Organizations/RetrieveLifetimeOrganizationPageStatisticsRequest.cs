@@ -40,4 +40,9 @@ namespace LinkedInApiClient.UseCases.Organizations
             }
         }
     }
+
+    public class RetrieveLifetimeOrganizationPageStatisticsResponse : LinkedInResponse
+    {
+
+    }
 }

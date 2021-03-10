@@ -9,6 +9,7 @@ namespace SAWebHost.Data
 {
     public class ApplicationUser : IdentityUser
     {
+        [PersonalData]
         public string OrganizationUrn { get; set; }
     }
 

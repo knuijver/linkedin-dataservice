@@ -76,7 +76,7 @@ namespace LinkedInWorkerService
                                 var followerStatistics = await client.RetrieveLifetimeFollowerStatisticsAsync(
                                     new RetrieveLifetimeFollowerStatisticsRequest(orginizationUrn, timeInterval), accessToken, stoppingToken);
 
-                                logger.LogInformation("{FollowerStatistcs}", followerStatistics.Raw);
+                                logger.LogInformation("{@FollowerStatistcs}", followerStatistics.ToFollowerStatistics());
 
                                 var pageStatistics = await client.RetrieveLifetimeOrganizationPageStatisticsAsync(
                                     new RetrieveLifetimeOrganizationPageStatisticsRequest(orginizationUrn, timeInterval), accessToken, stoppingToken);

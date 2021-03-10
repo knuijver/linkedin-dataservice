@@ -28,7 +28,24 @@ namespace LinkedInApiClient
             var httpResponse = await client.SendAsync(request, cancellationToken)
                 .ConfigureAwait(false);
 
-            var response = await LinkedInResponse.FromHttpResponseAsync(httpResponse, cancellationToken);
+            var response = await LinkedInResponse.FromHttpResponseAsync<LinkedInResponse>(httpResponse, cancellationToken);
+            return response;
+        }
+        /// <summary>
+        /// Send the HttRequestMessage and read the Response as a String if request was successful,
+        /// Otherwise the result will contain an HttpLinkedInError or incase of less unexpected exceptions it will be a LinkedInCaughtException
+        /// </summary>
+        /// <typeparam name="TResponse"></typeparam>
+        /// <param name="request"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public static async Task<TResponse> ExecuteRequest<TResponse>(this HttpMessageInvoker client, LinkedInRequest request, CancellationToken cancellationToken = default)
+             where TResponse : LinkedInResponse, new()
+        {
+            var httpResponse = await client.SendAsync(request, cancellationToken)
+                .ConfigureAwait(false);
+
+            var response = await LinkedInResponse.FromHttpResponseAsync<TResponse>(httpResponse, cancellationToken);
             return response;
         }
 

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Text.Json.Serialization;
 using LinkedInApiClient.Types;
+using LinkedInApiClient.UseCases.Models;
 
 namespace LinkedInApiClient.UseCases.Organizations
 {
@@ -32,6 +34,39 @@ namespace LinkedInApiClient.UseCases.Organizations
                 };
                 QueryParameters.AddRange(timeInterval.AsRestLiParametersV2());
             }
+        }
+    }
+
+    public class RetrieveLifetimeFollowerStatisticsResponse : LinkedInResponse
+    {
+        public RetrieveLifetimeFollowerStatisticsResponse()
+        {
+        }
+
+        public Paged<FollowerStatistics> ToFollowerStatistics()
+        {
+            return System.Text.Json.JsonSerializer.Deserialize<Paged<FollowerStatistics>>(this.Raw);
+        }
+
+        public class FollowerStatistics
+        {
+            [JsonPropertyName("followerGains")]
+            public FollowerGains FollowerGains { get; set; }
+
+            [JsonPropertyName("organizationalEntity")]
+            public LinkedInURN OrganizationUrn { get; set; }
+
+            [JsonPropertyName("timeRange")]
+            public TimeRange TimeRange { get; set; }
+        }
+
+        public class FollowerGains
+        {
+            [JsonPropertyName("organicFollowerGain")]
+            public int OrganicFollowerGain { get; set; }
+
+            [JsonPropertyName("paidFollowerGain")]
+            public int PaidFollowerGain { get; set; }
         }
     }
 }

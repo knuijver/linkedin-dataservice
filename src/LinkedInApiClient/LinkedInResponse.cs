@@ -14,6 +14,14 @@ namespace LinkedInApiClient
     /// </summary>
     public class LinkedInResponse
     {
+        public LinkedInResponse()
+        {
+        }
+        public LinkedInResponse(HttpResponseMessage httpResponse)
+        {
+            this.HttpResponse = httpResponse;
+        }
+
         public string Raw { get; protected set; }
 
         /// <summary>
@@ -24,9 +32,14 @@ namespace LinkedInApiClient
         /// </value>
         public JsonElement Json { get; protected set; }
 
-
+        /// <summary>
+        /// The actual underling HTTP response message.
+        /// </summary>
         public HttpResponseMessage HttpResponse { get; protected set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public Exception Exception { get; protected set; }
 
         /// <summary>
@@ -108,15 +121,14 @@ namespace LinkedInApiClient
             }
         }
 
-
         /// <summary>
         /// Initializes a protocol response from an HTTP response
         /// </summary>
         /// <param name="httpResponse">The HTTP response.</param>
         /// <returns></returns>
-        public static async Task<LinkedInResponse> FromHttpResponseAsync(HttpResponseMessage httpResponse, CancellationToken cancellationToken)
+        public static async Task<TResponse> FromHttpResponseAsync<TResponse>(HttpResponseMessage httpResponse, CancellationToken cancellationToken) where TResponse : LinkedInResponse, new()
         {
-            var response = new LinkedInResponse
+            var response = new TResponse
             {
                 HttpResponse = httpResponse
             };
@@ -134,7 +146,7 @@ namespace LinkedInApiClient
             {
             }
 
-            if (httpResponse.IsSuccessStatusCode == false && 
+            if (httpResponse.IsSuccessStatusCode == false &&
                 httpResponse.StatusCode != HttpStatusCode.BadRequest)
             {
                 response.ErrorType = ResponseErrorType.Http;

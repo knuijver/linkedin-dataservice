@@ -17,7 +17,7 @@ namespace LinkedInApiClient.Extensions
             CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(accessToken)) throw new ArgumentNullException(nameof(accessToken));
-            
+
             request.Method = HttpMethod.Get;
             request
                 .WithAccessToken(accessToken)
@@ -68,7 +68,7 @@ namespace LinkedInApiClient.Extensions
             return client.ExecuteRequest(request, cancellationToken);
         }
 
-        public static Task<LinkedInResponse> RetrieveLifetimeFollowerStatisticsAsync(
+        public static Task<RetrieveLifetimeFollowerStatisticsResponse> RetrieveLifetimeFollowerStatisticsAsync(
             this HttpMessageInvoker client,
             RetrieveLifetimeFollowerStatisticsRequest request,
             string accessToken,
@@ -81,7 +81,7 @@ namespace LinkedInApiClient.Extensions
                 .WithAccessToken(accessToken)
                 .Prepare();
 
-            return client.ExecuteRequest(request, cancellationToken);
+            return client.ExecuteRequest<RetrieveLifetimeFollowerStatisticsResponse>(request, cancellationToken);
         }
 
         public static Task<LinkedInResponse> RetrieveLifetimeOrganizationPageStatisticsAsync(
