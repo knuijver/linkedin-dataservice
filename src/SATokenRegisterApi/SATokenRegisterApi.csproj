@@ -26,4 +26,8 @@
     <ProjectReference Include="..\LinkedInApiClient\LinkedInApiClient.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Logs\" />
+  </ItemGroup>
+
 </Project>
