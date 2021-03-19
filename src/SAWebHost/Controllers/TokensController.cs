@@ -17,9 +17,9 @@ namespace SAWebHost.Controllers
     [Authorize("JwtBearer")]
     public class TokensController : ControllerBase
     {
-        private readonly SAWebHostContext _context;
+        private readonly TokenRegistryContext _context;
 
-        public TokensController(SAWebHostContext context)
+        public TokensController(TokenRegistryContext context)
         {
             _context = context;
         }

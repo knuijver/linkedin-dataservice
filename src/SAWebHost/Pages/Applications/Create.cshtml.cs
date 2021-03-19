@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using SAWebHost.Data;
 using SAWebHost.Data.Dto;
 
 namespace SAWebHost.Pages.Applications
@@ -15,9 +14,9 @@ namespace SAWebHost.Pages.Applications
     [Authorize]
     public class CreateModel : PageModel
     {
-        private readonly SAWebHost.Data.SAWebHostContext _context;
+        private readonly SAWebHost.Data.TokenRegistryContext _context;
 
-        public CreateModel(SAWebHost.Data.SAWebHostContext context)
+        public CreateModel(SAWebHost.Data.TokenRegistryContext context)
         {
             _context = context;
         }

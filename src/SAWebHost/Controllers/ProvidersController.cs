@@ -16,9 +16,9 @@ namespace SAWebHost.Controllers
     [ApiController]
     public class ProvidersController : ControllerBase
     {
-        private readonly SAWebHostContext _context;
+        private readonly TokenRegistryContext _context;
 
-        public ProvidersController(SAWebHostContext context)
+        public ProvidersController(TokenRegistryContext context)
         {
             _context = context;
         }

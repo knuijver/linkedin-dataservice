@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using SAWebHost.Data;
 using SAWebHost.Data.Dto;
 
 namespace SAWebHost.Pages.Applications
@@ -15,9 +14,9 @@ namespace SAWebHost.Pages.Applications
     [Authorize]
     public class EditModel : PageModel
     {
-        private readonly SAWebHost.Data.SAWebHostContext _context;
+        private readonly SAWebHost.Data.TokenRegistryContext _context;
 
-        public EditModel(SAWebHost.Data.SAWebHostContext context)
+        public EditModel(SAWebHost.Data.TokenRegistryContext context)
         {
             _context = context;
         }

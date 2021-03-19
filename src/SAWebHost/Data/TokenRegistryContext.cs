@@ -7,9 +7,9 @@ using SAWebHost.Data.Dto;
 
 namespace SAWebHost.Data
 {
-    public class SAWebHostContext : DbContext
+    public class TokenRegistryContext : DbContext
     {
-        public SAWebHostContext(DbContextOptions<SAWebHostContext> options)
+        public TokenRegistryContext(DbContextOptions<TokenRegistryContext> options)
             : base(options)
         {
         }
@@ -18,7 +18,7 @@ namespace SAWebHost.Data
 
         public DbSet<LinkedInProvider> LinkedInProvider { get; set; }
 
-        public DbSet<SAWebHost.Data.Dto.AccessTokenEntry> AccessTokenEntry { get; set; }
+        public DbSet<AccessTokenEntry> AccessTokenEntry { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

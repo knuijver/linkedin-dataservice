@@ -4,11 +4,10 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using SAWebHost.Data;
 
 namespace SAWebHost.Migrations
 {
-    [DbContext(typeof(SAWebHostContext))]
+    [DbContext(typeof(Data.TokenRegistryContext))]
     [Migration("20210203145649_provider_fields")]
     partial class provider_fields
     {

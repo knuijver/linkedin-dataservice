@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using SAWebHost.Data;
 using SAWebHost.Data.Dto;
 
 namespace SAWebHost.Pages.Organizations
@@ -14,9 +13,9 @@ namespace SAWebHost.Pages.Organizations
     [Authorize]
     public class DeleteModel : PageModel
     {
-        private readonly SAWebHost.Data.SAWebHostContext _context;
+        private readonly SAWebHost.Data.TokenRegistryContext _context;
 
-        public DeleteModel(SAWebHost.Data.SAWebHostContext context)
+        public DeleteModel(SAWebHost.Data.TokenRegistryContext context)
         {
             _context = context;
         }

@@ -42,7 +42,7 @@ namespace SAWebHost
                 host.MigrateDbContext<ApplicationDbContext>((context, services) =>
                 {
                 });
-                host.MigrateDbContext<SAWebHostContext>((context, services) =>
+                host.MigrateDbContext<TokenRegistryContext>((context, services) =>
                 {
 
                 });

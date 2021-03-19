@@ -57,7 +57,7 @@ namespace SAWebHost.Impl
         public bool ValidateCertificate(X509Certificate2 clientCertificate)
         {
             using var scope = scopeFactory.CreateScope();
-            using var context = scope.ServiceProvider.GetRequiredService<SAWebHostContext>();
+            using var context = scope.ServiceProvider.GetRequiredService<TokenRegistryContext>();
 
             return context
                 .Set<ValidThumbprint>()

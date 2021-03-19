@@ -5,16 +5,15 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using SAWebHost.Data;
 using SAWebHost.Data.Dto;
 
 namespace SAWebHost.Pages.Organizations
 {
     public class IndexModel : PageModel
     {
-        private readonly SAWebHost.Data.SAWebHostContext _context;
+        private readonly SAWebHost.Data.TokenRegistryContext _context;
 
-        public IndexModel(SAWebHost.Data.SAWebHostContext context)
+        public IndexModel(SAWebHost.Data.TokenRegistryContext context)
         {
             _context = context;
         }

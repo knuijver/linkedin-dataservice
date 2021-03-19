@@ -26,14 +26,14 @@ namespace SAWebHost.Areas.Identity.Pages.Account
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
-        private readonly SAWebHostContext context;
+        private readonly TokenRegistryContext context;
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
-            SAWebHostContext context)
+            TokenRegistryContext context)
         {
             this.context = context;
             _userManager = userManager;

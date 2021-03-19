@@ -22,11 +22,11 @@ namespace SAWebHost.Pages.Tokens
     [Authorize]
     public class CreateModel : PageModel
     {
-        private readonly SAWebHostContext context;
+        private readonly TokenRegistryContext context;
         private readonly LinkedInOptions options;
         private readonly UserManager<ApplicationUser> userManager;
 
-        public CreateModel(SAWebHostContext context, IOptionsMonitor<LinkedInOptions> options, UserManager<ApplicationUser> userManager)
+        public CreateModel(TokenRegistryContext context, IOptionsMonitor<LinkedInOptions> options, UserManager<ApplicationUser> userManager)
         {
             this.userManager = userManager;
             this.options = options.CurrentValue;

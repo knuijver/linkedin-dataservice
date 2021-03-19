@@ -15,9 +15,9 @@ namespace SAWebHost.Controllers
     [ApiController]
     public class OrganizationsController : ControllerBase
     {
-        private readonly SAWebHostContext _context;
+        private readonly TokenRegistryContext _context;
 
-        public OrganizationsController(SAWebHostContext context)
+        public OrganizationsController(TokenRegistryContext context)
         {
             _context = context;
         }

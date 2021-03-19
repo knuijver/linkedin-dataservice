@@ -3,12 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using SAWebHost.Data;
 
 namespace SAWebHost.Migrations
 {
-    [DbContext(typeof(SAWebHostContext))]
-    partial class SAWebHostContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(Data.TokenRegistryContext))]
+    partial class TokenRegistryContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {

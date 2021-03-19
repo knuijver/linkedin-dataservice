@@ -19,9 +19,9 @@ namespace SAWebHost.Controllers
     [ApiController]
     public class FansController : ControllerBase
     {
-        private readonly SAWebHostContext context;
+        private readonly TokenRegistryContext context;
 
-        public FansController(SAWebHostContext context)
+        public FansController(TokenRegistryContext context)
         {
             this.context = context;
         }
