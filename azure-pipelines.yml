@@ -59,6 +59,9 @@ stages:
           projects: '$(solution)'
           arguments: '--configuration $(BuildConfiguration) --logger "trx" --collect "Code coverage" /p:Version="$(major).$(minor).$(patch)"'
           nobuild: false
+      - task: WhiteSource@21
+        inputs:
+          cwd: '$(System.DefaultWorkingDirectory)'
       - task: DotNetCoreCLI@2
         displayName: 'Publishing $(BuildConfiguration) Artifacts'
         inputs:
