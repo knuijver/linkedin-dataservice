@@ -1,0 +1,65 @@
+name: Build and Test
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  prepare:
+    name: Prepare Build Environment
+    runs-on: windows-latest
+    steps:
+      - name: Setup Workspace
+        run: |
+          echo Got stuff to do, linkedin_${{ env.major }}.${{ env.minor }}.${{ env.patch }}
+
+      - name: Use .NET Core 5.0.x SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '5.0.x'
+
+      - name: Restore Packages
+        run: dotnet restore ${{ env.solution }}
+
+  build:
+    name: Build Solution
+    runs-on: windows-latest
+    needs: prepare
+    steps:
+      - name: Run Test Projects
+        run: dotnet test ${{ env.solution }} --configuration ${{ env.buildConfiguration }} --logger "trx" --collect "Code coverage" /p:Version="${{ env.major }}.${{ env.minor }}.${{ env.patch }}"
+      
+      - name: WhiteSource Scan
+        run: echo "WhiteSource scanning is not natively supported in GitHub Actions. Consider using a custom Action or CLI."
+
+      - name: Publish Artifacts
+        run: dotnet publish ${{ env.solution }} --configuration ${{ env.buildConfiguration }} --output ${{ env.buildArtifactStagingDirectory }} /p:Version="${{ env.major }}.${{ env.minor }}.${{ env.patch }}"
+
+      - name: Zip Published Artifacts
+        run: zip -r ${{ env.buildArtifactStagingDirectory }}/linkedin.zip ${{ env.buildArtifactStagingDirectory }}
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: linkedin
+          path: ${{ env.buildArtifactStagingDirectory }}
+
+      - name: Push Packages to Internal Feed
+        run: dotnet nuget push ${{ env.buildSourcesDirectory }}/**/*.nupkg --source "YourInternalFeedURL"
+
+      - name: Post Build Cleanup
+        run: echo "Cleanup tasks go here."
+
+env:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+  major: 2
+  minor: 0
+  patch: ${{ github.run_number }}
+  buildArtifactStagingDirectory: '${{ github.workspace }}/staging'
+  buildSourcesDirectory: '${{ github.workspace }}'
